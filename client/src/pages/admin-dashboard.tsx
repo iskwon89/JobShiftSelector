@@ -26,6 +26,7 @@ export default function AdminDashboard() {
   const [newLocation, setNewLocation] = useState("");
   const [newDate, setNewDate] = useState("");
   const [editingRate, setEditingRate] = useState<string | null>(null);
+  const [editingCapacity, setEditingCapacity] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState("");
   
   // Edit location/date states
@@ -155,6 +156,29 @@ export default function AdminDashboard() {
       toast({
         title: "Error",
         description: "Failed to update rate",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const updateCapacityMutation = useMutation({
+    mutationFn: async ({ id, capacity }: { id: number, capacity: number }) => {
+      const response = await apiRequest('PUT', `/api/admin/shift-data/${id}`, { capacity });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/shift-data'] });
+      setEditingCapacity(null);
+      setEditingValue("");
+      toast({
+        title: "Success",
+        description: "Capacity updated successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update capacity",
         variant: "destructive",
       });
     }
@@ -335,8 +359,21 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleEditCapacity = (shiftId: number, currentCapacity: string) => {
+    setEditingCapacity(shiftId.toString());
+    setEditingValue(currentCapacity);
+  };
+
+  const handleSaveCapacity = (shiftId: number) => {
+    const capacity = parseInt(editingValue);
+    if (!isNaN(capacity) && capacity >= 1) {
+      updateCapacityMutation.mutate({ id: shiftId, capacity });
+    }
+  };
+
   const handleCancelEdit = () => {
     setEditingRate(null);
+    setEditingCapacity(null);
     setEditingValue("");
   };
 
@@ -701,43 +738,79 @@ export default function AdminDashboard() {
                                 <React.Fragment key={`${location}-${date}`}>
                                   {['DS', 'SS'].map(shift => {
                                     const shiftEntry = groupedShiftData[`${location}-${date}`]?.[shift];
-                                    const isEditing = editingRate === shiftEntry?.id.toString();
+                                    const isEditingRate = editingRate === shiftEntry?.id.toString();
+                                    const isEditingCapacity = editingCapacity === shiftEntry?.id.toString();
                                     
                                     return (
                                       <td key={`${location}-${date}-${shift}`} className="w-20 h-16 px-2 py-2 text-center border-l border-slate-200">
-                                        {isEditing ? (
+                                        {isEditingRate ? (
                                           <div className="flex flex-col gap-1">
                                             <Input
                                               value={editingValue}
                                               onChange={(e) => setEditingValue(e.target.value)}
-                                              className="h-8 text-xs text-center"
+                                              className="h-6 text-xs text-center"
                                               placeholder="1x"
                                             />
                                             <div className="flex gap-1">
                                               <Button
                                                 size="sm"
-                                                className="h-6 px-2 text-xs"
+                                                className="h-5 px-1 text-xs"
                                                 onClick={() => handleSaveRate(shiftEntry!.id)}
                                               >
-                                                Save
+                                                ✓
                                               </Button>
                                               <Button
                                                 size="sm"
                                                 variant="ghost"
-                                                className="h-6 px-2 text-xs"
+                                                className="h-5 px-1 text-xs"
                                                 onClick={handleCancelEdit}
                                               >
-                                                Cancel
+                                                ✕
+                                              </Button>
+                                            </div>
+                                          </div>
+                                        ) : isEditingCapacity ? (
+                                          <div className="flex flex-col gap-1">
+                                            <Input
+                                              value={editingValue}
+                                              onChange={(e) => setEditingValue(e.target.value)}
+                                              className="h-6 text-xs text-center"
+                                              placeholder="10"
+                                              type="number"
+                                            />
+                                            <div className="flex gap-1">
+                                              <Button
+                                                size="sm"
+                                                className="h-5 px-1 text-xs"
+                                                onClick={() => handleSaveCapacity(shiftEntry!.id)}
+                                              >
+                                                ✓
+                                              </Button>
+                                              <Button
+                                                size="sm"
+                                                variant="ghost"
+                                                className="h-5 px-1 text-xs"
+                                                onClick={handleCancelEdit}
+                                              >
+                                                ✕
                                               </Button>
                                             </div>
                                           </div>
                                         ) : (
-                                          <button
-                                            onClick={() => shiftEntry && handleEditRate(shiftEntry.id, shiftEntry.rate)}
-                                            className="w-full h-12 flex items-center justify-center text-sm font-medium rounded-md hover:bg-slate-50 transition-colors"
-                                          >
-                                            {shiftEntry?.rate || '1x'}
-                                          </button>
+                                          <div className="w-full h-12 flex flex-col items-center justify-center text-xs">
+                                            <button
+                                              onClick={() => shiftEntry && handleEditRate(shiftEntry.id, shiftEntry.rate)}
+                                              className="w-full text-sm font-medium hover:bg-blue-50 py-1 rounded transition-colors"
+                                            >
+                                              {shiftEntry?.rate || '1x'}
+                                            </button>
+                                            <button
+                                              onClick={() => shiftEntry && handleEditCapacity(shiftEntry.id, shiftEntry.capacity?.toString() || '10')}
+                                              className="w-full text-xs text-slate-600 hover:bg-green-50 py-1 rounded transition-colors"
+                                            >
+                                              Cap: {shiftEntry?.capacity || 10}
+                                            </button>
+                                          </div>
                                         )}
                                       </td>
                                     );
