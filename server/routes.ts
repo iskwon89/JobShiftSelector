@@ -191,17 +191,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put('/api/admin/shift-data/:id', async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const { rate } = req.body;
+      const { rate, capacity } = req.body;
       
-      if (!rate) {
-        return res.status(400).json({ message: 'Rate is required' });
+      const updateData: any = {};
+      if (rate !== undefined) updateData.rate = rate;
+      if (capacity !== undefined) updateData.capacity = capacity;
+      
+      if (Object.keys(updateData).length === 0) {
+        return res.status(400).json({ message: 'At least one field (rate or capacity) is required' });
       }
       
-      const updatedShift = await storage.updateShiftData(id, { rate });
+      const updatedShift = await storage.updateShiftData(id, updateData);
       res.json(updatedShift);
     } catch (error) {
-      console.error('Error updating shift rate:', error);
-      res.status(500).json({ message: 'Failed to update shift rate' });
+      console.error('Error updating shift data:', error);
+      res.status(500).json({ message: 'Failed to update shift data' });
     }
   });
 

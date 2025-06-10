@@ -142,6 +142,19 @@ export class MemStorage implements IStorage {
       submittedAt: new Date().toISOString()
     };
     this.applications.set(id, application);
+    
+    // Update booking counts for each selected shift
+    if (insertApplication.selectedShifts) {
+      const shifts = JSON.parse(JSON.stringify(insertApplication.selectedShifts));
+      if (Array.isArray(shifts)) {
+        for (const shift of shifts) {
+          if (shift && shift.location && shift.date && shift.shift) {
+            await this.incrementShiftBookings(insertApplication.cohort, shift.location, shift.date, shift.shift);
+          }
+        }
+      }
+    }
+    
     return application;
   }
 
@@ -215,7 +228,9 @@ export class MemStorage implements IStorage {
           location,
           date,
           shift,
-          rate
+          rate,
+          capacity: 10,
+          currentBookings: 0
         });
       }
     }
@@ -245,7 +260,9 @@ export class MemStorage implements IStorage {
           location,
           date,
           shift,
-          rate
+          rate,
+          capacity: 10,
+          currentBookings: 0
         });
       }
     }
@@ -316,7 +333,9 @@ export class MemStorage implements IStorage {
             location,
             date,
             shift,
-            rate
+            rate,
+            capacity: 10,
+            currentBookings: 0
           });
         }
       }
