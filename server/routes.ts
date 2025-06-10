@@ -33,7 +33,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Upload and process Excel file
-  app.post("/api/upload-excel", upload.single('file'), async (req, res) => {
+  app.post("/api/upload-excel", upload.single('file'), async (req: any, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded" });
@@ -61,7 +61,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error("Invalid row data:", row, error);
           return null;
         }
-      }).filter(Boolean);
+      }).filter((emp): emp is NonNullable<typeof emp> => emp !== null);
 
       if (employees.length === 0) {
         return res.status(400).json({ message: "No valid employee data found in Excel file" });
@@ -124,6 +124,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching applications:", error);
       res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Admin routes for shift data management
+  app.get('/api/admin/shift-data', async (req, res) => {
+    try {
+      const shiftData = await storage.getAllShiftData();
+      res.json(shiftData);
+    } catch (error) {
+      console.error('Error fetching shift data:', error);
+      res.status(500).json({ message: 'Failed to fetch shift data' });
+    }
+  });
+
+  app.post('/api/admin/add-location', async (req, res) => {
+    try {
+      const { location } = req.body;
+      if (!location) {
+        return res.status(400).json({ message: 'Location is required' });
+      }
+      await storage.addLocation(location);
+      res.json({ message: 'Location added successfully' });
+    } catch (error) {
+      console.error('Error adding location:', error);
+      res.status(500).json({ message: 'Failed to add location' });
+    }
+  });
+
+  app.post('/api/admin/add-date', async (req, res) => {
+    try {
+      const { date } = req.body;
+      if (!date) {
+        return res.status(400).json({ message: 'Date is required' });
+      }
+      await storage.addDate(date);
+      res.json({ message: 'Date added successfully' });
+    } catch (error) {
+      console.error('Error adding date:', error);
+      res.status(500).json({ message: 'Failed to add date' });
+    }
+  });
+
+  app.put('/api/admin/shift-data/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { rate } = req.body;
+      
+      if (!rate) {
+        return res.status(400).json({ message: 'Rate is required' });
+      }
+      
+      const updatedShift = await storage.updateShiftData(id, { rate });
+      res.json(updatedShift);
+    } catch (error) {
+      console.error('Error updating shift rate:', error);
+      res.status(500).json({ message: 'Failed to update shift rate' });
     }
   });
 
