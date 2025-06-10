@@ -19,12 +19,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Employee ID is required" });
       }
 
-      // For now, everyone is eligible for Cohort A
+      // Check against uploaded employee data
+      const employee = await storage.getEmployeeByEmployeeId(employeeId.trim().toUpperCase());
+      
+      if (!employee) {
+        return res.status(404).json({ 
+          message: "Employee ID not found. Please check your ID or contact HR." 
+        });
+      }
+
+      if (!employee.eligible) {
+        return res.status(403).json({ 
+          message: "You are not eligible for shift applications. Please contact HR for more information." 
+        });
+      }
+
+      // Return employee data with cohort for pricing matrix
       res.json({
-        id: employeeId.trim().toUpperCase(),
-        name: `Employee ${employeeId.trim().toUpperCase()}`,
-        eligible: true,
-        cohort: 'A'
+        id: employee.employeeId,
+        name: employee.name,
+        eligible: employee.eligible,
+        cohort: employee.cohort || "A"
       });
     } catch (error) {
       console.error("Error verifying employee:", error);
@@ -51,9 +66,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Validate and insert employees
       const employees = data.map((row: any) => {
         try {
+          const employeeId = String(row.ID || row.id || '').trim().toUpperCase();
+          const name = String(row.Name || row.name || '').trim();
+          
+          if (!employeeId || !name) {
+            return null;
+          }
+          
           return insertEmployeeSchema.parse({
-            employeeId: String(row.ID || row.id || '').trim(),
-            name: String(row.Name || row.name || '').trim(),
+            employeeId,
+            name,
             eligible: Boolean(row.Eligible === true || row.Eligible === 'TRUE' || row.Eligible === 'true' || row.eligible === true),
             cohort: row.Cohort || row.cohort || null
           });

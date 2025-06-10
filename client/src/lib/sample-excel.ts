@@ -1,13 +1,15 @@
 import * as XLSX from 'xlsx';
 
 export function downloadSampleExcel() {
-  // Create sample data matching the expected format
+  // Create sample data matching the expected format with various test cases
   const sampleData = [
-    { ID: 'Test1', Name: 'Name 1', Eligible: true, Cohort: 'A' },
-    { ID: 'Test2', Name: 'Name 2', Eligible: false, Cohort: 'A' },
-    { ID: 'Test3', Name: 'Name 3', Eligible: true, Cohort: 'B' },
-    { ID: 'Test4', Name: 'Name 4', Eligible: true, Cohort: 'A' },
-    { ID: 'Test5', Name: 'Name 5', Eligible: false, Cohort: 'B' },
+    { ID: 'TEST1', Name: 'John Smith', Eligible: true, Cohort: 'A' },
+    { ID: 'TEST2', Name: 'Jane Doe', Eligible: false, Cohort: 'A' },
+    { ID: 'TEST3', Name: 'Bob Johnson', Eligible: true, Cohort: 'B' },
+    { ID: 'TEST4', Name: 'Alice Brown', Eligible: true, Cohort: 'C' },
+    { ID: 'TEST5', Name: 'Charlie Wilson', Eligible: false, Cohort: 'B' },
+    { ID: 'EMP001', Name: 'Sarah Davis', Eligible: true, Cohort: 'A' },
+    { ID: 'EMP002', Name: 'Mike Taylor', Eligible: true, Cohort: 'B' },
   ];
 
   // Create workbook and worksheet
