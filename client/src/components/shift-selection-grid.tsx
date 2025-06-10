@@ -119,20 +119,13 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack }: Shift
   return (
     <div>
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-2xl font-semibold text-slate-800">Available Shifts & Rates</h2>
-            <p className="text-slate-600 mt-1">Select up to 1 shift per day. Rates are multipliers of base pay.</p>
-          </div>
-          <div className="text-right">
-            <Badge variant="secondary" className="bg-green-100 text-green-800">
-              {userData.name} - Cohort {userData.cohort}
-            </Badge>
-          </div>
+        <div className="mb-4">
+          <h2 className="text-2xl font-semibold text-slate-800">Available Shifts & Rates</h2>
+          <p className="text-slate-600 mt-1">Select up to 1 shift per day. Rates are multipliers of base pay.</p>
         </div>
         
         <div className="text-sm text-slate-500 mb-6">
-          <span className="font-medium">DS</span> = Day Shift, <span className="font-medium">SS</span> = Swing Shift
+          <span className="font-medium">MS</span> = Morning Shift, <span className="font-medium">ES</span> = Evening Shift
         </div>
       </div>
 
@@ -155,10 +148,10 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack }: Shift
               {dates.map(date => (
                 <React.Fragment key={date}>
                   <th className="px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
-                    DS
+                    MS
                   </th>
                   <th className="px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
-                    SS
+                    ES
                   </th>
                 </React.Fragment>
               ))}
