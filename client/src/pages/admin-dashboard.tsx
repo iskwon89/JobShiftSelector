@@ -7,10 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, CheckCircle, LogOut, Trash2, Plus } from "lucide-react";
+import { Upload, CheckCircle, LogOut, Trash2, Plus, Download } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ShiftData } from "@shared/schema";
+import { downloadSampleExcel } from "@/lib/sample-excel";
 
 export default function AdminDashboard() {
   const [fileUploaded, setFileUploaded] = useState(false);
@@ -407,7 +408,18 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="bg-slate-50 p-4 rounded-lg">
-                  <h4 className="font-medium text-slate-700 mb-2">Required Excel Columns:</h4>
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-medium text-slate-700">Required Excel Columns:</h4>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={downloadSampleExcel}
+                      className="text-xs"
+                    >
+                      <Download className="w-3 h-3 mr-1" />
+                      Download Sample
+                    </Button>
+                  </div>
                   <ul className="text-sm text-slate-600 space-y-1">
                     <li>• <strong>ID</strong> - National ID (string)</li>
                     <li>• <strong>Name</strong> - Employee name (text)</li>
