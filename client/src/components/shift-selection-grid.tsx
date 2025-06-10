@@ -47,6 +47,21 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack }: Shift
     return shiftEntry?.rate || '1x';
   };
 
+  const getShiftCapacity = (location: string, date: string, shift: string) => {
+    if (!shiftData) return { capacity: 10, currentBookings: 0, remaining: 10 };
+    const shiftEntry = shiftData.find(
+      s => s.location === location && s.date === date && s.shift === shift
+    );
+    const capacity = shiftEntry?.capacity || 10;
+    const currentBookings = shiftEntry?.currentBookings || 0;
+    return { capacity, currentBookings, remaining: capacity - currentBookings };
+  };
+
+  const isShiftFullyBooked = (location: string, date: string, shift: string) => {
+    const { remaining } = getShiftCapacity(location, date, shift);
+    return remaining <= 0;
+  };
+
   const isShiftSelected = (location: string, date: string, shift: string) => {
     return selectedShifts.some(
       s => s.location === location && s.date === date && s.shift === shift
@@ -54,6 +69,16 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack }: Shift
   };
 
   const handleShiftClick = (location: string, date: string, shift: string) => {
+    // Prevent clicking on fully booked shifts
+    if (isShiftFullyBooked(location, date, shift)) {
+      toast({
+        title: "Fully Booked",
+        description: "This shift has reached maximum capacity",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const rate = getShiftRate(location, date, shift);
     const shiftKey = `${location}-${date}-${shift}`;
     
@@ -172,19 +197,36 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack }: Shift
                     {shifts.map(shift => {
                       const rate = getShiftRate(location, date, shift);
                       const selected = isShiftSelected(location, date, shift);
+                      const { remaining } = getShiftCapacity(location, date, shift);
+                      const fullyBooked = isShiftFullyBooked(location, date, shift);
                       
                       return (
-                        <td key={`${location}-${date}-${shift}`} className={`w-20 h-16 px-2 py-2 text-center border-l border-slate-200 ${selected ? 'bg-blue-50' : ''}`}>
+                        <td key={`${location}-${date}-${shift}`} className={`w-20 h-16 px-2 py-2 text-center border-l border-slate-200 ${
+                          selected ? 'bg-blue-50' : fullyBooked ? 'bg-gray-100' : ''
+                        }`}>
                           <button
                             onClick={() => handleShiftClick(location, date, shift)}
-                            className={`w-full h-12 flex flex-col items-center justify-center text-sm font-medium rounded-md transition-colors ${
-                              selected
-                                ? 'bg-blue-600 text-white'
-                                : 'hover:bg-slate-50 text-slate-700'
+                            disabled={fullyBooked}
+                            className={`w-full h-12 flex flex-col items-center justify-center text-xs rounded-md transition-colors ${
+                              fullyBooked 
+                                ? 'text-gray-400 cursor-not-allowed bg-gray-50 border border-gray-200' 
+                                : selected 
+                                  ? 'bg-blue-600 text-white border-2 border-blue-700' 
+                                  : 'hover:bg-slate-50 text-slate-700 border border-slate-200'
                             }`}
                           >
-                            <span>{rate}</span>
-                            {selected && <span className="text-xs">Selected</span>}
+                            {fullyBooked ? (
+                              <>
+                                <span className="font-medium">Fully</span>
+                                <span className="font-medium">Booked</span>
+                              </>
+                            ) : (
+                              <>
+                                <span className="font-semibold text-sm">{rate}</span>
+                                <span className="text-xs opacity-75">{remaining} left</span>
+                                {selected && <span className="text-xs font-medium">Selected</span>}
+                              </>
+                            )}
                           </button>
                         </td>
                       );
