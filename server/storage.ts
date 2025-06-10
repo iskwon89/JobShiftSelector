@@ -17,12 +17,18 @@ export interface IStorage {
   createShiftData(shiftData: Omit<ShiftData, 'id'>): Promise<ShiftData>;
   updateShiftData(id: number, updates: Partial<ShiftData>): Promise<ShiftData>;
   bulkCreateShiftData(shiftDataList: Omit<ShiftData, 'id'>[]): Promise<ShiftData[]>;
-  addLocation(location: string): Promise<void>;
-  addDate(date: string): Promise<void>;
-  deleteLocation(location: string): Promise<void>;
-  deleteDate(date: string): Promise<void>;
-  updateLocation(oldLocation: string, newLocation: string): Promise<void>;
-  updateDate(oldDate: string, newDate: string): Promise<void>;
+  addLocationToCohort(cohort: string, location: string): Promise<void>;
+  addDateToCohort(cohort: string, date: string): Promise<void>;
+  deleteLocationFromCohort(cohort: string, location: string): Promise<void>;
+  deleteDateFromCohort(cohort: string, date: string): Promise<void>;
+  updateLocationInCohort(cohort: string, oldLocation: string, newLocation: string): Promise<void>;
+  updateDateInCohort(cohort: string, oldDate: string, newDate: string): Promise<void>;
+  
+  // Cohort management
+  getAvailableCohorts(): Promise<string[]>;
+  createCohortMatrix(cohort: string): Promise<void>;
+  deleteCohortMatrix(cohort: string): Promise<void>;
+  duplicateCohortMatrix(fromCohort: string, toCohort: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -166,95 +172,158 @@ export class MemStorage implements IStorage {
     return updated;
   }
 
-  async addLocation(location: string): Promise<void> {
-    const dates = ['10-Jun', '11-Jun', '12-Jun'];
-    const shifts = ['DS', 'SS'];
-    const cohorts = ['A', 'B'];
+  async addLocationToCohort(cohort: string, location: string): Promise<void> {
+    const dates = Array.from(new Set(
+      Array.from(this.shiftData.values())
+        .filter(s => s.cohort === cohort)
+        .map(s => s.date)
+    ));
     
-    for (const cohort of cohorts) {
-      for (const date of dates) {
-        for (const shift of shifts) {
-          // Default rates
-          let rate = '1x';
-          if (shift === 'SS') {
-            rate = cohort === 'A' ? '1.5x' : '2x';
-          }
-          
-          const id = this.currentShiftDataId++;
-          this.shiftData.set(id, {
-            id,
-            cohort,
-            location,
-            date,
-            shift,
-            rate
-          });
+    const shifts = ['DS', 'SS'];
+    
+    for (const date of dates) {
+      for (const shift of shifts) {
+        // Default rates based on cohort and shift
+        let rate = '1x';
+        if (shift === 'SS') {
+          rate = cohort === 'A' ? '1.5x' : '2x';
         }
+        
+        const id = this.currentShiftDataId++;
+        this.shiftData.set(id, {
+          id,
+          cohort,
+          location,
+          date,
+          shift,
+          rate
+        });
       }
     }
   }
 
-  async addDate(date: string): Promise<void> {
-    const locations = ['FC1', 'FC2', 'FC3', 'FC4', 'FC5'];
-    const shifts = ['DS', 'SS'];
-    const cohorts = ['A', 'B'];
+  async addDateToCohort(cohort: string, date: string): Promise<void> {
+    const locations = Array.from(new Set(
+      Array.from(this.shiftData.values())
+        .filter(s => s.cohort === cohort)
+        .map(s => s.location)
+    ));
     
-    for (const cohort of cohorts) {
-      for (const location of locations) {
-        for (const shift of shifts) {
-          // Default rates
-          let rate = '1x';
-          if (shift === 'SS') {
-            rate = cohort === 'A' ? '1.5x' : '2x';
-          }
-          
-          const id = this.currentShiftDataId++;
-          this.shiftData.set(id, {
-            id,
-            cohort,
-            location,
-            date,
-            shift,
-            rate
-          });
+    const shifts = ['DS', 'SS'];
+    
+    for (const location of locations) {
+      for (const shift of shifts) {
+        // Default rates based on cohort and shift
+        let rate = '1x';
+        if (shift === 'SS') {
+          rate = cohort === 'A' ? '1.5x' : '2x';
         }
+        
+        const id = this.currentShiftDataId++;
+        this.shiftData.set(id, {
+          id,
+          cohort,
+          location,
+          date,
+          shift,
+          rate
+        });
       }
     }
   }
 
-  async deleteLocation(location: string): Promise<void> {
+  async deleteLocationFromCohort(cohort: string, location: string): Promise<void> {
     const toDelete = Array.from(this.shiftData.values())
-      .filter(shift => shift.location === location);
+      .filter(shift => shift.location === location && shift.cohort === cohort);
     
     for (const shift of toDelete) {
       this.shiftData.delete(shift.id);
     }
   }
 
-  async deleteDate(date: string): Promise<void> {
+  async deleteDateFromCohort(cohort: string, date: string): Promise<void> {
     const toDelete = Array.from(this.shiftData.values())
-      .filter(shift => shift.date === date);
+      .filter(shift => shift.date === date && shift.cohort === cohort);
     
     for (const shift of toDelete) {
       this.shiftData.delete(shift.id);
     }
   }
 
-  async updateLocation(oldLocation: string, newLocation: string): Promise<void> {
+  async updateLocationInCohort(cohort: string, oldLocation: string, newLocation: string): Promise<void> {
     const toUpdate = Array.from(this.shiftData.values())
-      .filter(shift => shift.location === oldLocation);
+      .filter(shift => shift.location === oldLocation && shift.cohort === cohort);
     
     for (const shift of toUpdate) {
       this.shiftData.set(shift.id, { ...shift, location: newLocation });
     }
   }
 
-  async updateDate(oldDate: string, newDate: string): Promise<void> {
+  async updateDateInCohort(cohort: string, oldDate: string, newDate: string): Promise<void> {
     const toUpdate = Array.from(this.shiftData.values())
-      .filter(shift => shift.date === oldDate);
+      .filter(shift => shift.date === oldDate && shift.cohort === cohort);
     
     for (const shift of toUpdate) {
       this.shiftData.set(shift.id, { ...shift, date: newDate });
+    }
+  }
+
+  async getAvailableCohorts(): Promise<string[]> {
+    const cohorts = Array.from(new Set(
+      Array.from(this.shiftData.values()).map(s => s.cohort)
+    ));
+    return cohorts.sort();
+  }
+
+  async createCohortMatrix(cohort: string): Promise<void> {
+    // Create a basic matrix with default locations and dates
+    const defaultLocations = ['FC1', 'FC2', 'FC3', 'FC4', 'FC5'];
+    const defaultDates = ['10-Jun', '11-Jun', '12-Jun'];
+    const shifts = ['DS', 'SS'];
+    
+    for (const location of defaultLocations) {
+      for (const date of defaultDates) {
+        for (const shift of shifts) {
+          // Default rates based on cohort and shift
+          let rate = '1x';
+          if (shift === 'SS') {
+            rate = cohort === 'A' ? '1.5x' : '2x';
+          }
+          
+          const id = this.currentShiftDataId++;
+          this.shiftData.set(id, {
+            id,
+            cohort,
+            location,
+            date,
+            shift,
+            rate
+          });
+        }
+      }
+    }
+  }
+
+  async deleteCohortMatrix(cohort: string): Promise<void> {
+    const toDelete = Array.from(this.shiftData.values())
+      .filter(shift => shift.cohort === cohort);
+    
+    for (const shift of toDelete) {
+      this.shiftData.delete(shift.id);
+    }
+  }
+
+  async duplicateCohortMatrix(fromCohort: string, toCohort: string): Promise<void> {
+    const sourceData = Array.from(this.shiftData.values())
+      .filter(shift => shift.cohort === fromCohort);
+    
+    for (const shift of sourceData) {
+      const id = this.currentShiftDataId++;
+      this.shiftData.set(id, {
+        ...shift,
+        id,
+        cohort: toCohort
+      });
     }
   }
 

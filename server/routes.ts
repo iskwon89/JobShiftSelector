@@ -140,11 +140,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/admin/add-location', async (req, res) => {
     try {
-      const { location } = req.body;
-      if (!location) {
-        return res.status(400).json({ message: 'Location is required' });
+      const { location, cohort } = req.body;
+      if (!location || !cohort) {
+        return res.status(400).json({ message: 'Location and cohort are required' });
       }
-      await storage.addLocation(location);
+      await storage.addLocationToCohort(cohort, location);
       res.json({ message: 'Location added successfully' });
     } catch (error) {
       console.error('Error adding location:', error);
@@ -154,11 +154,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/admin/add-date', async (req, res) => {
     try {
-      const { date } = req.body;
-      if (!date) {
-        return res.status(400).json({ message: 'Date is required' });
+      const { date, cohort } = req.body;
+      if (!date || !cohort) {
+        return res.status(400).json({ message: 'Date and cohort are required' });
       }
-      await storage.addDate(date);
+      await storage.addDateToCohort(cohort, date);
       res.json({ message: 'Date added successfully' });
     } catch (error) {
       console.error('Error adding date:', error);
@@ -183,10 +183,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/admin/location/:location', async (req, res) => {
+  app.delete('/api/admin/location/:cohort/:location', async (req, res) => {
     try {
-      const { location } = req.params;
-      await storage.deleteLocation(decodeURIComponent(location));
+      const { cohort, location } = req.params;
+      await storage.deleteLocationFromCohort(cohort, decodeURIComponent(location));
       res.json({ message: 'Location deleted successfully' });
     } catch (error) {
       console.error('Error deleting location:', error);
@@ -194,10 +194,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/admin/date/:date', async (req, res) => {
+  app.delete('/api/admin/date/:cohort/:date', async (req, res) => {
     try {
-      const { date } = req.params;
-      await storage.deleteDate(decodeURIComponent(date));
+      const { cohort, date } = req.params;
+      await storage.deleteDateFromCohort(cohort, decodeURIComponent(date));
       res.json({ message: 'Date deleted successfully' });
     } catch (error) {
       console.error('Error deleting date:', error);
@@ -205,8 +205,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/location/:location', async (req, res) => {
+  app.put('/api/admin/location/:cohort/:location', async (req, res) => {
     try {
+      const { cohort } = req.params;
       const oldLocation = decodeURIComponent(req.params.location);
       const { newLocation } = req.body;
       
@@ -214,7 +215,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: 'New location is required' });
       }
       
-      await storage.updateLocation(oldLocation, newLocation);
+      await storage.updateLocationInCohort(cohort, oldLocation, newLocation);
       res.json({ message: 'Location updated successfully' });
     } catch (error) {
       console.error('Error updating location:', error);
@@ -222,8 +223,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put('/api/admin/date/:date', async (req, res) => {
+  app.put('/api/admin/date/:cohort/:date', async (req, res) => {
     try {
+      const { cohort } = req.params;
       const oldDate = decodeURIComponent(req.params.date);
       const { newDate } = req.body;
       
@@ -231,11 +233,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: 'New date is required' });
       }
       
-      await storage.updateDate(oldDate, newDate);
+      await storage.updateDateInCohort(cohort, oldDate, newDate);
       res.json({ message: 'Date updated successfully' });
     } catch (error) {
       console.error('Error updating date:', error);
       res.status(500).json({ message: 'Failed to update date' });
+    }
+  });
+
+  // Cohort management routes
+  app.get('/api/admin/cohorts', async (req, res) => {
+    try {
+      const cohorts = await storage.getAvailableCohorts();
+      res.json(cohorts);
+    } catch (error) {
+      console.error('Error fetching cohorts:', error);
+      res.status(500).json({ message: 'Failed to fetch cohorts' });
+    }
+  });
+
+  app.post('/api/admin/cohorts', async (req, res) => {
+    try {
+      const { cohort } = req.body;
+      if (!cohort) {
+        return res.status(400).json({ message: 'Cohort is required' });
+      }
+      await storage.createCohortMatrix(cohort);
+      res.json({ message: 'Cohort matrix created successfully' });
+    } catch (error) {
+      console.error('Error creating cohort matrix:', error);
+      res.status(500).json({ message: 'Failed to create cohort matrix' });
+    }
+  });
+
+  app.delete('/api/admin/cohorts/:cohort', async (req, res) => {
+    try {
+      const { cohort } = req.params;
+      await storage.deleteCohortMatrix(cohort);
+      res.json({ message: 'Cohort matrix deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting cohort matrix:', error);
+      res.status(500).json({ message: 'Failed to delete cohort matrix' });
+    }
+  });
+
+  app.post('/api/admin/cohorts/:fromCohort/duplicate', async (req, res) => {
+    try {
+      const { fromCohort } = req.params;
+      const { toCohort } = req.body;
+      
+      if (!toCohort) {
+        return res.status(400).json({ message: 'Target cohort is required' });
+      }
+      
+      await storage.duplicateCohortMatrix(fromCohort, toCohort);
+      res.json({ message: 'Cohort matrix duplicated successfully' });
+    } catch (error) {
+      console.error('Error duplicating cohort matrix:', error);
+      res.status(500).json({ message: 'Failed to duplicate cohort matrix' });
     }
   });
 

@@ -18,6 +18,10 @@ export default function AdminDashboard() {
   const [fileName, setFileName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   
+  // Current cohort selection
+  const [selectedCohort, setSelectedCohort] = useState<string>("A");
+  const [newCohort, setNewCohort] = useState("");
+  
   // New location/date form states
   const [newLocation, setNewLocation] = useState("");
   const [newDate, setNewDate] = useState("");
@@ -41,8 +45,18 @@ export default function AdminDashboard() {
     }
   }, []);
 
+  // Fetch available cohorts
+  const { data: cohorts } = useQuery<string[]>({
+    queryKey: ['/api/admin/cohorts'],
+    queryFn: async () => {
+      const response = await fetch('/api/admin/cohorts');
+      if (!response.ok) throw new Error('Failed to fetch cohorts');
+      return response.json();
+    }
+  });
+
   // Fetch shift data for all cohorts
-  const { data: shiftData, isLoading: shiftDataLoading } = useQuery<ShiftData[]>({
+  const { data: allShiftData, isLoading: shiftDataLoading } = useQuery<ShiftData[]>({
     queryKey: ['/api/admin/shift-data'],
     queryFn: async () => {
       const response = await fetch('/api/admin/shift-data');
@@ -50,6 +64,9 @@ export default function AdminDashboard() {
       return response.json();
     }
   });
+
+  // Filter shift data for selected cohort
+  const shiftData = allShiftData?.filter(s => s.cohort === selectedCohort) || [];
 
   // Mutations for shift data management
   const addLocationMutation = useMutation({
