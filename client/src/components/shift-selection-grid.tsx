@@ -131,26 +131,26 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack }: Shift
 
       {/* Pricing Matrix Table */}
       <div className="overflow-x-auto mb-8">
-        <table className="w-full border border-slate-200 rounded-lg overflow-hidden">
+        <table className="w-full border border-slate-200 rounded-lg overflow-hidden table-fixed">
           <thead className="bg-slate-50">
             <tr>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700 border-b border-slate-200">
+              <th className="w-32 px-4 py-3 text-left text-sm font-semibold text-slate-700 border-b border-slate-200">
                 Location
               </th>
               {dates.map(date => (
-                <th key={date} className="px-4 py-3 text-center text-sm font-semibold text-slate-700 border-b border-l border-slate-200" colSpan={2}>
+                <th key={date} className="w-40 px-4 py-3 text-center text-sm font-semibold text-slate-700 border-b border-l border-slate-200" colSpan={2}>
                   {date}
                 </th>
               ))}
             </tr>
             <tr className="bg-slate-50">
-              <th className="px-4 py-2 text-left text-xs font-medium text-slate-600 border-b border-slate-200"></th>
+              <th className="w-32 px-4 py-2 text-left text-xs font-medium text-slate-600 border-b border-slate-200"></th>
               {dates.map(date => (
                 <React.Fragment key={date}>
-                  <th className="px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
+                  <th className="w-20 px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
                     MS
                   </th>
-                  <th className="px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
+                  <th className="w-20 px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
                     ES
                   </th>
                 </React.Fragment>
@@ -159,9 +159,9 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack }: Shift
           </thead>
           <tbody className="bg-white">
             {locations.map((location, locationIndex) => (
-              <tr key={location} className={`${locationIndex < locations.length - 1 ? 'border-b border-slate-100' : ''}`}>
-                <td className="px-4 py-3 border-r border-slate-200">
-                  <div className="flex items-center">
+              <tr key={location} className={`h-16 ${locationIndex < locations.length - 1 ? 'border-b border-slate-100' : ''}`}>
+                <td className="w-32 h-16 px-4 py-3 border-r border-slate-200">
+                  <div className="flex items-center h-full">
                     <MapPin className="w-4 h-4 text-slate-400 mr-2" />
                     <span className="font-medium text-slate-700">{location}</span>
                   </div>
@@ -173,17 +173,17 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack }: Shift
                       const selected = isShiftSelected(location, date, shift);
                       
                       return (
-                        <td key={`${location}-${date}-${shift}`} className={`px-3 py-3 text-center border-l border-slate-200 ${selected ? 'bg-blue-50' : ''}`}>
+                        <td key={`${location}-${date}-${shift}`} className={`w-20 h-16 px-2 py-2 text-center border-l border-slate-200 ${selected ? 'bg-blue-50' : ''}`}>
                           <button
                             onClick={() => handleShiftClick(location, date, shift)}
-                            className={`w-full py-2 px-3 text-sm font-medium rounded-md transition-colors ${
+                            className={`w-full h-12 flex flex-col items-center justify-center text-sm font-medium rounded-md transition-colors ${
                               selected
                                 ? 'bg-blue-600 text-white'
                                 : 'hover:bg-slate-50 text-slate-700'
                             }`}
                           >
-                            {rate}
-                            {selected && <div className="text-xs mt-1">Selected</div>}
+                            <span>{rate}</span>
+                            {selected && <span className="text-xs">Selected</span>}
                           </button>
                         </td>
                       );
