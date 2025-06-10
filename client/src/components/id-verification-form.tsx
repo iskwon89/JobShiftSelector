@@ -64,7 +64,19 @@ export function IDVerificationForm({ onVerified }: IDVerificationFormProps) {
   };
 
   return (
-    <div>
+    <div className="relative">
+      {/* Admin Login Button */}
+      <div className="absolute top-0 right-0">
+        <Button 
+          variant="ghost" 
+          size="sm"
+          onClick={() => window.location.href = '/admin'}
+          className="text-slate-500 hover:text-slate-700"
+        >
+          Admin Login
+        </Button>
+      </div>
+
       <div className="text-center mb-8">
         <h2 className="text-2xl font-semibold text-slate-800 mb-2">Verify Your Eligibility</h2>
         <p className="text-slate-600">Enter your National ID to check job eligibility</p>
