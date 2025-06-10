@@ -23,6 +23,12 @@ export default function AdminDashboard() {
   const [editingRate, setEditingRate] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState("");
   
+  // Edit location/date states
+  const [editingLocation, setEditingLocation] = useState<string | null>(null);
+  const [editingDate, setEditingDate] = useState<string | null>(null);
+  const [editLocationValue, setEditLocationValue] = useState("");
+  const [editDateValue, setEditDateValue] = useState("");
+  
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -112,16 +118,124 @@ export default function AdminDashboard() {
     }
   });
 
+  const deleteLocationMutation = useMutation({
+    mutationFn: async (location: string) => {
+      const response = await apiRequest('DELETE', `/api/admin/location/${encodeURIComponent(location)}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/shift-data'] });
+      toast({
+        title: "Success",
+        description: "Location deleted successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete location",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const deleteDateMutation = useMutation({
+    mutationFn: async (date: string) => {
+      const response = await apiRequest('DELETE', `/api/admin/date/${encodeURIComponent(date)}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/shift-data'] });
+      toast({
+        title: "Success",
+        description: "Date deleted successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete date",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const updateLocationMutation = useMutation({
+    mutationFn: async ({ oldLocation, newLocation }: { oldLocation: string, newLocation: string }) => {
+      const response = await apiRequest('PUT', `/api/admin/location/${encodeURIComponent(oldLocation)}`, { newLocation });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/shift-data'] });
+      setEditingLocation(null);
+      setEditLocationValue("");
+      toast({
+        title: "Success",
+        description: "Location updated successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update location",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const updateDateMutation = useMutation({
+    mutationFn: async ({ oldDate, newDate }: { oldDate: string, newDate: string }) => {
+      const response = await apiRequest('PUT', `/api/admin/date/${encodeURIComponent(oldDate)}`, { newDate });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/shift-data'] });
+      setEditingDate(null);
+      setEditDateValue("");
+      toast({
+        title: "Success",
+        description: "Date updated successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update date",
+        variant: "destructive",
+      });
+    }
+  });
+
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    // Validate file type
+    if (!file.name.match(/\.(xlsx|xls)$/i)) {
+      toast({
+        title: "Error",
+        description: "Please select a valid Excel file (.xlsx or .xls)",
+        variant: "destructive",
+      });
+      return;
+    }
 
     const formData = new FormData();
     formData.append('file', file);
 
     try {
       setIsLoading(true);
-      const response = await apiRequest('POST', '/api/upload-excel', formData);
+      
+      // Use fetch directly instead of apiRequest for file uploads
+      const response = await fetch('/api/upload-excel', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.statusText}`);
+      }
+      
       const result = await response.json();
       
       setFileUploaded(true);
@@ -130,7 +244,11 @@ export default function AdminDashboard() {
         title: "Success",
         description: `Excel file processed: ${result.employeesLoaded} employees loaded`,
       });
+      
+      // Reset the input
+      event.target.value = '';
     } catch (error) {
+      console.error('Excel upload error:', error);
       toast({
         title: "Error",
         description: "Failed to upload Excel file. Please check the file format.",
@@ -172,6 +290,46 @@ export default function AdminDashboard() {
   const handleCancelEdit = () => {
     setEditingRate(null);
     setEditingValue("");
+  };
+
+  const handleEditLocation = (location: string) => {
+    setEditingLocation(location);
+    setEditLocationValue(location);
+  };
+
+  const handleSaveLocation = (oldLocation: string) => {
+    if (editLocationValue.trim() && editLocationValue !== oldLocation) {
+      updateLocationMutation.mutate({ oldLocation, newLocation: editLocationValue.trim() });
+    } else {
+      setEditingLocation(null);
+      setEditLocationValue("");
+    }
+  };
+
+  const handleEditDate = (date: string) => {
+    setEditingDate(date);
+    setEditDateValue(date);
+  };
+
+  const handleSaveDate = (oldDate: string) => {
+    if (editDateValue.trim() && editDateValue !== oldDate) {
+      updateDateMutation.mutate({ oldDate, newDate: editDateValue.trim() });
+    } else {
+      setEditingDate(null);
+      setEditDateValue("");
+    }
+  };
+
+  const handleDeleteLocation = (location: string) => {
+    if (confirm(`Are you sure you want to delete location "${location}"? This will remove all associated shift data.`)) {
+      deleteLocationMutation.mutate(location);
+    }
+  };
+
+  const handleDeleteDate = (date: string) => {
+    if (confirm(`Are you sure you want to delete date "${date}"? This will remove all associated shift data.`)) {
+      deleteDateMutation.mutate(date);
+    }
   };
 
   // Group shift data by location and date for display
@@ -318,7 +476,56 @@ export default function AdminDashboard() {
                             </th>
                             {dates.map(date => (
                               <th key={date} className="w-40 px-4 py-3 text-center text-sm font-semibold text-slate-700 border-b border-l border-slate-200" colSpan={2}>
-                                {date}
+                                <div className="flex items-center justify-center gap-1">
+                                  {editingDate === date ? (
+                                    <div className="flex items-center gap-1">
+                                      <Input
+                                        value={editDateValue}
+                                        onChange={(e) => setEditDateValue(e.target.value)}
+                                        className="h-6 text-xs w-16"
+                                        onKeyDown={(e) => {
+                                          if (e.key === 'Enter') handleSaveDate(date);
+                                          if (e.key === 'Escape') {
+                                            setEditingDate(null);
+                                            setEditDateValue("");
+                                          }
+                                        }}
+                                      />
+                                      <Button
+                                        size="sm"
+                                        className="h-5 px-1 text-xs"
+                                        onClick={() => handleSaveDate(date)}
+                                      >
+                                        ✓
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="h-5 px-1 text-xs"
+                                        onClick={() => {
+                                          setEditingDate(null);
+                                          setEditDateValue("");
+                                        }}
+                                      >
+                                        ✕
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <div className="flex items-center gap-1">
+                                      <span onClick={() => handleEditDate(date)} className="cursor-pointer hover:text-blue-600">
+                                        {date}
+                                      </span>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="h-4 w-4 p-0 text-red-500 hover:text-red-700"
+                                        onClick={() => handleDeleteDate(date)}
+                                      >
+                                        <Trash2 className="h-3 w-3" />
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
                               </th>
                             ))}
                           </tr>
@@ -340,7 +547,56 @@ export default function AdminDashboard() {
                           {locations.map((location, locationIndex) => (
                             <tr key={location} className={`h-16 ${locationIndex < locations.length - 1 ? 'border-b border-slate-100' : ''}`}>
                               <td className="w-32 h-16 px-4 py-3 border-r border-slate-200">
-                                <span className="font-medium text-slate-700">{location}</span>
+                                <div className="flex items-center gap-1">
+                                  {editingLocation === location ? (
+                                    <div className="flex items-center gap-1">
+                                      <Input
+                                        value={editLocationValue}
+                                        onChange={(e) => setEditLocationValue(e.target.value)}
+                                        className="h-6 text-xs w-16"
+                                        onKeyDown={(e) => {
+                                          if (e.key === 'Enter') handleSaveLocation(location);
+                                          if (e.key === 'Escape') {
+                                            setEditingLocation(null);
+                                            setEditLocationValue("");
+                                          }
+                                        }}
+                                      />
+                                      <Button
+                                        size="sm"
+                                        className="h-5 px-1 text-xs"
+                                        onClick={() => handleSaveLocation(location)}
+                                      >
+                                        ✓
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="h-5 px-1 text-xs"
+                                        onClick={() => {
+                                          setEditingLocation(null);
+                                          setEditLocationValue("");
+                                        }}
+                                      >
+                                        ✕
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <div className="flex items-center gap-1">
+                                      <span onClick={() => handleEditLocation(location)} className="font-medium text-slate-700 cursor-pointer hover:text-blue-600">
+                                        {location}
+                                      </span>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="h-4 w-4 p-0 text-red-500 hover:text-red-700"
+                                        onClick={() => handleDeleteLocation(location)}
+                                      >
+                                        <Trash2 className="h-3 w-3" />
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
                               </td>
                               {dates.map(date => (
                                 <React.Fragment key={`${location}-${date}`}>

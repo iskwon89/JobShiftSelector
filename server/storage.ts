@@ -19,6 +19,10 @@ export interface IStorage {
   bulkCreateShiftData(shiftDataList: Omit<ShiftData, 'id'>[]): Promise<ShiftData[]>;
   addLocation(location: string): Promise<void>;
   addDate(date: string): Promise<void>;
+  deleteLocation(location: string): Promise<void>;
+  deleteDate(date: string): Promise<void>;
+  updateLocation(oldLocation: string, newLocation: string): Promise<void>;
+  updateDate(oldDate: string, newDate: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -215,6 +219,42 @@ export class MemStorage implements IStorage {
           });
         }
       }
+    }
+  }
+
+  async deleteLocation(location: string): Promise<void> {
+    const toDelete = Array.from(this.shiftData.values())
+      .filter(shift => shift.location === location);
+    
+    for (const shift of toDelete) {
+      this.shiftData.delete(shift.id);
+    }
+  }
+
+  async deleteDate(date: string): Promise<void> {
+    const toDelete = Array.from(this.shiftData.values())
+      .filter(shift => shift.date === date);
+    
+    for (const shift of toDelete) {
+      this.shiftData.delete(shift.id);
+    }
+  }
+
+  async updateLocation(oldLocation: string, newLocation: string): Promise<void> {
+    const toUpdate = Array.from(this.shiftData.values())
+      .filter(shift => shift.location === oldLocation);
+    
+    for (const shift of toUpdate) {
+      this.shiftData.set(shift.id, { ...shift, location: newLocation });
+    }
+  }
+
+  async updateDate(oldDate: string, newDate: string): Promise<void> {
+    const toUpdate = Array.from(this.shiftData.values())
+      .filter(shift => shift.date === oldDate);
+    
+    for (const shift of toUpdate) {
+      this.shiftData.set(shift.id, { ...shift, date: newDate });
     }
   }
 

@@ -183,6 +183,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete('/api/admin/location/:location', async (req, res) => {
+    try {
+      const { location } = req.params;
+      await storage.deleteLocation(decodeURIComponent(location));
+      res.json({ message: 'Location deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting location:', error);
+      res.status(500).json({ message: 'Failed to delete location' });
+    }
+  });
+
+  app.delete('/api/admin/date/:date', async (req, res) => {
+    try {
+      const { date } = req.params;
+      await storage.deleteDate(decodeURIComponent(date));
+      res.json({ message: 'Date deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting date:', error);
+      res.status(500).json({ message: 'Failed to delete date' });
+    }
+  });
+
+  app.put('/api/admin/location/:location', async (req, res) => {
+    try {
+      const oldLocation = decodeURIComponent(req.params.location);
+      const { newLocation } = req.body;
+      
+      if (!newLocation) {
+        return res.status(400).json({ message: 'New location is required' });
+      }
+      
+      await storage.updateLocation(oldLocation, newLocation);
+      res.json({ message: 'Location updated successfully' });
+    } catch (error) {
+      console.error('Error updating location:', error);
+      res.status(500).json({ message: 'Failed to update location' });
+    }
+  });
+
+  app.put('/api/admin/date/:date', async (req, res) => {
+    try {
+      const oldDate = decodeURIComponent(req.params.date);
+      const { newDate } = req.body;
+      
+      if (!newDate) {
+        return res.status(400).json({ message: 'New date is required' });
+      }
+      
+      await storage.updateDate(oldDate, newDate);
+      res.json({ message: 'Date updated successfully' });
+    } catch (error) {
+      console.error('Error updating date:', error);
+      res.status(500).json({ message: 'Failed to update date' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
