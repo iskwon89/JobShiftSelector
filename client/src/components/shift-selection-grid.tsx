@@ -34,8 +34,9 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack }: Shift
     }
   });
 
-  const locations = ['FC1', 'FC2', 'FC3', 'FC4', 'FC5'];
-  const dates = ['10-Jun', '11-Jun', '12-Jun'];
+  // Extract unique locations and dates from the fetched shift data
+  const locations = shiftData ? Array.from(new Set(shiftData.map(s => s.location))).sort() : [];
+  const dates = shiftData ? Array.from(new Set(shiftData.map(s => s.date))).sort() : [];
   const shifts = ['DS', 'SS'];
 
   const getShiftRate = (location: string, date: string, shift: string) => {
