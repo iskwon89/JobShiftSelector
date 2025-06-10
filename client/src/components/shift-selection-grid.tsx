@@ -203,41 +203,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack }: Shift
         </table>
       </div>
 
-      {/* Selected Shifts Summary */}
-      <Card className="mb-8">
-        <CardContent className="pt-6">
-          <h3 className="font-semibold text-slate-800 mb-4">Selected Shifts Summary</h3>
-          <div className="space-y-2">
-            {selectedShifts.length === 0 ? (
-              <p className="text-slate-500 text-center py-4">No shifts selected</p>
-            ) : (
-              selectedShifts.map((shift, index) => (
-                <div key={index} className="flex items-center justify-between py-2 px-3 bg-white rounded-md border border-slate-200">
-                  <div>
-                    <span className="font-medium text-slate-700">
-                      {shift.location} - {shift.date} ({shift.shift})
-                    </span>
-                    <span className="text-sm text-slate-500 ml-2">
-                      {shift.shift === 'DS' ? 'Day Shift' : 'Swing Shift'}
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <span className="text-blue-600 font-semibold mr-3">{shift.rate} rate</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeShift(shift.location, shift.date, shift.shift)}
-                      className="text-red-500 hover:text-red-700 p-1"
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </CardContent>
-      </Card>
+
 
       {/* Navigation */}
       <div className="flex justify-between">

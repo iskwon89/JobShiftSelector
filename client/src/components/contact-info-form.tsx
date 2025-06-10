@@ -121,10 +121,7 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack 
                 <span className="text-slate-600">Employee:</span>
                 <span className="font-medium">{userData.name} ({userData.id})</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-600">Cohort:</span>
-                <span className="font-medium">Cohort {userData.cohort}</span>
-              </div>
+
               <div className="flex justify-between">
                 <span className="text-slate-600">Selected Shifts:</span>
                 <span className="font-medium">{selectedShifts.length} shifts</span>
