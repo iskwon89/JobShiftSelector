@@ -802,7 +802,7 @@ export default function AdminDashboard() {
                                               onClick={() => shiftEntry && handleEditRate(shiftEntry.id, shiftEntry.rate)}
                                               className="w-full text-sm font-medium hover:bg-blue-50 py-1 rounded transition-colors"
                                             >
-                                              {shiftEntry?.rate || '1x'}
+                                              NT${shiftEntry?.rate || '800'}
                                             </button>
                                             <button
                                               onClick={() => shiftEntry && handleEditCapacity(shiftEntry.id, shiftEntry.capacity?.toString() || '10')}
