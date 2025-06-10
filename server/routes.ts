@@ -19,21 +19,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Employee ID is required" });
       }
 
-      const employee = await storage.getEmployeeByEmployeeId(employeeId);
-      
-      if (!employee) {
-        return res.status(404).json({ message: "Employee ID not found" });
-      }
-
-      if (!employee.eligible) {
-        return res.status(403).json({ message: "Employee is not eligible for this application" });
-      }
-
+      // For now, everyone is eligible for Cohort A
       res.json({
-        id: employee.employeeId,
-        name: employee.name,
-        eligible: employee.eligible,
-        cohort: employee.cohort
+        id: employeeId.trim().toUpperCase(),
+        name: `Employee ${employeeId.trim().toUpperCase()}`,
+        eligible: true,
+        cohort: 'A'
       });
     } catch (error) {
       console.error("Error verifying employee:", error);

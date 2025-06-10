@@ -159,19 +159,14 @@ export function IDVerificationForm({ onVerified }: IDVerificationFormProps) {
         {/* Demo Data */}
         <Card className="mt-6">
           <CardContent className="pt-4">
-            <p className="text-sm font-medium text-slate-700 mb-2">Demo IDs for testing:</p>
+            <p className="text-sm font-medium text-slate-700 mb-2">For testing:</p>
             <div className="grid grid-cols-1 gap-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-slate-600">EMP001:</span>
-                <span className="font-medium text-green-600">Eligible (Cohort A)</span>
+                <span className="text-slate-600">Any ID:</span>
+                <span className="font-medium text-green-600">All users eligible (Cohort A)</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-600">EMP002:</span>
-                <span className="font-medium text-green-600">Eligible (Cohort B)</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-600">EMP003:</span>
-                <span className="font-medium text-red-600">Not Eligible</span>
+              <div className="text-xs text-slate-500 mt-2">
+                Try: EMP001, TEST123, or any ID
               </div>
             </div>
           </CardContent>
