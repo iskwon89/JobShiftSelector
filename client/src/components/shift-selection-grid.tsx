@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -58,7 +59,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack }: Shift
     // Check if this date already has a selection
     const existingShiftForDate = Object.values(shiftSelections).find(s => s.date === date);
     
-    if (existingShiftForDate && existingShiftForDate.location !== location || existingShiftForDate?.shift !== shift) {
+    if (existingShiftForDate && (existingShiftForDate.location !== location || existingShiftForDate.shift !== shift)) {
       // Remove previous selection for this date
       const prevKey = `${existingShiftForDate.location}-${existingShiftForDate.date}-${existingShiftForDate.shift}`;
       const newSelections = { ...shiftSelections };
@@ -82,7 +83,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack }: Shift
       ));
     } else {
       // Select
-      const newShift: ShiftSelection = { location, date, shift, rate };
+      const newShift: ShiftSelection = { location, date, shift: shift as 'DS' | 'SS', rate };
       setShiftSelections(prev => ({ ...prev, [shiftKey]: newShift }));
       setSelectedShifts(prev => [...prev, newShift]);
     }
@@ -152,14 +153,14 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack }: Shift
             <tr className="bg-slate-50">
               <th className="px-4 py-2 text-left text-xs font-medium text-slate-600 border-b border-slate-200"></th>
               {dates.map(date => (
-                <>
-                  <th key={`${date}-DS`} className="px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
+                <React.Fragment key={date}>
+                  <th className="px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
                     DS
                   </th>
-                  <th key={`${date}-SS`} className="px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
+                  <th className="px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
                     SS
                   </th>
-                </>
+                </React.Fragment>
               ))}
             </tr>
           </thead>
@@ -173,13 +174,13 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack }: Shift
                   </div>
                 </td>
                 {dates.map(date => (
-                  <>
+                  <React.Fragment key={`${location}-${date}`}>
                     {shifts.map(shift => {
                       const rate = getShiftRate(location, date, shift);
                       const selected = isShiftSelected(location, date, shift);
                       
                       return (
-                        <td key={`${date}-${shift}`} className={`px-3 py-3 text-center border-l border-slate-200 ${selected ? 'bg-blue-50' : ''}`}>
+                        <td key={`${location}-${date}-${shift}`} className={`px-3 py-3 text-center border-l border-slate-200 ${selected ? 'bg-blue-50' : ''}`}>
                           <button
                             onClick={() => handleShiftClick(location, date, shift)}
                             className={`w-full py-2 px-3 text-sm font-medium rounded-md transition-colors ${
@@ -194,7 +195,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack }: Shift
                         </td>
                       );
                     })}
-                  </>
+                  </React.Fragment>
                 ))}
               </tr>
             ))}
