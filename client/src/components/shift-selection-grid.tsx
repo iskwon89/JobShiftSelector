@@ -147,7 +147,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack }: Shift
       <div className="mb-8">
         <div className="mb-4">
           <h2 className="text-2xl font-semibold text-slate-800">Available Shifts & Rates</h2>
-          <p className="text-slate-600 mt-1">Select up to 1 shift per day. Rates are multipliers of base pay.</p>
+          <p className="text-slate-600 mt-1">Select up to 1 shift per day. Rates shown in NTD (New Taiwan Dollar).</p>
         </div>
         
         <div className="text-sm text-slate-500 mb-6">
@@ -222,7 +222,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack }: Shift
                               </>
                             ) : (
                               <>
-                                <span className="font-semibold text-sm">{rate}</span>
+                                <span className="font-semibold text-sm">NT${rate}</span>
                                 <span className="text-xs opacity-75">{remaining} left</span>
                                 {selected && <span className="text-xs font-medium">Selected</span>}
                               </>
@@ -239,7 +239,37 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack }: Shift
         </table>
       </div>
 
-
+      {/* Earnings Summary */}
+      {selectedShifts.length > 0 && (
+        <Card className="mb-8 bg-blue-50 border-blue-200">
+          <CardContent className="pt-6">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="text-lg font-semibold text-blue-900">Total Earnings Potential</h3>
+                <p className="text-blue-700 text-sm">Based on your selected shifts</p>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold text-blue-900">
+                  NT${selectedShifts.reduce((total, shift) => {
+                    const rate = parseInt(shift.rate.replace(/[^\d]/g, ''));
+                    return total + rate;
+                  }, 0).toLocaleString()}
+                </div>
+                <p className="text-blue-700 text-sm">{selectedShifts.length} shift{selectedShifts.length > 1 ? 's' : ''} selected</p>
+              </div>
+            </div>
+            
+            <div className="mt-4 space-y-2">
+              {selectedShifts.map((shift, index) => (
+                <div key={index} className="flex justify-between text-sm text-blue-800">
+                  <span>{shift.location} - {shift.date} ({shift.shift})</span>
+                  <span>NT${parseInt(shift.rate.replace(/[^\d]/g, '')).toLocaleString()}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Navigation */}
       <div className="flex justify-between">

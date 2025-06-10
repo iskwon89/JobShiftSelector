@@ -597,7 +597,7 @@ export default function AdminDashboard() {
               <Card>
                 <CardHeader>
                   <CardTitle>Pricing Matrix - Cohort {selectedCohort}</CardTitle>
-                  <p className="text-slate-600">Click on any rate to edit it. Changes persist for this cohort.</p>
+                  <p className="text-slate-600">Click on any rate (NTD) or capacity to edit it. Changes persist for this cohort.</p>
                 </CardHeader>
                 <CardContent>
                   {shiftDataLoading ? (

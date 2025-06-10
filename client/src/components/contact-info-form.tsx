@@ -116,6 +116,23 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack 
         <Card className="mb-8">
           <CardContent className="pt-6">
             <h3 className="font-semibold text-slate-800 mb-4">Application Summary</h3>
+            
+            {/* Total Earnings */}
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h4 className="font-semibold text-green-900">Total Earnings Potential</h4>
+                  <p className="text-green-700 text-sm">{selectedShifts.length} shift{selectedShifts.length > 1 ? 's' : ''} selected</p>
+                </div>
+                <div className="text-2xl font-bold text-green-900">
+                  NT${selectedShifts.reduce((total, shift) => {
+                    const rate = parseInt(shift.rate.replace(/[^\d]/g, ''));
+                    return total + rate;
+                  }, 0).toLocaleString()}
+                </div>
+              </div>
+            </div>
+
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-slate-600">Employee:</span>
