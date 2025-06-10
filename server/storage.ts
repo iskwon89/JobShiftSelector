@@ -17,6 +17,8 @@ export interface IStorage {
   createShiftData(shiftData: Omit<ShiftData, 'id'>): Promise<ShiftData>;
   updateShiftData(id: number, updates: Partial<ShiftData>): Promise<ShiftData>;
   bulkCreateShiftData(shiftDataList: Omit<ShiftData, 'id'>[]): Promise<ShiftData[]>;
+  updateShiftCapacity(id: number, capacity: number): Promise<ShiftData>;
+  incrementShiftBookings(cohort: string, location: string, date: string, shift: string): Promise<void>;
   addLocationToCohort(cohort: string, location: string): Promise<void>;
   addDateToCohort(cohort: string, date: string): Promise<void>;
   deleteLocationFromCohort(cohort: string, location: string): Promise<void>;
@@ -91,7 +93,9 @@ export class MemStorage implements IStorage {
               location,
               date,
               shift,
-              rate
+              rate,
+              capacity: 10, // Default capacity
+              currentBookings: 0 // Start with no bookings
             });
           });
         });
@@ -170,6 +174,21 @@ export class MemStorage implements IStorage {
     const updated = { ...existing, ...updates };
     this.shiftData.set(id, updated);
     return updated;
+  }
+
+  async updateShiftCapacity(id: number, capacity: number): Promise<ShiftData> {
+    return this.updateShiftData(id, { capacity });
+  }
+
+  async incrementShiftBookings(cohort: string, location: string, date: string, shift: string): Promise<void> {
+    const shiftEntry = Array.from(this.shiftData.values()).find(
+      s => s.cohort === cohort && s.location === location && s.date === date && s.shift === shift
+    );
+    
+    if (shiftEntry) {
+      shiftEntry.currentBookings = (shiftEntry.currentBookings || 0) + 1;
+      this.shiftData.set(shiftEntry.id, shiftEntry);
+    }
   }
 
   async addLocationToCohort(cohort: string, location: string): Promise<void> {

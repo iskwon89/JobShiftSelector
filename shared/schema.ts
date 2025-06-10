@@ -1,4 +1,4 @@
-import { pgTable, text, serial, boolean, json } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, boolean, json, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -28,6 +28,8 @@ export const shiftData = pgTable("shift_data", {
   date: text("date").notNull(),
   shift: text("shift").notNull(), // DS or SS
   rate: text("rate").notNull(), // 1x, 1.5x, 2x
+  capacity: integer("capacity").default(10).notNull(), // Maximum number of applicants
+  currentBookings: integer("current_bookings").default(0).notNull(), // Current number of applications
 });
 
 export const insertEmployeeSchema = createInsertSchema(employees).pick({
