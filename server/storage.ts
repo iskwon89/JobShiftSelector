@@ -58,16 +58,16 @@ export class MemStorage implements IStorage {
     const dates = ['10-Jun', '11-Jun', '12-Jun'];
     const shifts = ['DS', 'SS'];
     
-    // Cohort A rates
+    // Cohort A rates (in NTD)
     const cohortARates = {
-      'DS': '1x',
-      'SS': '1.5x'
+      'DS': '800',
+      'SS': '1200'
     };
     
-    // Cohort B rates (higher rates)
+    // Cohort B rates (higher rates in NTD)
     const cohortBRates = {
-      'DS': '1x',
-      'SS': '2x'
+      'DS': '900',
+      'SS': '1600'
     };
 
     // Create shift data for both cohorts
@@ -80,10 +80,10 @@ export class MemStorage implements IStorage {
             // Special cases for higher rates at certain locations
             let rate = rates[shift as keyof typeof rates];
             if (cohort === 'B' && location === 'FC2' && shift === 'SS') {
-              rate = '2x';
+              rate = '1800';
             }
             if (cohort === 'A' && location === 'FC4' && shift === 'SS') {
-              rate = '2x';
+              rate = '1600';
             }
             
             const id = this.currentShiftDataId++;
@@ -215,10 +215,12 @@ export class MemStorage implements IStorage {
     
     for (const date of dates) {
       for (const shift of shifts) {
-        // Default rates based on cohort and shift
-        let rate = '1x';
+        // Default rates based on cohort and shift (in NTD)
+        let rate = '800';
         if (shift === 'SS') {
-          rate = cohort === 'A' ? '1.5x' : '2x';
+          rate = cohort === 'A' ? '1200' : '1600';
+        } else if (cohort === 'B') {
+          rate = '900';
         }
         
         const id = this.currentShiftDataId++;
@@ -247,10 +249,12 @@ export class MemStorage implements IStorage {
     
     for (const location of locations) {
       for (const shift of shifts) {
-        // Default rates based on cohort and shift
-        let rate = '1x';
+        // Default rates based on cohort and shift (in NTD)
+        let rate = '800';
         if (shift === 'SS') {
-          rate = cohort === 'A' ? '1.5x' : '2x';
+          rate = cohort === 'A' ? '1200' : '1600';
+        } else if (cohort === 'B') {
+          rate = '900';
         }
         
         const id = this.currentShiftDataId++;
@@ -320,10 +324,12 @@ export class MemStorage implements IStorage {
     for (const location of defaultLocations) {
       for (const date of defaultDates) {
         for (const shift of shifts) {
-          // Default rates based on cohort and shift
-          let rate = '1x';
+          // Default rates based on cohort and shift (in NTD)
+          let rate = '800';
           if (shift === 'SS') {
-            rate = cohort === 'A' ? '1.5x' : '2x';
+            rate = cohort === 'A' ? '1200' : '1600';
+          } else if (cohort === 'B') {
+            rate = '900';
           }
           
           const id = this.currentShiftDataId++;
