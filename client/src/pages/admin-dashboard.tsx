@@ -68,10 +68,34 @@ export default function AdminDashboard() {
   // Filter shift data for selected cohort
   const shiftData = allShiftData?.filter(s => s.cohort === selectedCohort) || [];
 
+  // Mutations for cohort management
+  const createCohortMutation = useMutation({
+    mutationFn: async (cohort: string) => {
+      const response = await apiRequest('POST', '/api/admin/cohorts', { cohort });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/cohorts'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/shift-data'] });
+      setNewCohort("");
+      toast({
+        title: "Success",
+        description: "Cohort matrix created successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to create cohort matrix",
+        variant: "destructive",
+      });
+    }
+  });
+
   // Mutations for shift data management
   const addLocationMutation = useMutation({
     mutationFn: async (location: string) => {
-      const response = await apiRequest('POST', '/api/admin/add-location', { location });
+      const response = await apiRequest('POST', '/api/admin/add-location', { location, cohort: selectedCohort });
       return response.json();
     },
     onSuccess: () => {
@@ -93,7 +117,7 @@ export default function AdminDashboard() {
 
   const addDateMutation = useMutation({
     mutationFn: async (date: string) => {
-      const response = await apiRequest('POST', '/api/admin/add-date', { date });
+      const response = await apiRequest('POST', '/api/admin/add-date', { date, cohort: selectedCohort });
       return response.json();
     },
     onSuccess: () => {
@@ -138,7 +162,7 @@ export default function AdminDashboard() {
 
   const deleteLocationMutation = useMutation({
     mutationFn: async (location: string) => {
-      const response = await apiRequest('DELETE', `/api/admin/location/${encodeURIComponent(location)}`);
+      const response = await apiRequest('DELETE', `/api/admin/location/${selectedCohort}/${encodeURIComponent(location)}`);
       return response.json();
     },
     onSuccess: () => {
@@ -159,7 +183,7 @@ export default function AdminDashboard() {
 
   const deleteDateMutation = useMutation({
     mutationFn: async (date: string) => {
-      const response = await apiRequest('DELETE', `/api/admin/date/${encodeURIComponent(date)}`);
+      const response = await apiRequest('DELETE', `/api/admin/date/${selectedCohort}/${encodeURIComponent(date)}`);
       return response.json();
     },
     onSuccess: () => {
@@ -180,7 +204,7 @@ export default function AdminDashboard() {
 
   const updateLocationMutation = useMutation({
     mutationFn: async ({ oldLocation, newLocation }: { oldLocation: string, newLocation: string }) => {
-      const response = await apiRequest('PUT', `/api/admin/location/${encodeURIComponent(oldLocation)}`, { newLocation });
+      const response = await apiRequest('PUT', `/api/admin/location/${selectedCohort}/${encodeURIComponent(oldLocation)}`, { newLocation });
       return response.json();
     },
     onSuccess: () => {
@@ -203,7 +227,7 @@ export default function AdminDashboard() {
 
   const updateDateMutation = useMutation({
     mutationFn: async ({ oldDate, newDate }: { oldDate: string, newDate: string }) => {
-      const response = await apiRequest('PUT', `/api/admin/date/${encodeURIComponent(oldDate)}`, { newDate });
+      const response = await apiRequest('PUT', `/api/admin/date/${selectedCohort}/${encodeURIComponent(oldDate)}`, { newDate });
       return response.json();
     },
     onSuccess: () => {
@@ -291,6 +315,12 @@ export default function AdminDashboard() {
   const handleAddDate = () => {
     if (newDate.trim()) {
       addDateMutation.mutate(newDate.trim());
+    }
+  };
+
+  const handleCreateCohort = () => {
+    if (newCohort.trim()) {
+      createCohortMutation.mutate(newCohort.trim());
     }
   };
 
@@ -451,10 +481,50 @@ export default function AdminDashboard() {
           {/* Pricing Matrix Tab */}
           <TabsContent value="pricing-matrix">
             <div className="space-y-6">
+              {/* Cohort Management */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Cohort Management</CardTitle>
+                  <p className="text-slate-600">Select or create cohort pricing matrices</p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Select Active Cohort</Label>
+                      <Select value={selectedCohort} onValueChange={setSelectedCohort}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select cohort" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {cohorts?.map(cohort => (
+                            <SelectItem key={cohort} value={cohort}>
+                              Cohort {cohort}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Create New Cohort</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          value={newCohort}
+                          onChange={(e) => setNewCohort(e.target.value)}
+                          placeholder="e.g., C"
+                        />
+                        <Button onClick={handleCreateCohort} disabled={!newCohort.trim()}>
+                          <Plus className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Add Location/Date Controls */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Add New Location or Date</CardTitle>
+                  <CardTitle>Manage Matrix for Cohort {selectedCohort}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -489,8 +559,8 @@ export default function AdminDashboard() {
               {/* Pricing Matrix */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Pricing Matrix</CardTitle>
-                  <p className="text-slate-600">Click on any rate to edit it</p>
+                  <CardTitle>Pricing Matrix - Cohort {selectedCohort}</CardTitle>
+                  <p className="text-slate-600">Click on any rate to edit it. Changes persist for this cohort.</p>
                 </CardHeader>
                 <CardContent>
                   {shiftDataLoading ? (
