@@ -33,7 +33,11 @@ export default function JobApplication() {
   useEffect(() => {
     if (previousApplication && userData) {
       setExistingApplication(previousApplication);
-      setSelectedShifts(previousApplication.selectedShifts || []);
+      const app = previousApplication as any;
+      const shifts = Array.isArray(app.selectedShifts) 
+        ? app.selectedShifts 
+        : [];
+      setSelectedShifts(shifts);
       setIsReturningUser(true);
     }
   }, [previousApplication, userData]);

@@ -19,11 +19,13 @@ interface ContactInfoFormProps {
   selectedShifts: ShiftSelection[];
   onSubmitted: (applicationId: string) => void;
   onBack: () => void;
+  existingApplication?: any;
+  isUpdate?: boolean;
 }
 
-export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack }: ContactInfoFormProps) {
-  const [lineId, setLineId] = useState("");
-  const [phone, setPhone] = useState("");
+export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack, existingApplication, isUpdate = false }: ContactInfoFormProps) {
+  const [lineId, setLineId] = useState(existingApplication?.lineId || "");
+  const [phone, setPhone] = useState(existingApplication?.phone || "");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -51,26 +53,53 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack 
 
     try {
       setIsLoading(true);
-      const response = await apiRequest('POST', '/api/submit-application', {
-        employeeId: userData.id,
-        name: userData.name,
-        cohort: userData.cohort,
-        selectedShifts,
-        lineId: lineId.trim(),
-        phone: phone.trim()
-      });
       
-      const result = await response.json();
+      let response;
+      let result;
+      
+      if (isUpdate && existingApplication) {
+        // Update existing application
+        response = await apiRequest('PUT', `/api/application/${existingApplication.id}`, {
+          name: userData.name,
+          cohort: userData.cohort,
+          selectedShifts,
+          lineId: lineId.trim(),
+          phone: phone.trim(),
+          submittedAt: new Date().toISOString()
+        });
+        
+        result = await response.json();
+        
+        toast({
+          title: "Success",
+          description: "Your application has been updated successfully!",
+        });
+        
+        // Generate application ID for display
+        const applicationId = `APP-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${String(existingApplication.id).padStart(3, '0')}`;
+        onSubmitted(applicationId);
+      } else {
+        // Create new application
+        response = await apiRequest('POST', '/api/submit-application', {
+          employeeId: userData.id,
+          name: userData.name,
+          cohort: userData.cohort,
+          selectedShifts,
+          lineId: lineId.trim(),
+          phone: phone.trim()
+        });
+        
+        result = await response.json();
+        onSubmitted(result.applicationId);
+        
+        toast({
+          title: "Success",
+          description: "Your application has been submitted successfully!",
+        });
+      }
       
       // Invalidate shift data cache to refresh capacity for all users
       queryClient.invalidateQueries({ queryKey: ['/api/shift-data'] });
-      
-      onSubmitted(result.applicationId);
-      
-      toast({
-        title: "Success",
-        description: "Your application has been submitted successfully!",
-      });
     } catch (error: any) {
       toast({
         title: "Error",

@@ -18,11 +18,26 @@ interface ShiftSelectionGridProps {
   userData: UserData;
   onShiftsSelected: (shifts: ShiftSelection[]) => void;
   onBack: () => void;
+  initialSelectedShifts?: ShiftSelection[];
+  isReturningUser?: boolean;
 }
 
-export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack }: ShiftSelectionGridProps) {
-  const [selectedShifts, setSelectedShifts] = useState<ShiftSelection[]>([]);
+export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initialSelectedShifts = [], isReturningUser = false }: ShiftSelectionGridProps) {
+  const [selectedShifts, setSelectedShifts] = useState<ShiftSelection[]>(initialSelectedShifts);
   const [shiftSelections, setShiftSelections] = useState<Record<string, ShiftSelection>>({});
+  
+  // Initialize shift selections from initial data
+  useEffect(() => {
+    if (initialSelectedShifts.length > 0) {
+      const initialSelections: Record<string, ShiftSelection> = {};
+      initialSelectedShifts.forEach(shift => {
+        const key = `${shift.location}-${shift.date}-${shift.shift}`;
+        initialSelections[key] = shift;
+      });
+      setShiftSelections(initialSelections);
+      setSelectedShifts(initialSelectedShifts);
+    }
+  }, [initialSelectedShifts]);
   const { toast } = useToast();
 
   const { data: shiftData, isLoading } = useQuery<ShiftData[]>({
