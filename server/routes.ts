@@ -481,25 +481,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const excelData = applications.map(app => ({
         'Application ID': app.id,
         'Employee ID': app.employeeId,
-        'Name': app.name,
         'Cohort': app.cohort,
         'Phone': app.phone,
-        'National ID': app.nationalId,
-        'Date of Birth': app.dateOfBirth,
-        'Line Account': app.lineAccount,
+        'Line ID': app.lineId,
         'Selected Shifts': Array.isArray(app.selectedShifts) 
-          ? app.selectedShifts.map(shift => 
+          ? app.selectedShifts.map((shift: any) => 
               `${shift.location} - ${shift.date} (${shift.shift}) - ${shift.rate}`
             ).join('; ')
           : 'No shifts selected',
         'Total Rate': Array.isArray(app.selectedShifts)
-          ? app.selectedShifts.reduce((total, shift) => {
+          ? app.selectedShifts.reduce((total: number, shift: any) => {
               const rate = parseInt(shift.rate.replace(/[^\d]/g, '')) || 0;
               return total + rate;
             }, 0)
           : 0,
-        'Submitted At': app.submittedAt,
-        'Line Confirmed': app.lineConfirmed ? 'Yes' : 'No'
+        'Submitted At': app.submittedAt
       }));
       
       // Create Excel workbook
