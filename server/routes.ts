@@ -73,19 +73,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Validate and insert employees
       const employees = data.map((row: any, index: number) => {
         try {
-          const employeeId = String(row.ID || row.id || '').trim().toUpperCase();
+          const rawEmployeeId = String(row.ID || row.id || '').trim().toUpperCase();
           const name = String(row.Name || row.name || '').trim();
           
-          if (!employeeId || !name) {
+          if (!rawEmployeeId || !name) {
             return null;
           }
           
+          // Hash the employee ID using MD5 before storing
+          const hashedEmployeeId = crypto.createHash('md5').update(rawEmployeeId).digest('hex');
+          
           const employeeData = {
-            employeeId,
+            employeeId: hashedEmployeeId,
             name,
             eligible: Boolean(row.Eligible === true || row.Eligible === 'TRUE' || row.Eligible === 'true' || row.eligible === true),
             cohort: row.Cohort || row.cohort || 'A'
           };
+          
+          console.log(`Row ${index + 1}: ${rawEmployeeId} -> ${hashedEmployeeId}`);
           
           return insertEmployeeSchema.parse(employeeData);
         } catch (error) {
