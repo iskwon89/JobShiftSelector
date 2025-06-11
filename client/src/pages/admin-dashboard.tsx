@@ -13,6 +13,35 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ShiftData } from "@shared/schema";
 import { downloadSampleExcel } from "@/lib/sample-excel";
 
+// Format date from "13-Jun" to "Wed, Jun 11" format
+const formatDateDisplay = (dateStr: string) => {
+  try {
+    // Parse date like "13-Jun" and convert to "Wed, Jun 13" format
+    const [day, monthAbbr] = dateStr.split('-');
+    const currentYear = new Date().getFullYear();
+    
+    // Create a mapping for month abbreviations
+    const monthMap: { [key: string]: number } = {
+      'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+      'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+    };
+    
+    const monthIndex = monthMap[monthAbbr];
+    if (monthIndex === undefined) return dateStr; // Return original if can't parse
+    
+    const date = new Date(currentYear, monthIndex, parseInt(day));
+    
+    // Format as "Wed, Jun 11"
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric'
+    });
+  } catch (error) {
+    return dateStr; // Return original string if parsing fails
+  }
+};
+
 export default function AdminDashboard() {
   const [fileUploaded, setFileUploaded] = useState(false);
   const [fileName, setFileName] = useState("");
@@ -703,7 +732,7 @@ export default function AdminDashboard() {
                                     ) : (
                                       <div className="flex items-center gap-1">
                                         <span onClick={() => handleEditDate(date)} className="cursor-pointer hover:text-blue-600">
-                                          {date}
+                                          {formatDateDisplay(date)}
                                         </span>
                                         <Button
                                           size="sm"
@@ -969,7 +998,7 @@ export default function AdminDashboard() {
                                     ) : (
                                       <div className="flex items-center justify-between w-full">
                                         <span onClick={() => handleEditDate(date)} className="font-medium text-slate-700 cursor-pointer hover:text-blue-600">
-                                          {date}
+                                          {formatDateDisplay(date)}
                                         </span>
                                         <Button
                                           size="sm"
