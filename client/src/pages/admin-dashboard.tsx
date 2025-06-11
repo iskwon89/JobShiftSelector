@@ -442,6 +442,25 @@ export default function AdminDashboard() {
     setEditingValue("");
   };
 
+  // Function to get gradient color based on rate value
+  const getRateGradientStyle = (rate: string) => {
+    const rateValue = parseFloat(rate.replace('x', ''));
+    if (isNaN(rateValue)) return {};
+    
+    // Define rate ranges and corresponding colors
+    if (rateValue >= 2.5) {
+      return { backgroundColor: 'rgb(239 68 68 / 0.15)', borderLeft: '3px solid rgb(239 68 68)' }; // Red for highest rates
+    } else if (rateValue >= 2.0) {
+      return { backgroundColor: 'rgb(249 115 22 / 0.15)', borderLeft: '3px solid rgb(249 115 22)' }; // Orange for high rates
+    } else if (rateValue >= 1.5) {
+      return { backgroundColor: 'rgb(245 158 11 / 0.15)', borderLeft: '3px solid rgb(245 158 11)' }; // Amber for medium-high rates
+    } else if (rateValue > 1.0) {
+      return { backgroundColor: 'rgb(34 197 94 / 0.15)', borderLeft: '3px solid rgb(34 197 94)' }; // Green for above base rates
+    } else {
+      return { backgroundColor: 'rgb(148 163 184 / 0.1)', borderLeft: '3px solid rgb(148 163 184)' }; // Gray for base rates
+    }
+  };
+
   const handleEditLocation = (location: string) => {
     setEditingLocation(location);
     setEditLocationValue(location);
@@ -679,6 +698,33 @@ export default function AdminDashboard() {
                 <CardHeader>
                   <CardTitle>Pricing Matrix - Cohort {selectedCohort}</CardTitle>
                   <p className="text-slate-600">Click on any rate (NTD) or capacity to edit it. Changes persist for this cohort.</p>
+                  
+                  {/* Rate Color Legend */}
+                  <div className="mt-3 p-3 bg-slate-50 rounded-lg">
+                    <h4 className="text-sm font-semibold text-slate-700 mb-2">Rate Color Guide:</h4>
+                    <div className="flex flex-wrap gap-3 text-xs">
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded" style={{ backgroundColor: 'rgb(239 68 68 / 0.15)', borderLeft: '3px solid rgb(239 68 68)' }}></div>
+                        <span>≥2.5x Premium</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded" style={{ backgroundColor: 'rgb(249 115 22 / 0.15)', borderLeft: '3px solid rgb(249 115 22)' }}></div>
+                        <span>≥2.0x High</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded" style={{ backgroundColor: 'rgb(245 158 11 / 0.15)', borderLeft: '3px solid rgb(245 158 11)' }}></div>
+                        <span>≥1.5x Medium</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded" style={{ backgroundColor: 'rgb(34 197 94 / 0.15)', borderLeft: '3px solid rgb(34 197 94)' }}></div>
+                        <span>{'>'}1.0x Above Base</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded" style={{ backgroundColor: 'rgb(148 163 184 / 0.1)', borderLeft: '3px solid rgb(148 163 184)' }}></div>
+                        <span>1.0x Base Rate</span>
+                      </div>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   {shiftDataLoading ? (
@@ -765,8 +811,8 @@ export default function AdminDashboard() {
                           </thead>
                           <tbody className="bg-white">
                             {locations.map((location, locationIndex) => (
-                              <tr key={location} className={`h-16 ${locationIndex < locations.length - 1 ? 'border-b border-slate-100' : ''}`}>
-                                <td className="sticky left-0 bg-white z-10 w-32 h-16 px-4 py-3 border-r border-slate-200">
+                              <tr key={location} className={`h-20 ${locationIndex < locations.length - 1 ? 'border-b border-slate-100' : ''}`}>
+                                <td className="sticky left-0 bg-white z-10 w-32 h-20 px-4 py-4 border-r border-slate-200">
                                   <div className="flex items-center gap-1">
                                     {editingLocation === location ? (
                                       <div className="flex items-center gap-1">
@@ -825,20 +871,26 @@ export default function AdminDashboard() {
                                       const isEditingRate = editingRate === shiftEntry?.id.toString();
                                       const isEditingCapacity = editingCapacity === shiftEntry?.id.toString();
                                       
+                                      const gradientStyle = shiftEntry ? getRateGradientStyle(shiftEntry.rate) : {};
+                                      
                                       return (
-                                        <td key={`${location}-${date}-${shift}`} className="min-w-[100px] h-16 px-2 py-2 text-center border-l border-slate-200">
+                                        <td 
+                                          key={`${location}-${date}-${shift}`} 
+                                          className="min-w-[120px] h-20 px-3 py-3 text-center border-l border-slate-200"
+                                          style={gradientStyle}
+                                        >
                                           {isEditingRate ? (
-                                            <div className="flex flex-col gap-1">
+                                            <div className="flex flex-col gap-2">
                                               <Input
                                                 value={editingValue}
                                                 onChange={(e) => setEditingValue(e.target.value)}
-                                                className="h-6 text-xs text-center"
-                                                placeholder="1x"
+                                                className="h-8 text-sm text-center"
+                                                placeholder="800"
                                               />
-                                              <div className="flex gap-1">
+                                              <div className="flex gap-1 justify-center">
                                                 <Button
                                                   size="sm"
-                                                  className="h-5 px-1 text-xs"
+                                                  className="h-6 px-2 text-xs"
                                                   onClick={() => handleSaveRate(shiftEntry!.id)}
                                                 >
                                                   ✓
@@ -846,7 +898,7 @@ export default function AdminDashboard() {
                                                 <Button
                                                   size="sm"
                                                   variant="ghost"
-                                                  className="h-5 px-1 text-xs"
+                                                  className="h-6 px-2 text-xs"
                                                   onClick={handleCancelEdit}
                                                 >
                                                   ✕
@@ -854,18 +906,18 @@ export default function AdminDashboard() {
                                               </div>
                                             </div>
                                           ) : isEditingCapacity ? (
-                                            <div className="flex flex-col gap-1">
+                                            <div className="flex flex-col gap-2">
                                               <Input
                                                 value={editingValue}
                                                 onChange={(e) => setEditingValue(e.target.value)}
-                                                className="h-6 text-xs text-center"
+                                                className="h-8 text-sm text-center"
                                                 placeholder="10"
                                                 type="number"
                                               />
-                                              <div className="flex gap-1">
+                                              <div className="flex gap-1 justify-center">
                                                 <Button
                                                   size="sm"
-                                                  className="h-5 px-1 text-xs"
+                                                  className="h-6 px-2 text-xs"
                                                   onClick={() => handleSaveCapacity(shiftEntry!.id)}
                                                 >
                                                   ✓
@@ -873,7 +925,7 @@ export default function AdminDashboard() {
                                                 <Button
                                                   size="sm"
                                                   variant="ghost"
-                                                  className="h-5 px-1 text-xs"
+                                                  className="h-6 px-2 text-xs"
                                                   onClick={handleCancelEdit}
                                                 >
                                                   ✕
@@ -881,16 +933,16 @@ export default function AdminDashboard() {
                                               </div>
                                             </div>
                                           ) : (
-                                            <div className="w-full h-12 flex flex-col items-center justify-center text-xs">
+                                            <div className="w-full h-16 flex flex-col items-center justify-center gap-1">
                                               <button
                                                 onClick={() => shiftEntry && handleEditRate(shiftEntry.id, shiftEntry.rate)}
-                                                className="w-full text-sm font-medium hover:bg-blue-50 py-1 rounded transition-colors"
+                                                className="w-full text-sm font-semibold text-slate-800 hover:bg-white/50 py-2 rounded transition-colors"
                                               >
                                                 NT${shiftEntry?.rate || '800'}
                                               </button>
                                               <button
                                                 onClick={() => shiftEntry && handleEditCapacity(shiftEntry.id, shiftEntry.capacity?.toString() || '10')}
-                                                className="w-full text-xs text-slate-600 hover:bg-green-50 py-1 rounded transition-colors"
+                                                className="w-full text-xs text-slate-600 hover:bg-white/50 py-1 rounded transition-colors"
                                               >
                                                 Cap: {shiftEntry?.capacity ?? 10}
                                               </button>
