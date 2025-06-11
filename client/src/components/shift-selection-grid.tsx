@@ -282,11 +282,6 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                               <div className={`text-xs ${selected ? 'text-blue-100' : 'text-gray-500'}`}>
                                 {remaining} available
                               </div>
-                              {selected && (
-                                <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-white bg-opacity-20 text-xs font-medium text-white">
-                                  ✓ Selected
-                                </div>
-                              )}
                             </div>
                           )}
                         </button>
@@ -348,11 +343,6 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                                 <div className={`text-sm ${selected ? 'text-blue-100' : 'text-gray-500'}`}>
                                   {remaining} available
                                 </div>
-                                {selected && (
-                                  <div className="inline-flex items-center justify-center px-3 py-1.5 rounded-full bg-white bg-opacity-20 text-sm font-medium text-white mt-2">
-                                    ✓ Selected
-                                  </div>
-                                )}
                               </>
                             )}
                           </div>
