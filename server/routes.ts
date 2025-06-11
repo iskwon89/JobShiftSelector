@@ -54,46 +54,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No file uploaded" });
       }
 
+      console.log("Processing Excel file upload, file size:", req.file.size);
+
       // Parse Excel file
       const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
       const data = XLSX.utils.sheet_to_json(worksheet);
 
+      console.log("Raw Excel data parsed:", data.length, "rows");
+      console.log("Sample row data:", data[0]);
+
       // Clear existing employees
+      console.log("Clearing existing employees...");
       await storage.clearEmployees();
+      console.log("Existing employees cleared");
 
       // Validate and insert employees
-      const employees = data.map((row: any) => {
+      const employees = data.map((row: any, index: number) => {
         try {
           const employeeId = String(row.ID || row.id || '').trim().toUpperCase();
           const name = String(row.Name || row.name || '').trim();
           
           if (!employeeId || !name) {
+            console.log(`Row ${index + 1}: Missing required data - ID: "${employeeId}", Name: "${name}"`);
             return null;
           }
           
-          return insertEmployeeSchema.parse({
+          const employeeData = {
             employeeId,
             name,
             eligible: Boolean(row.Eligible === true || row.Eligible === 'TRUE' || row.Eligible === 'true' || row.eligible === true),
             cohort: row.Cohort || row.cohort || null
-          });
+          };
+
+          console.log(`Row ${index + 1}: Processing employee:`, employeeData);
+          
+          return insertEmployeeSchema.parse(employeeData);
         } catch (error) {
-          console.error("Invalid row data:", row, error);
+          console.error(`Row ${index + 1}: Invalid row data:`, row, error);
           return null;
         }
       }).filter((emp): emp is NonNullable<typeof emp> => emp !== null);
+
+      console.log("Valid employees to insert:", employees.length);
 
       if (employees.length === 0) {
         return res.status(400).json({ message: "No valid employee data found in Excel file" });
       }
 
+      console.log("Inserting employees into database...");
       await storage.bulkCreateEmployees(employees);
+      console.log("Employees inserted successfully");
 
       res.json({ 
         message: "Excel file processed successfully", 
-        employeesLoaded: employees.length 
+        employeesLoaded: employees.length,
+        employees: employees.map(emp => ({ id: emp.employeeId, name: emp.name, eligible: emp.eligible, cohort: emp.cohort }))
       });
     } catch (error) {
       console.error("Error processing Excel file:", error);
@@ -145,6 +162,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       console.error("Error submitting application:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Get all employees (for debugging)
+  app.get("/api/employees", async (req, res) => {
+    try {
+      // Since we don't have a direct method to get all employees, let's add one
+      const employees = await storage.getAllEmployees?.() || [];
+      res.json(employees);
+    } catch (error) {
+      console.error("Error fetching employees:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
