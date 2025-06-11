@@ -180,26 +180,26 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
       </div>
 
       {/* Desktop Table View */}
-      <div className="hidden lg:block overflow-x-auto mb-8">
-        <table className="w-full border border-slate-200 rounded-lg overflow-hidden table-fixed min-w-[800px]">
-          <thead className="bg-slate-50">
+      <div className="hidden lg:block overflow-x-auto border border-slate-200 rounded-lg mb-8">
+        <table className="w-full bg-white" style={{ minWidth: `${128 + dates.length * 160}px` }}>
+          <thead className="bg-slate-50 sticky top-0 z-10">
             <tr>
-              <th className="w-32 px-4 py-3 text-left text-sm font-semibold text-slate-700 border-b border-slate-200">
+              <th className="sticky left-0 bg-slate-50 z-20 w-32 px-4 py-3 text-left text-sm font-semibold text-slate-700 border-b border-r border-slate-200">
                 Location
               </th>
               {dates.map(date => (
-                <th key={date} className="w-40 px-4 py-3 text-center text-sm font-semibold text-slate-700 border-b border-l border-slate-200" colSpan={2}>
+                <th key={date} className="min-w-[160px] px-4 py-3 text-center text-sm font-semibold text-slate-700 border-b border-l border-slate-200" colSpan={2}>
                   {date}
                 </th>
               ))}
             </tr>
             <tr className="bg-slate-50">
-              <th className="w-32 px-4 py-2 text-left text-xs font-medium text-slate-600 border-b border-slate-200"></th>
+              <th className="sticky left-0 bg-slate-50 z-20 w-32 px-4 py-2 text-left text-xs font-medium text-slate-600 border-b border-r border-slate-200"></th>
               {dates.flatMap(date => [
-                <th key={`${date}-ms`} className="w-20 px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
+                <th key={`${date}-ms`} className="min-w-[80px] px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
                   MS
                 </th>,
-                <th key={`${date}-es`} className="w-20 px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
+                <th key={`${date}-es`} className="min-w-[80px] px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
                   ES
                 </th>
               ])}
@@ -208,7 +208,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
           <tbody className="bg-white">
             {locations.map((location, locationIndex) => (
               <tr key={location} className={`h-16 ${locationIndex < locations.length - 1 ? 'border-b border-slate-100' : ''}`}>
-                <td className="w-32 h-16 px-4 py-3 border-r border-slate-200">
+                <td className="sticky left-0 bg-white z-10 w-32 h-16 px-4 py-3 border-r border-slate-200">
                   <div className="flex items-center h-full">
                     <MapPin className="w-4 h-4 text-slate-400 mr-2" />
                     <span className="font-medium text-slate-700">{location}</span>
@@ -222,7 +222,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                     const fullyBooked = isShiftFullyBooked(location, date, shift);
                     
                     return (
-                      <td key={`${location}-${date}-${shift}`} className={`w-20 h-16 px-2 py-2 text-center border-l border-slate-200 ${
+                      <td key={`${location}-${date}-${shift}`} className={`min-w-[80px] h-16 px-2 py-2 text-center border-l border-slate-200 ${
                         selected ? 'bg-blue-50' : fullyBooked ? 'bg-gray-100' : ''
                       }`}>
                         <button
