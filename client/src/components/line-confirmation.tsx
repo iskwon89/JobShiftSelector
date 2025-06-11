@@ -23,9 +23,6 @@ export function LineConfirmation({ applicationId, onConfirm, onBack }: LineConfi
           <CheckCircle className="w-8 h-8 text-green-600 mr-2" />
           <h2 className="text-2xl font-semibold text-slate-800">Let's Connect!</h2>
         </div>
-        <p className="text-center text-slate-600">
-          Your application ID is: <span className="font-mono font-semibold text-slate-800">{applicationId}</span>
-        </p>
       </div>
 
       <div className="space-y-6 mb-8">
