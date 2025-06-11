@@ -48,6 +48,40 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
     return shiftEntry?.rate || '1x';
   };
 
+  // Get numeric value from rate string for comparison
+  const getRateNumericValue = (rate: string) => {
+    const match = rate.match(/^(\d+(?:\.\d+)?)x?$/);
+    return match ? parseFloat(match[1]) : 1;
+  };
+
+  // Get all rate values to determine min/max for color scaling
+  const allRates = shiftData ? shiftData.map(s => getRateNumericValue(s.rate)) : [1];
+  const minRate = Math.min(...allRates);
+  const maxRate = Math.max(...allRates);
+
+  // Get color intensity based on rate value
+  const getRateColorIntensity = (rate: string) => {
+    const numericRate = getRateNumericValue(rate);
+    if (maxRate === minRate) return 0.5; // Default intensity if all rates are the same
+    
+    // Scale from 0.2 (low rates) to 1.0 (high rates)
+    const intensity = 0.2 + (0.8 * (numericRate - minRate) / (maxRate - minRate));
+    return intensity;
+  };
+
+  // Get rate text color classes based on intensity
+  const getRateTextColor = (rate: string, isSelected: boolean, isFullyBooked: boolean) => {
+    if (isFullyBooked) return 'text-gray-400';
+    if (isSelected) return 'text-white';
+    
+    const intensity = getRateColorIntensity(rate);
+    
+    if (intensity >= 0.8) return 'text-green-700 font-bold'; // High rates - dark green, bold
+    if (intensity >= 0.6) return 'text-green-600 font-semibold'; // Medium-high rates - green, semibold
+    if (intensity >= 0.4) return 'text-slate-700 font-medium'; // Medium rates - default color, medium weight
+    return 'text-slate-500'; // Low rates - lighter color
+  };
+
   // Initialize shift selections from initial data with current pricing
   useEffect(() => {
     if (initialSelectedShifts.length > 0 && shiftData) {
@@ -243,7 +277,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                             </>
                           ) : (
                             <>
-                              <span className="font-semibold text-sm">NT${rate}</span>
+                              <span className={`text-sm ${getRateTextColor(rate, selected, fullyBooked)}`}>NT${rate}</span>
                               <span className="text-xs opacity-75">{remaining} left</span>
                               {selected && <span className="text-xs font-medium">Selected</span>}
                             </>
@@ -301,7 +335,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                               <div className="text-sm font-medium">Fully Booked</div>
                             ) : (
                               <>
-                                <div className="text-lg font-bold">NT${rate}</div>
+                                <div className={`text-lg ${getRateTextColor(rate, selected, fullyBooked)}`}>NT${rate}</div>
                                 <div className="text-xs opacity-75">{remaining} slots left</div>
                                 {selected && (
                                   <div className="text-xs font-medium mt-1 bg-white bg-opacity-20 rounded px-2 py-1">
