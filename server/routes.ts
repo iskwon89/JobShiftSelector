@@ -58,12 +58,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Parse Excel file
       const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
+      console.log("Available worksheets:", workbook.SheetNames);
       const sheetName = workbook.SheetNames[0];
+      console.log("Using worksheet:", sheetName);
       const worksheet = workbook.Sheets[sheetName];
-      const data = XLSX.utils.sheet_to_json(worksheet);
+      
+      // Check worksheet range
+      const range = worksheet['!ref'];
+      console.log("Worksheet range:", range);
+      
+      // Parse with different options to capture all data
+      const data = XLSX.utils.sheet_to_json(worksheet, { 
+        header: 1,  // Use array format first to see raw structure
+        defval: '',  // Default value for empty cells
+        blankrows: true  // Include blank rows
+      });
+      
+      console.log("Raw array format data:", data);
+      
+      // Now parse with object format
+      const objectData = XLSX.utils.sheet_to_json(worksheet, {
+        defval: '',
+        blankrows: false
+      });
 
-      console.log("Raw Excel data parsed:", data.length, "rows");
-      console.log("All Excel data:", JSON.stringify(data, null, 2));
+      console.log("Raw Excel data parsed:", objectData.length, "rows");
+      console.log("Object format Excel data:", JSON.stringify(objectData, null, 2));
 
       // Clear existing employees
       console.log("Clearing existing employees...");
@@ -71,7 +91,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Existing employees cleared");
 
       // Validate and insert employees
-      const employees = data.map((row: any, index: number) => {
+      const employees = objectData.map((row: any, index: number) => {
         console.log(`\n--- Processing Row ${index + 1} ---`);
         console.log("Raw row data:", JSON.stringify(row, null, 2));
         console.log("Available keys:", Object.keys(row));
