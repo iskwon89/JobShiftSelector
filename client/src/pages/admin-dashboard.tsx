@@ -435,7 +435,7 @@ export default function AdminDashboard() {
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-slate-200 pt-2 sm:pt-0">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-4 flex justify-between items-center">
-          <h1 className="text-lg sm:text-2xl font-semibold text-slate-800">CouFlex Admin</h1>
+          <h1 className="text-lg sm:text-2xl font-semibold text-slate-800">Couflex Admin</h1>
           <Button variant="outline" onClick={handleLogout} size="sm" className="sm:size-default">
             <LogOut className="w-4 h-4 sm:mr-2" />
             <span className="hidden sm:inline">Logout</span>

@@ -84,7 +84,7 @@ export default function AdminLogin() {
         <Card>
           <CardHeader className="text-center">
             <CardTitle className="text-xl sm:text-2xl font-semibold text-slate-800">
-              CouFlex Admin
+              Couflex Admin
             </CardTitle>
             <p className="text-slate-600 text-sm sm:text-base">Access administrative functions</p>
           </CardHeader>
