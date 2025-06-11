@@ -5,9 +5,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function AdminLogin() {
-  const [adminId, setAdminId] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -15,10 +16,10 @@ export default function AdminLogin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!adminId.trim() || !password.trim()) {
+    if (!username.trim() || !password.trim()) {
       toast({
         title: "Error",
-        description: "Please enter both admin ID and password",
+        description: "Please enter both username and password",
         variant: "destructive",
       });
       return;
@@ -26,19 +27,43 @@ export default function AdminLogin() {
 
     setIsLoading(true);
     
-    // Simple authentication check
-    if (adminId.trim() === "Admin" && password.trim() === "Admin") {
-      localStorage.setItem("adminAuthenticated", "true");
-      window.location.href = "/admin/dashboard";
-    } else {
+    try {
+      const response = await apiRequest('POST', '/api/admin/login', {
+        username: username.trim(),
+        password: password.trim()
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Store authentication token
+        localStorage.setItem("adminAuthenticated", "true");
+        localStorage.setItem("adminToken", result.token);
+        
+        toast({
+          title: "Success",
+          description: "Login successful",
+        });
+        
+        // Redirect to admin dashboard
+        window.location.href = "/admin/dashboard";
+      } else {
+        toast({
+          title: "Error",
+          description: result.message || "Invalid admin credentials",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      console.error("Admin login error:", error);
       toast({
         title: "Error",
-        description: "Invalid admin credentials",
+        description: error.message || "Login failed. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   return (
@@ -62,17 +87,22 @@ export default function AdminLogin() {
               Admin Login
             </CardTitle>
             <p className="text-slate-600 text-sm sm:text-base">Access administrative functions</p>
+            <div className="mt-4 p-3 bg-slate-100 rounded-lg text-xs text-slate-600">
+              <p><strong>Demo Credentials:</strong></p>
+              <p>Username: admin</p>
+              <p>Password: Adm1n!2024$SecureP@ssw0rd</p>
+            </div>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="admin-id" className="text-sm sm:text-base">Admin ID</Label>
+                <Label htmlFor="username" className="text-sm sm:text-base">Username</Label>
                 <Input
-                  id="admin-id"
+                  id="username"
                   type="text"
-                  value={adminId}
-                  onChange={(e) => setAdminId(e.target.value)}
-                  placeholder="Enter admin ID"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter username"
                   className="mt-1 text-base sm:text-sm"
                 />
               </div>

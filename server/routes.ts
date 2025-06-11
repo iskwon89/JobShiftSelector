@@ -9,7 +9,54 @@ import crypto from "crypto";
 
 const upload = multer({ storage: multer.memoryStorage() });
 
+// Strong admin credentials (hardcoded on server)
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "Adm1n!2024$SecureP@ssw0rd";
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  
+  // Admin login endpoint
+  app.post("/api/admin/login", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      
+      if (!username || !password) {
+        console.log("Admin login attempt - Missing credentials");
+        return res.status(400).json({ message: "Username and password are required" });
+      }
+
+      console.log("=== Admin Login Attempt ===");
+      console.log("Username provided:", username);
+      console.log("Request timestamp:", new Date().toISOString());
+      console.log("Request IP:", req.ip || req.connection.remoteAddress);
+      
+      // Verify credentials against hardcoded values
+      if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+        console.log("Admin login: SUCCESS");
+        console.log("=== End Admin Login ===");
+        
+        // Generate a simple session token (in production, use proper JWT)
+        const sessionToken = Buffer.from(`${ADMIN_USERNAME}:${Date.now()}`).toString('base64');
+        
+        res.json({
+          success: true,
+          message: "Login successful",
+          token: sessionToken
+        });
+      } else {
+        console.log("Admin login: FAILED - Invalid credentials");
+        console.log("=== End Admin Login ===");
+        
+        res.status(401).json({
+          success: false,
+          message: "Invalid admin credentials"
+        });
+      }
+    } catch (error) {
+      console.error("Error during admin login:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
   
   // Verify employee ID and get user data
   app.post("/api/verify-employee", async (req, res) => {
