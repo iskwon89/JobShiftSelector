@@ -119,6 +119,21 @@ export function IDVerificationForm({ onVerified }: IDVerificationFormProps) {
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-6 px-4 sm:px-0">
+        <div>
+          <Label htmlFor="national-id" className="text-sm sm:text-base">National ID</Label>
+          <Input
+            id="national-id"
+            type="text"
+            value={employeeId}
+            onChange={handleInputChange}
+            placeholder="e.g. A123456789"
+            className={`mt-1 text-base sm:text-sm ${validationError ? 'border-red-500' : ''}`}
+          />
+          {validationError && (
+            <p className="text-red-500 text-xs mt-1">{validationError}</p>
+          )}
+        </div>
+
         {/* Data Usage Consent */}
         <div className="mb-6">
           <h3 className="font-semibold text-slate-800 mb-4 text-sm sm:text-base">Data Usage Consent</h3>
@@ -178,21 +193,6 @@ export function IDVerificationForm({ onVerified }: IDVerificationFormProps) {
               </label>
             </div>
           </div>
-        </div>
-
-        <div>
-          <Label htmlFor="national-id" className="text-sm sm:text-base">National ID</Label>
-          <Input
-            id="national-id"
-            type="text"
-            value={employeeId}
-            onChange={handleInputChange}
-            placeholder="e.g. A123456789"
-            className={`mt-1 text-base sm:text-sm ${validationError ? 'border-red-500' : ''}`}
-          />
-          {validationError && (
-            <p className="text-red-500 text-xs mt-1">{validationError}</p>
-          )}
         </div>
 
         <Button 
