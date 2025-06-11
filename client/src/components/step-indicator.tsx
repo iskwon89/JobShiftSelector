@@ -11,7 +11,7 @@ export function StepIndicator({ currentStep, totalSteps }: StepIndicatorProps) {
   ];
 
   return (
-    <div className="flex items-center justify-center space-x-4">
+    <div className="flex items-center justify-center space-x-4 pl-[0px] pr-[0px] text-center">
       {steps.map((step, index) => (
         <div key={step.number} className="flex items-center">
           <div className="flex items-center">
