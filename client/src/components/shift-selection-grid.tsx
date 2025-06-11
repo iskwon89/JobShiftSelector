@@ -256,31 +256,30 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                     const fullyBooked = isShiftFullyBooked(location, date, shift);
                     
                     return (
-                      <td key={`${location}-${date}-${shift}`} className={`min-w-[100px] h-20 px-3 py-3 text-center border-l border-slate-200 ${
+                      <td key={`${location}-${date}-${shift}`} className={`min-w-[120px] h-24 px-4 py-4 text-center border-l border-slate-200 ${
                         selected ? 'bg-blue-50' : fullyBooked ? 'bg-gray-100' : ''
                       }`}>
                         <button
                           onClick={() => handleShiftClick(location, date, shift)}
                           disabled={fullyBooked}
-                          className={`w-full h-14 flex flex-col items-center justify-center rounded-lg transition-colors ${
+                          className={`w-full h-16 flex flex-col items-center justify-center rounded-xl transition-all duration-200 ${
                             fullyBooked 
-                              ? 'text-gray-400 cursor-not-allowed bg-gray-50 border border-gray-200' 
+                              ? 'text-gray-400 cursor-not-allowed bg-gray-50 border-2 border-gray-200' 
                               : selected 
-                                ? 'bg-blue-600 text-white border-2 border-blue-700' 
-                                : 'hover:bg-slate-50 text-slate-700 border border-slate-200'
+                                ? 'bg-blue-600 text-white border-2 border-blue-700 shadow-lg scale-105' 
+                                : 'hover:bg-slate-50 text-slate-700 border-2 border-slate-200 hover:border-slate-300 hover:shadow-md'
                           }`}
                         >
                           {fullyBooked ? (
-                            <>
-                              <span className="font-medium text-sm">Fully</span>
-                              <span className="font-medium text-sm">Booked</span>
-                            </>
+                            <div className="space-y-1">
+                              <div className="text-sm font-medium">Fully Booked</div>
+                            </div>
                           ) : (
-                            <>
-                              <span className={`text-base font-semibold mb-1 ${getRateTextColor(rate, selected, fullyBooked)}`}>NT${rate}</span>
-                              <span className="text-xs opacity-75">{remaining} left</span>
-                              {selected && <span className="text-xs font-medium mt-1">Selected</span>}
-                            </>
+                            <div className="space-y-1">
+                              <div className={`text-lg font-bold ${getRateTextColor(rate, selected, fullyBooked)}`}>NT${rate}</div>
+                              <div className="text-xs opacity-75">{remaining} left</div>
+                              {selected && <div className="text-xs font-semibold bg-white bg-opacity-20 rounded-full px-2 py-0.5 mt-1">Selected</div>}
+                            </div>
                           )}
                         </button>
                       </td>
@@ -319,30 +318,30 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                           key={shift}
                           onClick={() => handleShiftClick(location, date, shift)}
                           disabled={fullyBooked}
-                          className={`p-4 rounded-lg border-2 transition-all min-h-[100px] ${
+                          className={`p-6 rounded-xl border-2 transition-all duration-200 min-h-[120px] ${
                             fullyBooked 
                               ? 'text-gray-400 cursor-not-allowed bg-gray-50 border-gray-200' 
                               : selected 
-                                ? 'bg-blue-600 text-white border-blue-700 shadow-md' 
-                                : 'hover:bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300'
+                                ? 'bg-blue-600 text-white border-blue-700 shadow-lg scale-105' 
+                                : 'hover:bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300 hover:shadow-md'
                           }`}
                         >
-                          <div className="text-center">
-                            <div className="text-sm font-medium text-slate-500 mb-2">
+                          <div className="text-center space-y-3">
+                            <div className="text-sm font-medium text-slate-500 mb-3">
                               {shift === 'DS' ? 'Morning Shift' : 'Evening Shift'}
                             </div>
                             {fullyBooked ? (
-                              <div className="text-base font-medium">Fully Booked</div>
+                              <div className="text-lg font-semibold">Fully Booked</div>
                             ) : (
-                              <>
-                                <div className={`text-xl font-bold mb-2 ${getRateTextColor(rate, selected, fullyBooked)}`}>NT${rate}</div>
+                              <div className="space-y-2">
+                                <div className={`text-2xl font-bold ${getRateTextColor(rate, selected, fullyBooked)}`}>NT${rate}</div>
                                 <div className="text-sm opacity-75">{remaining} slots left</div>
                                 {selected && (
-                                  <div className="text-sm font-medium mt-2 bg-white bg-opacity-20 rounded px-3 py-1">
+                                  <div className="text-sm font-semibold mt-3 bg-white bg-opacity-20 rounded-full px-4 py-1 inline-block">
                                     Selected
                                   </div>
                                 )}
-                              </>
+                              </div>
                             )}
                           </div>
                         </button>
