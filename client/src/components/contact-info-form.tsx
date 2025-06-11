@@ -162,21 +162,64 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack 
           </CardContent>
         </Card>
 
-        {/* Terms and Conditions */}
+        {/* Data Usage Consent */}
         <div className="mb-8">
-          <div className="flex items-start space-x-2">
-            <Checkbox
-              id="terms"
-              checked={termsAccepted}
-              onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
-            />
-            <label htmlFor="terms" className="text-sm text-slate-600 leading-relaxed">
-              I agree to the{" "}
-              <a href="#" className="text-blue-600 hover:text-blue-700 underline">
-                terms and conditions
-              </a>{" "}
-              and confirm that all information provided is accurate.
-            </label>
+          <h3 className="font-semibold text-slate-800 mb-4">Data Usage Consent</h3>
+          
+          {/* Scrollable Consent Text */}
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 h-40 overflow-y-auto mb-4">
+            <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+              <p>
+                <strong>1. 蒐集者：</strong>火箭物流倉儲股份有限公司
+              </p>
+              <p>
+                <strong>2. 蒐集目的：</strong>人事招募
+              </p>
+              <p>
+                <strong>3. 蒐集個資：</strong>姓名、電話號碼、出生年月日、身分證或居留證號碼、通訊軟體帳號等個人資料。
+              </p>
+              <p>
+                <strong>4. 利用個資期間：</strong>自取得資料日起5年（或至撤回同意為止)。
+              </p>
+              <p>
+                <strong>5. 利用個資地區與對象：</strong>在目的範圍內，與支援招募業務的台灣與韓國關係企業利用個人資料。
+              </p>
+              <p>
+                <strong>6. 利用個資方式：</strong>招募時與應徵者確認與溝通、資格審查、指導與進行招募、指定工作地點、處理招募相關要求與詢問、入職後辦理保險等人事管理作業。我們會將您的資料登錄人才資料庫，並透過電話以及電子郵件、簡訊、Line 等各種電子傳輸媒介向您發送各類職缺招聘通知（廣告）
+              </p>
+              <p>
+                <strong>7. 您的權利：</strong>您可查閱、增修、複製、要求停止處理利用，或要求刪除您的個人資料。請與您的招募者或privacy.tw@coupang.com聯繫行使權利。
+              </p>
+              <p className="text-slate-600 italic">
+                *如您不同意提供個人資料，將無法完成應徵程序並登入於我們的人才資料庫。
+              </p>
+              <p className="text-slate-600 italic">
+                *求職者隱私權政策通知：
+                <a 
+                  href="https://privacy.coupang.com/en/land/jobs/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-700 underline ml-1"
+                >
+                  https://privacy.coupang.com/en/land/jobs/
+                </a>
+              </p>
+            </div>
+          </div>
+
+          {/* Consent Checkbox */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-start space-x-3">
+              <Checkbox
+                id="dataConsent"
+                checked={termsAccepted}
+                onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
+                className="mt-1"
+              />
+              <label htmlFor="dataConsent" className="text-sm text-slate-700 leading-relaxed">
+                I have read and agree to the Data Usage terms.
+              </label>
+            </div>
           </div>
         </div>
 
