@@ -345,15 +345,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const id = parseInt(req.params.id);
       const { rate, capacity } = req.body;
       
+      console.log(`=== Updating Shift Data ID: ${id} ===`);
+      console.log('Request body:', { rate, capacity });
+      
       const updateData: any = {};
       if (rate !== undefined) updateData.rate = rate;
-      if (capacity !== undefined) updateData.capacity = capacity;
+      if (capacity !== undefined) {
+        updateData.capacity = parseInt(capacity);
+        console.log('Parsed capacity:', updateData.capacity);
+      }
       
       if (Object.keys(updateData).length === 0) {
         return res.status(400).json({ message: 'At least one field (rate or capacity) is required' });
       }
       
+      console.log('Update data:', updateData);
       const updatedShift = await storage.updateShiftData(id, updateData);
+      console.log('Updated shift result:', updatedShift);
+      console.log('=== End Shift Data Update ===');
+      
       res.json(updatedShift);
     } catch (error) {
       console.error('Error updating shift data:', error);
