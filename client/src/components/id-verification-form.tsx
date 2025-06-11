@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import CryptoJS from 'crypto-js';
 
 interface UserData {
   id: string;
@@ -35,8 +36,10 @@ export function IDVerificationForm({ onVerified }: IDVerificationFormProps) {
 
     try {
       setIsLoading(true);
+      // Hash the employee ID before sending to server
+      const hashedId = CryptoJS.MD5(employeeId.trim().toUpperCase()).toString();
       const response = await apiRequest('POST', '/api/verify-employee', {
-        employeeId: employeeId.trim().toUpperCase()
+        employeeId: hashedId
       });
       
       const userData = await response.json();

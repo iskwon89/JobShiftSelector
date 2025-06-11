@@ -1,4 +1,5 @@
 import * as XLSX from 'xlsx';
+import CryptoJS from 'crypto-js';
 
 export interface ExcelEmployee {
   ID: string;
@@ -19,12 +20,17 @@ export function parseExcelFile(file: File): Promise<ExcelEmployee[]> {
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet);
         
-        const employees = jsonData.map((row: any) => ({
-          ID: String(row.ID || row.id || '').trim(),
-          Name: String(row.Name || row.name || '').trim(),
-          Eligible: Boolean(row.Eligible === true || row.Eligible === 'TRUE' || row.Eligible === 'true'),
-          Cohort: String(row.Cohort || row.cohort || '').trim()
-        }));
+        const employees = jsonData.map((row: any) => {
+          const originalId = String(row.ID || row.id || '').trim();
+          const hashedId = originalId ? CryptoJS.MD5(originalId).toString() : '';
+          
+          return {
+            ID: hashedId,
+            Name: String(row.Name || row.name || '').trim(),
+            Eligible: Boolean(row.Eligible === true || row.Eligible === 'TRUE' || row.Eligible === 'true'),
+            Cohort: String(row.Cohort || row.cohort || '').trim()
+          };
+        });
         
         resolve(employees);
       } catch (error) {
