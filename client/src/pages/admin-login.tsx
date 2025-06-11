@@ -87,11 +87,6 @@ export default function AdminLogin() {
               Admin Login
             </CardTitle>
             <p className="text-slate-600 text-sm sm:text-base">Access administrative functions</p>
-            <div className="mt-4 p-3 bg-slate-100 rounded-lg text-xs text-slate-600">
-              <p><strong>Demo Credentials:</strong></p>
-              <p>Username: admin</p>
-              <p>Password: Adm1n!2024$SecureP@ssw0rd</p>
-            </div>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
