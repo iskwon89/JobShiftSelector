@@ -212,7 +212,6 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
           <span className="font-medium">MS</span> = Morning Shift, <span className="font-medium">ES</span> = Evening Shift
         </div>
       </div>
-
       {/* Desktop Table View */}
       <div className="hidden lg:block overflow-x-auto border border-slate-200 rounded-lg mb-8">
         <table className="w-full bg-white" style={{ minWidth: `${128 + dates.length * 160}px` }}>
@@ -276,7 +275,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                             </div>
                           ) : (
                             <div className="space-y-1">
-                              <div className={`text-lg font-bold ${getRateTextColor(rate, selected, fullyBooked)}`}>NT${rate}</div>
+                              <div className="text-white text-[14px] font-semibold pl-[4px] pr-[4px] ml-[-3px] mr-[-3px] pt-[-2px] pb-[-2px] mt-[-3px] mb-[-3px]">NT${rate}</div>
                               <div className="text-xs opacity-75">{remaining} left</div>
                               {selected && <div className="text-xs font-semibold bg-white bg-opacity-20 rounded-full px-2 py-0.5 mt-1">Selected</div>}
                             </div>
@@ -291,7 +290,6 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
           </tbody>
         </table>
       </div>
-
       {/* Mobile Card View */}
       <div className="lg:hidden space-y-4 mb-8">
         {locations.map(location => (
@@ -354,7 +352,6 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
           </div>
         ))}
       </div>
-
       {/* Earnings Summary */}
       {selectedShifts.length > 0 && (
         <Card className="mb-6 sm:mb-8 bg-blue-50 border-blue-200">
@@ -386,7 +383,6 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
           </CardContent>
         </Card>
       )}
-
       {/* Navigation */}
       <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
         <Button variant="ghost" onClick={onBack} className="order-2 sm:order-1">
