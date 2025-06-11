@@ -83,16 +83,9 @@ export default function AdminLogin() {
         
         <Card>
           <CardHeader className="text-center">
-            <div className="flex items-center justify-center space-x-3 mb-2">
-              <img 
-                src="/attached_assets/coupang-rocket-logo.png" 
-                alt="Coupang Rocket" 
-                className="w-8 h-8 sm:w-10 sm:h-10"
-              />
-              <CardTitle className="text-xl sm:text-2xl font-semibold text-slate-800">
-                Couflex Admin
-              </CardTitle>
-            </div>
+            <CardTitle className="text-xl sm:text-2xl font-semibold text-slate-800">
+              CouFlex Admin
+            </CardTitle>
             <p className="text-slate-600 text-sm sm:text-base">Access administrative functions</p>
           </CardHeader>
           <CardContent>
