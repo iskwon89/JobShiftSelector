@@ -277,9 +277,9 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                             </>
                           ) : (
                             <>
-                              <span className={`text-base font-semibold mb-1 ${getRateTextColor(rate, selected, fullyBooked)}`}>NT${rate}</span>
+                              <span className={`text-xs font-semibold mb-1 ${getRateTextColor(rate, selected, fullyBooked)}`} style={{ fontSize: '12pt' }}>NT${rate}</span>
                               <span className="text-xs opacity-75">{remaining} left</span>
-                              {selected && <span className="text-xs font-medium mt-1">Selected</span>}
+                              {selected && <span className="text-xs font-semibold text-white bg-blue-800 px-1 py-0.5 rounded mt-1">Selected</span>}
                             </>
                           )}
                         </button>
@@ -335,10 +335,10 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                               <div className="text-base font-medium">Fully Booked</div>
                             ) : (
                               <>
-                                <div className={`text-xl font-bold mb-2 ${getRateTextColor(rate, selected, fullyBooked)}`}>NT${rate}</div>
+                                <div className={`font-bold mb-2 ${getRateTextColor(rate, selected, fullyBooked)}`} style={{ fontSize: '12pt' }}>NT${rate}</div>
                                 <div className="text-sm opacity-75">{remaining} slots left</div>
                                 {selected && (
-                                  <div className="text-sm font-medium mt-2 bg-white bg-opacity-20 rounded px-3 py-1">
+                                  <div className="text-sm font-semibold mt-2 bg-blue-800 bg-opacity-90 text-white rounded px-3 py-1">
                                     Selected
                                   </div>
                                 )}
