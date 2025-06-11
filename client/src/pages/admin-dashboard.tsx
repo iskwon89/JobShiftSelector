@@ -366,7 +366,7 @@ export default function AdminDashboard() {
 
   const handleSaveCapacity = (shiftId: number) => {
     const capacity = parseInt(editingValue);
-    if (!isNaN(capacity) && capacity >= 1) {
+    if (!isNaN(capacity) && capacity >= 0) {
       updateCapacityMutation.mutate({ id: shiftId, capacity });
     }
   };
