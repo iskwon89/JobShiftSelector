@@ -813,7 +813,7 @@ export default function AdminDashboard() {
                                                 onClick={() => shiftEntry && handleEditCapacity(shiftEntry.id, shiftEntry.capacity?.toString() || '10')}
                                                 className="w-full text-xs text-slate-600 hover:bg-green-50 py-1 rounded transition-colors"
                                               >
-                                                Cap: {shiftEntry?.capacity || 10}
+                                                Cap: {shiftEntry?.capacity ?? 10}
                                               </button>
                                             </div>
                                           )}
@@ -1009,7 +1009,7 @@ export default function AdminDashboard() {
                                                 onClick={() => shiftEntry && handleEditCapacity(shiftEntry.id, shiftEntry.capacity?.toString() || '10')}
                                                 className="w-full bg-white hover:bg-green-50 py-1 px-3 rounded border text-xs text-slate-600 transition-colors"
                                               >
-                                                Capacity: {shiftEntry?.capacity || 10}
+                                                Capacity: {shiftEntry?.capacity ?? 10}
                                               </button>
                                             </div>
                                           )}

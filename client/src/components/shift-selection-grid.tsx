@@ -66,7 +66,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
     const shiftEntry = shiftData.find(
       s => s.location === location && s.date === date && s.shift === shift
     );
-    const capacity = shiftEntry?.capacity || 10;
+    const capacity = shiftEntry?.capacity ?? 10;
     const currentBookings = shiftEntry?.currentBookings || 0;
     return { capacity, currentBookings, remaining: capacity - currentBookings };
   };
