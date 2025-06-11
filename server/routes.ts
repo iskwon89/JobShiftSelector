@@ -255,7 +255,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/applications", async (req, res) => {
     try {
       const applications = await storage.getApplications();
-      res.json(applications);
+      
+      // Filter out shifts for dates that no longer exist in each application
+      const filteredApplications = await Promise.all(applications.map(async (app) => {
+        if (app.selectedShifts && Array.isArray(app.selectedShifts)) {
+          const currentShiftData = await storage.getShiftDataByCohort(app.cohort);
+          const availableDates = Array.from(new Set(currentShiftData.map(s => s.date)));
+          
+          const validShifts = app.selectedShifts.filter((shift: any) => {
+            return availableDates.includes(shift.date) && 
+                   currentShiftData.some(s => 
+                     s.location === shift.location && 
+                     s.date === shift.date && 
+                     s.shift === shift.shift
+                   );
+          });
+          
+          return { ...app, selectedShifts: validShifts };
+        }
+        return app;
+      }));
+      
+      res.json(filteredApplications);
     } catch (error) {
       console.error("Error fetching applications:", error);
       res.status(500).json({ message: "Internal server error" });
@@ -270,6 +291,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!application) {
         return res.status(404).json({ message: "No application found for this employee" });
+      }
+      
+      // Filter out shifts for dates that no longer exist in the current shift data
+      if (application.selectedShifts && Array.isArray(application.selectedShifts)) {
+        // Get current available shift data for this cohort
+        const currentShiftData = await storage.getShiftDataByCohort(application.cohort);
+        const availableDates = Array.from(new Set(currentShiftData.map(s => s.date)));
+        
+        // Filter shifts to only include dates that still exist
+        const validShifts = application.selectedShifts.filter((shift: any) => {
+          return availableDates.includes(shift.date) && 
+                 currentShiftData.some(s => 
+                   s.location === shift.location && 
+                   s.date === shift.date && 
+                   s.shift === shift.shift
+                 );
+        });
+        
+        application.selectedShifts = validShifts;
       }
       
       res.json(application);
@@ -477,25 +517,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const applications = await storage.getApplications();
       
-      // Transform applications into Excel format
-      const excelData = applications.map(app => ({
-        'Application ID': app.id,
-        'Employee ID': app.employeeId,
-        'Cohort': app.cohort,
-        'Phone': app.phone,
-        'Line ID': app.lineId,
-        'Selected Shifts': Array.isArray(app.selectedShifts) 
-          ? app.selectedShifts.map((shift: any) => 
-              `${shift.location} - ${shift.date} (${shift.shift}) - ${shift.rate}`
-            ).join('; ')
-          : 'No shifts selected',
-        'Total Rate': Array.isArray(app.selectedShifts)
-          ? app.selectedShifts.reduce((total: number, shift: any) => {
-              const rate = parseInt(shift.rate.replace(/[^\d]/g, '')) || 0;
-              return total + rate;
-            }, 0)
-          : 0,
-        'Submitted At': app.submittedAt
+      // Transform applications into Excel format with filtered shifts
+      const excelData = await Promise.all(applications.map(async (app) => {
+        let validShifts = app.selectedShifts || [];
+        
+        // Filter out shifts for dates that no longer exist
+        if (Array.isArray(app.selectedShifts) && app.selectedShifts.length > 0) {
+          const currentShiftData = await storage.getShiftDataByCohort(app.cohort);
+          const availableDates = Array.from(new Set(currentShiftData.map(s => s.date)));
+          
+          validShifts = app.selectedShifts.filter((shift: any) => {
+            return availableDates.includes(shift.date) && 
+                   currentShiftData.some(s => 
+                     s.location === shift.location && 
+                     s.date === shift.date && 
+                     s.shift === shift.shift
+                   );
+          });
+        }
+        
+        return {
+          'Application ID': app.id,
+          'Employee ID': app.employeeId,
+          'Cohort': app.cohort,
+          'Phone': app.phone,
+          'Line ID': app.lineId,
+          'Selected Shifts': Array.isArray(validShifts) 
+            ? validShifts.map((shift: any) => 
+                `${shift.location} - ${shift.date} (${shift.shift}) - ${shift.rate}`
+              ).join('; ')
+            : 'No shifts selected',
+          'Total Rate': Array.isArray(validShifts)
+            ? validShifts.reduce((total: number, shift: any) => {
+                const rate = parseInt(shift.rate.replace(/[^\d]/g, '')) || 0;
+                return total + rate;
+              }, 0)
+            : 0,
+          'Submitted At': app.submittedAt
+        };
       }));
       
       // Create Excel workbook

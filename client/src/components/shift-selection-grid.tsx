@@ -82,20 +82,33 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
     return 'text-slate-500'; // Low rates - lighter color
   };
 
-  // Initialize shift selections from initial data with current pricing
+  // Initialize shift selections from initial data with current pricing, filtering out removed dates
   useEffect(() => {
     if (initialSelectedShifts.length > 0 && shiftData) {
       const initialSelections: Record<string, ShiftSelection> = {};
       const updatedShifts: ShiftSelection[] = [];
+      const availableDates = Array.from(new Set(shiftData.map(s => s.date)));
       
       initialSelectedShifts.forEach(shift => {
-        const key = `${shift.location}-${shift.date}-${shift.shift}`;
-        // Get current rate from shift data matrix
-        const currentRate = getShiftRate(shift.location, shift.date, shift.shift);
-        const updatedShift = { ...shift, rate: currentRate };
-        
-        initialSelections[key] = updatedShift;
-        updatedShifts.push(updatedShift);
+        // Only include shifts for dates that still exist in the current shift data
+        if (availableDates.includes(shift.date)) {
+          // Check if this specific shift combination still exists
+          const shiftExists = shiftData.some(s => 
+            s.location === shift.location && 
+            s.date === shift.date && 
+            s.shift === shift.shift
+          );
+          
+          if (shiftExists) {
+            const key = `${shift.location}-${shift.date}-${shift.shift}`;
+            // Get current rate from shift data matrix
+            const currentRate = getShiftRate(shift.location, shift.date, shift.shift);
+            const updatedShift = { ...shift, rate: currentRate };
+            
+            initialSelections[key] = updatedShift;
+            updatedShifts.push(updatedShift);
+          }
+        }
       });
       
       setShiftSelections(initialSelections);
