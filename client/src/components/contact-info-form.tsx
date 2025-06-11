@@ -26,9 +26,42 @@ interface ContactInfoFormProps {
 export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack, existingApplication, isUpdate = false }: ContactInfoFormProps) {
   const [lineId, setLineId] = useState(existingApplication?.lineId || "");
   const [phone, setPhone] = useState(existingApplication?.phone || "");
+  const [phoneError, setPhoneError] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  const validatePhone = (phoneNumber: string) => {
+    const trimmedPhone = phoneNumber.trim();
+    if (!trimmedPhone) {
+      setPhoneError("Phone number is required");
+      return false;
+    }
+    if (trimmedPhone.length !== 10) {
+      setPhoneError("Phone number must be exactly 10 digits");
+      return false;
+    }
+    if (!trimmedPhone.startsWith("09")) {
+      setPhoneError("Phone number must start with 09");
+      return false;
+    }
+    if (!/^\d+$/.test(trimmedPhone)) {
+      setPhoneError("Phone number must contain only digits");
+      return false;
+    }
+    setPhoneError("");
+    return true;
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPhone(value);
+    if (value.trim()) {
+      validatePhone(value);
+    } else {
+      setPhoneError("");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +72,10 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
         description: "Please fill in all contact information fields.",
         variant: "destructive",
       });
+      return;
+    }
+
+    if (!validatePhone(phone)) {
       return;
     }
 
@@ -138,10 +175,13 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
               id="phone"
               type="tel"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="Enter your phone number"
-              className="mt-1"
+              onChange={handlePhoneChange}
+              placeholder="e.g. 0912345678"
+              className={`mt-1 ${phoneError ? 'border-red-500' : ''}`}
             />
+            {phoneError && (
+              <p className="text-red-500 text-xs mt-1">{phoneError}</p>
+            )}
           </div>
         </div>
 
