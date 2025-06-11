@@ -172,18 +172,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
           <p className="text-slate-600 mt-1 text-sm sm:text-base">Select up to 1 shift per day. Rates shown in NTD (New Taiwan Dollar).</p>
         </div>
 
-        {/* Returning User Notification */}
-        {isReturningUser && initialSelectedShifts.length > 0 && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 flex items-start space-x-3 mb-4">
-            <Info className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-            <div>
-              <h3 className="font-medium text-blue-900 text-sm sm:text-base">Application Update</h3>
-              <p className="text-blue-700 text-xs sm:text-sm">
-                Your previous selections have been loaded with current pricing. Rates may have changed since your last submission. Review and modify as needed, then resubmit your application.
-              </p>
-            </div>
-          </div>
-        )}
+
         
         <div className="text-xs sm:text-sm text-slate-500 mb-4 sm:mb-6">
           <span className="font-medium">MS</span> = Morning Shift, <span className="font-medium">ES</span> = Evening Shift
