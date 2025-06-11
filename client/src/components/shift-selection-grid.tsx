@@ -241,8 +241,8 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
           </thead>
           <tbody className="bg-white">
             {locations.map((location, locationIndex) => (
-              <tr key={location} className={`h-16 ${locationIndex < locations.length - 1 ? 'border-b border-slate-100' : ''}`}>
-                <td className="sticky left-0 bg-white z-10 w-32 h-16 px-4 py-3 border-r border-slate-200">
+              <tr key={location} className={`h-20 ${locationIndex < locations.length - 1 ? 'border-b border-slate-100' : ''}`}>
+                <td className="sticky left-0 bg-white z-10 w-32 h-20 px-4 py-4 border-r border-slate-200">
                   <div className="flex items-center h-full">
                     <MapPin className="w-4 h-4 text-slate-400 mr-2" />
                     <span className="font-medium text-slate-700">{location}</span>
@@ -256,13 +256,13 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                     const fullyBooked = isShiftFullyBooked(location, date, shift);
                     
                     return (
-                      <td key={`${location}-${date}-${shift}`} className={`min-w-[80px] h-16 px-2 py-2 text-center border-l border-slate-200 ${
+                      <td key={`${location}-${date}-${shift}`} className={`min-w-[100px] h-20 px-3 py-3 text-center border-l border-slate-200 ${
                         selected ? 'bg-blue-50' : fullyBooked ? 'bg-gray-100' : ''
                       }`}>
                         <button
                           onClick={() => handleShiftClick(location, date, shift)}
                           disabled={fullyBooked}
-                          className={`w-full h-12 flex flex-col items-center justify-center text-xs rounded-md transition-colors ${
+                          className={`w-full h-14 flex flex-col items-center justify-center rounded-lg transition-colors ${
                             fullyBooked 
                               ? 'text-gray-400 cursor-not-allowed bg-gray-50 border border-gray-200' 
                               : selected 
@@ -272,14 +272,14 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                         >
                           {fullyBooked ? (
                             <>
-                              <span className="font-medium">Fully</span>
-                              <span className="font-medium">Booked</span>
+                              <span className="font-medium text-sm">Fully</span>
+                              <span className="font-medium text-sm">Booked</span>
                             </>
                           ) : (
                             <>
-                              <span className={`text-sm ${getRateTextColor(rate, selected, fullyBooked)}`}>NT${rate}</span>
+                              <span className={`text-base font-semibold mb-1 ${getRateTextColor(rate, selected, fullyBooked)}`}>NT${rate}</span>
                               <span className="text-xs opacity-75">{remaining} left</span>
-                              {selected && <span className="text-xs font-medium">Selected</span>}
+                              {selected && <span className="text-xs font-medium mt-1">Selected</span>}
                             </>
                           )}
                         </button>
@@ -319,7 +319,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                           key={shift}
                           onClick={() => handleShiftClick(location, date, shift)}
                           disabled={fullyBooked}
-                          className={`p-3 rounded-lg border-2 transition-all ${
+                          className={`p-4 rounded-lg border-2 transition-all min-h-[100px] ${
                             fullyBooked 
                               ? 'text-gray-400 cursor-not-allowed bg-gray-50 border-gray-200' 
                               : selected 
@@ -328,17 +328,17 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                           }`}
                         >
                           <div className="text-center">
-                            <div className="text-xs font-medium text-slate-500 mb-1">
+                            <div className="text-sm font-medium text-slate-500 mb-2">
                               {shift === 'DS' ? 'Morning Shift' : 'Evening Shift'}
                             </div>
                             {fullyBooked ? (
-                              <div className="text-sm font-medium">Fully Booked</div>
+                              <div className="text-base font-medium">Fully Booked</div>
                             ) : (
                               <>
-                                <div className={`text-lg ${getRateTextColor(rate, selected, fullyBooked)}`}>NT${rate}</div>
-                                <div className="text-xs opacity-75">{remaining} slots left</div>
+                                <div className={`text-xl font-bold mb-2 ${getRateTextColor(rate, selected, fullyBooked)}`}>NT${rate}</div>
+                                <div className="text-sm opacity-75">{remaining} slots left</div>
                                 {selected && (
-                                  <div className="text-xs font-medium mt-1 bg-white bg-opacity-20 rounded px-2 py-1">
+                                  <div className="text-sm font-medium mt-2 bg-white bg-opacity-20 rounded px-3 py-1">
                                     Selected
                                   </div>
                                 )}
