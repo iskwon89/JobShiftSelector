@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { ShiftSelection } from "@shared/schema";
 
 interface UserData {
@@ -61,6 +61,10 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack 
       });
       
       const result = await response.json();
+      
+      // Invalidate shift data cache to refresh capacity for all users
+      queryClient.invalidateQueries({ queryKey: ['/api/shift-data'] });
+      
       onSubmitted(result.applicationId);
       
       toast({

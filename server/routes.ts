@@ -119,6 +119,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const applicationData = insertApplicationSchema.parse(req.body);
       const application = await storage.createApplication(applicationData);
       
+      // Update shift bookings for each selected shift
+      const selectedShifts = applicationData.selectedShifts as any[];
+      for (const shift of selectedShifts) {
+        await storage.incrementShiftBookings(
+          applicationData.cohort,
+          shift.location,
+          shift.date,
+          shift.shift
+        );
+      }
+      
       // Generate application ID
       const applicationId = `APP-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${String(application.id).padStart(3, '0')}`;
       
