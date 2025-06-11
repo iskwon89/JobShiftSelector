@@ -70,7 +70,6 @@ export function IDVerificationForm({ onVerified }: IDVerificationFormProps) {
       
       toast({
         title: "Success!",
-        description: `Welcome ${userData.name}!`,
       });
     } catch (error: any) {
       const errorMessage = error.message.includes('404') 
