@@ -3,6 +3,7 @@ import { StepIndicator } from "@/components/step-indicator";
 import { IDVerificationForm } from "@/components/id-verification-form";
 import { ShiftSelectionGrid } from "@/components/shift-selection-grid";
 import { ContactInfoForm } from "@/components/contact-info-form";
+import { LineConfirmation } from "@/components/line-confirmation";
 import { CheckCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { ShiftSelection } from "@shared/schema";
@@ -57,6 +58,10 @@ export default function JobApplication() {
     setCurrentStep(4);
   };
 
+  const handleLineConfirmed = () => {
+    setCurrentStep(5);
+  };
+
   const goToStep = (step: number) => {
     setCurrentStep(step);
   };
@@ -74,7 +79,7 @@ export default function JobApplication() {
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Step Indicator */}
         <div className="mb-6 sm:mb-8">
-          <StepIndicator currentStep={currentStep} totalSteps={3} />
+          <StepIndicator currentStep={currentStep} totalSteps={4} />
         </div>
 
         {/* Step Content */}
@@ -110,12 +115,22 @@ export default function JobApplication() {
         )}
 
         {currentStep === 4 && (
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-8">
+            <LineConfirmation
+              applicationId={applicationId}
+              onConfirm={handleLineConfirmed}
+              onBack={() => goToStep(3)}
+            />
+          </div>
+        )}
+
+        {currentStep === 5 && (
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
-            <h2 className="text-2xl font-semibold text-slate-800 mb-2">Application Submitted Successfully!</h2>
-            <p className="text-slate-600 mb-6">Thank you for your application. We'll contact you soon regarding your selected shifts.</p>
+            <h2 className="text-2xl font-semibold text-slate-800 mb-2">Setup Complete!</h2>
+            <p className="text-slate-600 mb-6">Thank you for completing your application and adding our organization on LINE. We'll contact you soon regarding your selected shifts.</p>
             <p className="text-sm text-slate-500">
               Application ID: <span className="font-mono bg-slate-100 px-2 py-1 rounded">{applicationId}</span>
             </p>

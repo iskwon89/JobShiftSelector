@@ -198,16 +198,14 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
             </tr>
             <tr className="bg-slate-50">
               <th className="w-32 px-4 py-2 text-left text-xs font-medium text-slate-600 border-b border-slate-200"></th>
-              {dates.map(date => (
-                <Fragment key={date}>
-                  <th className="w-20 px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
-                    MS
-                  </th>
-                  <th className="w-20 px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
-                    ES
-                  </th>
-                </Fragment>
-              ))}
+              {dates.flatMap(date => [
+                <th key={`${date}-ms`} className="w-20 px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
+                  MS
+                </th>,
+                <th key={`${date}-es`} className="w-20 px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
+                  ES
+                </th>
+              ])}
             </tr>
           </thead>
           <tbody className="bg-white">
@@ -219,47 +217,45 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                     <span className="font-medium text-slate-700">{location}</span>
                   </div>
                 </td>
-                {dates.map(date => (
-                  <Fragment key={`${location}-${date}`}>
-                    {shifts.map(shift => {
-                      const rate = getShiftRate(location, date, shift);
-                      const selected = isShiftSelected(location, date, shift);
-                      const { remaining } = getShiftCapacity(location, date, shift);
-                      const fullyBooked = isShiftFullyBooked(location, date, shift);
-                      
-                      return (
-                        <td key={`${location}-${date}-${shift}`} className={`w-20 h-16 px-2 py-2 text-center border-l border-slate-200 ${
-                          selected ? 'bg-blue-50' : fullyBooked ? 'bg-gray-100' : ''
-                        }`}>
-                          <button
-                            onClick={() => handleShiftClick(location, date, shift)}
-                            disabled={fullyBooked}
-                            className={`w-full h-12 flex flex-col items-center justify-center text-xs rounded-md transition-colors ${
-                              fullyBooked 
-                                ? 'text-gray-400 cursor-not-allowed bg-gray-50 border border-gray-200' 
-                                : selected 
-                                  ? 'bg-blue-600 text-white border-2 border-blue-700' 
-                                  : 'hover:bg-slate-50 text-slate-700 border border-slate-200'
-                            }`}
-                          >
-                            {fullyBooked ? (
-                              <>
-                                <span className="font-medium">Fully</span>
-                                <span className="font-medium">Booked</span>
-                              </>
-                            ) : (
-                              <>
-                                <span className="font-semibold text-sm">NT${rate}</span>
-                                <span className="text-xs opacity-75">{remaining} left</span>
-                                {selected && <span className="text-xs font-medium">Selected</span>}
-                              </>
-                            )}
-                          </button>
-                        </td>
-                      );
-                    })}
-                  </Fragment>
-                ))}
+                {dates.flatMap(date => 
+                  shifts.map(shift => {
+                    const rate = getShiftRate(location, date, shift);
+                    const selected = isShiftSelected(location, date, shift);
+                    const { remaining } = getShiftCapacity(location, date, shift);
+                    const fullyBooked = isShiftFullyBooked(location, date, shift);
+                    
+                    return (
+                      <td key={`${location}-${date}-${shift}`} className={`w-20 h-16 px-2 py-2 text-center border-l border-slate-200 ${
+                        selected ? 'bg-blue-50' : fullyBooked ? 'bg-gray-100' : ''
+                      }`}>
+                        <button
+                          onClick={() => handleShiftClick(location, date, shift)}
+                          disabled={fullyBooked}
+                          className={`w-full h-12 flex flex-col items-center justify-center text-xs rounded-md transition-colors ${
+                            fullyBooked 
+                              ? 'text-gray-400 cursor-not-allowed bg-gray-50 border border-gray-200' 
+                              : selected 
+                                ? 'bg-blue-600 text-white border-2 border-blue-700' 
+                                : 'hover:bg-slate-50 text-slate-700 border border-slate-200'
+                          }`}
+                        >
+                          {fullyBooked ? (
+                            <>
+                              <span className="font-medium">Fully</span>
+                              <span className="font-medium">Booked</span>
+                            </>
+                          ) : (
+                            <>
+                              <span className="font-semibold text-sm">NT${rate}</span>
+                              <span className="text-xs opacity-75">{remaining} left</span>
+                              {selected && <span className="text-xs font-medium">Selected</span>}
+                            </>
+                          )}
+                        </button>
+                      </td>
+                    );
+                  })
+                )}
               </tr>
             ))}
           </tbody>
