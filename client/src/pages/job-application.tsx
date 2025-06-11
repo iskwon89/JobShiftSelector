@@ -58,10 +58,6 @@ export default function JobApplication() {
     setCurrentStep(4);
   };
 
-  const handleLineConfirmed = () => {
-    setCurrentStep(5);
-  };
-
   const goToStep = (step: number) => {
     setCurrentStep(step);
   };
@@ -118,22 +114,9 @@ export default function JobApplication() {
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-8">
             <LineConfirmation
               applicationId={applicationId}
-              onConfirm={handleLineConfirmed}
-              onBack={() => goToStep(3)}
+              onConfirm={() => {}}
+              onBack={() => {}}
             />
-          </div>
-        )}
-
-        {currentStep === 5 && (
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="w-8 h-8 text-green-600" />
-            </div>
-            <h2 className="text-2xl font-semibold text-slate-800 mb-2">Setup Complete!</h2>
-            <p className="text-slate-600 mb-6">Thank you for completing your application and adding our organization on LINE. We'll contact you soon regarding your selected shifts.</p>
-            <p className="text-sm text-slate-500">
-              Application ID: <span className="font-mono bg-slate-100 px-2 py-1 rounded">{applicationId}</span>
-            </p>
           </div>
         )}
       </main>

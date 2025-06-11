@@ -18,108 +18,65 @@ export function LineConfirmation({ applicationId, onConfirm, onBack }: LineConfi
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="mb-6">
+      <div className="mb-8">
         <div className="flex items-center justify-center mb-4">
           <CheckCircle className="w-8 h-8 text-green-600 mr-2" />
-          <h2 className="text-2xl font-semibold text-slate-800">Application Submitted!</h2>
+          <h2 className="text-2xl font-semibold text-slate-800">Let's Connect!</h2>
         </div>
         <p className="text-center text-slate-600">
           Your application ID is: <span className="font-mono font-semibold text-slate-800">{applicationId}</span>
         </p>
       </div>
 
+      <div className="space-y-6 mb-8">
+        <div className="text-slate-700 space-y-4">
+          <div className="flex items-start space-x-3">
+            <span className="text-blue-600 font-semibold text-lg">1.</span>
+            <p>Add our official Coupang Line account for important updates and shift reminders.</p>
+          </div>
+          <div className="flex items-start space-x-3">
+            <span className="text-blue-600 font-semibold text-lg">2.</span>
+            <p>You will receive a confirmation message on Line/SMS shortly.</p>
+          </div>
+          <div className="flex items-start space-x-3">
+            <span className="text-blue-600 font-semibold text-lg">3.</span>
+            <p>Please arrive at the designated Factory Center at least 15 minutes before your shift starts.</p>
+          </div>
+          <div className="flex items-start space-x-3">
+            <span className="text-blue-600 font-semibold text-lg">4.</span>
+            <p>Bring your National ID for verification on your first day.</p>
+          </div>
+        </div>
+      </div>
+
       <Card className="mb-6">
         <CardContent className="pt-6">
-          <div className="text-center mb-6">
-            <h3 className="text-xl font-semibold text-slate-800 mb-2">
-              Add Our Organization on LINE
-            </h3>
-            <p className="text-slate-600 text-sm mb-4">
-              Please add our organization on LINE to receive important updates about your application and work schedules.
+          <div className="text-center">
+            <div className="flex justify-center mb-4">
+              <div className="bg-white p-4 rounded-lg border-2 border-slate-200 shadow-sm">
+                <img 
+                  src={lineQrCodePath} 
+                  alt="LINE QR Code" 
+                  className="w-48 h-48 object-contain"
+                />
+              </div>
+            </div>
+            <p className="text-sm text-slate-600 mb-3">
+              Scan this QR code with your LINE app to add our official account
             </p>
-          </div>
-
-          <div className="space-y-6">
-            {/* QR Code Section */}
             <div className="text-center">
-              <h4 className="font-semibold text-slate-700 mb-3">Scan QR Code</h4>
-              <div className="flex justify-center mb-4">
-                <div className="bg-white p-4 rounded-lg border-2 border-slate-200 shadow-sm">
-                  <img 
-                    src={lineQrCodePath} 
-                    alt="LINE QR Code" 
-                    className="w-48 h-48 object-contain"
-                  />
-                </div>
-              </div>
-              <p className="text-xs text-slate-500">
-                Open LINE app and scan this QR code to add our organization
-              </p>
-            </div>
-
-            {/* Divider */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200"></div>
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-slate-500">Or</span>
-              </div>
-            </div>
-
-            {/* Link Section */}
-            <div className="text-center">
-              <h4 className="font-semibold text-slate-700 mb-3">Add via Link</h4>
               <Button 
                 onClick={handleLineLink}
                 variant="outline"
-                className="w-full sm:w-auto border-green-500 text-green-600 hover:bg-green-50"
+                className="border-green-500 text-green-600 hover:bg-green-50"
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
-                Open LINE and Add Organization
+                Or click here to add via link
               </Button>
-              <p className="text-xs text-slate-500 mt-2">
-                This will open LINE in a new tab/app
-              </p>
             </div>
           </div>
         </CardContent>
       </Card>
-
-      {/* Important Notice */}
-      <Card className="mb-6 bg-yellow-50 border-yellow-200">
-        <CardContent className="pt-4">
-          <div className="flex items-start space-x-3">
-            <div className="w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center flex-shrink-0 mt-0.5">
-              <span className="text-white text-xs font-bold">!</span>
-            </div>
-            <div>
-              <h4 className="font-semibold text-yellow-800 text-sm">Important</h4>
-              <p className="text-yellow-700 text-sm mt-1">
-                Adding our organization on LINE is required to receive work schedules, 
-                shift updates, and important announcements. Please make sure to complete this step.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-        <Button
-          onClick={onBack}
-          variant="outline"
-          className="order-2 sm:order-1"
-        >
-          Back to Contact Info
-        </Button>
-        <Button
-          onClick={onConfirm}
-          className="order-1 sm:order-2 flex-1"
-        >
-          I've Added the Organization
-        </Button>
-      </div>
     </div>
   );
 }
