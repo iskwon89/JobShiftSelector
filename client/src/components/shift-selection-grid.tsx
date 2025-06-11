@@ -24,19 +24,6 @@ interface ShiftSelectionGridProps {
 export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initialSelectedShifts = [], isReturningUser = false }: ShiftSelectionGridProps) {
   const [selectedShifts, setSelectedShifts] = useState<ShiftSelection[]>(initialSelectedShifts);
   const [shiftSelections, setShiftSelections] = useState<Record<string, ShiftSelection>>({});
-  
-  // Initialize shift selections from initial data
-  useEffect(() => {
-    if (initialSelectedShifts.length > 0) {
-      const initialSelections: Record<string, ShiftSelection> = {};
-      initialSelectedShifts.forEach(shift => {
-        const key = `${shift.location}-${shift.date}-${shift.shift}`;
-        initialSelections[key] = shift;
-      });
-      setShiftSelections(initialSelections);
-      setSelectedShifts(initialSelectedShifts);
-    }
-  }, [initialSelectedShifts]);
   const { toast } = useToast();
 
   const { data: shiftData, isLoading } = useQuery<ShiftData[]>({
@@ -60,6 +47,27 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
     );
     return shiftEntry?.rate || '1x';
   };
+
+  // Initialize shift selections from initial data with current pricing
+  useEffect(() => {
+    if (initialSelectedShifts.length > 0 && shiftData) {
+      const initialSelections: Record<string, ShiftSelection> = {};
+      const updatedShifts: ShiftSelection[] = [];
+      
+      initialSelectedShifts.forEach(shift => {
+        const key = `${shift.location}-${shift.date}-${shift.shift}`;
+        // Get current rate from shift data matrix
+        const currentRate = getShiftRate(shift.location, shift.date, shift.shift);
+        const updatedShift = { ...shift, rate: currentRate };
+        
+        initialSelections[key] = updatedShift;
+        updatedShifts.push(updatedShift);
+      });
+      
+      setShiftSelections(initialSelections);
+      setSelectedShifts(updatedShifts);
+    }
+  }, [initialSelectedShifts, shiftData]);
 
   const getShiftCapacity = (location: string, date: string, shift: string) => {
     if (!shiftData) return { capacity: 10, currentBookings: 0, remaining: 10 };
@@ -169,9 +177,9 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 flex items-start space-x-3 mb-4">
             <Info className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 mt-0.5 flex-shrink-0" />
             <div>
-              <h3 className="font-medium text-blue-900 text-sm sm:text-base">Previous Selections Loaded</h3>
+              <h3 className="font-medium text-blue-900 text-sm sm:text-base">Application Update</h3>
               <p className="text-blue-700 text-xs sm:text-sm">
-                Your previous shift selections have been loaded. You can modify them as needed and resubmit your application.
+                Your previous selections have been loaded with current pricing. Rates may have changed since your last submission. Review and modify as needed, then resubmit your application.
               </p>
             </div>
           </div>
