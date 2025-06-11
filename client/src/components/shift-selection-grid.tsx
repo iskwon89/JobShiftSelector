@@ -275,7 +275,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                             </div>
                           ) : (
                             <div className="space-y-1">
-                              <div className="text-white text-[14px] font-semibold pl-[4px] pr-[4px] ml-[-3px] mr-[-3px] pt-[-2px] pb-[-2px] mt-[-3px] mb-[-3px]">NT${rate}</div>
+                              <div className="text-[14px] pl-[4px] pr-[4px] ml-[-3px] mr-[-3px] pt-[-2px] pb-[-2px] mt-[-3px] mb-[-3px] text-[#404040] font-medium">NT${rate}</div>
                               <div className="text-xs opacity-75">{remaining} left</div>
                               {selected && <div className="text-xs font-semibold bg-white bg-opacity-20 rounded-full px-2 py-0.5 mt-1">Selected</div>}
                             </div>
