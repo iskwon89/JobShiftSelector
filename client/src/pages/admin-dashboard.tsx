@@ -431,10 +431,10 @@ export default function AdminDashboard() {
   const dates = Array.from(new Set(shiftData?.map(s => s.date) || [])).sort();
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 pt-safe">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-slate-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+      <header className="bg-white shadow-sm border-b border-slate-200 pt-2 sm:pt-0">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-4 flex justify-between items-center">
           <h1 className="text-lg sm:text-2xl font-semibold text-slate-800">Admin Dashboard</h1>
           <Button variant="outline" onClick={handleLogout} size="sm" className="sm:size-default">
             <LogOut className="w-4 h-4 sm:mr-2" />
@@ -444,7 +444,7 @@ export default function AdminDashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <Tabs defaultValue="excel-upload" className="space-y-4 sm:space-y-6">
           <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 h-auto sm:h-10">
             <TabsTrigger value="excel-upload" className="text-xs sm:text-sm">Employee Data Upload</TabsTrigger>
