@@ -434,21 +434,21 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-slate-200">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-semibold text-slate-800">Admin Dashboard</h1>
-          <Button variant="outline" onClick={handleLogout}>
-            <LogOut className="w-4 h-4 mr-2" />
-            Logout
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+          <h1 className="text-lg sm:text-2xl font-semibold text-slate-800">Admin Dashboard</h1>
+          <Button variant="outline" onClick={handleLogout} size="sm" className="sm:size-default">
+            <LogOut className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline">Logout</span>
           </Button>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-6 py-8">
-        <Tabs defaultValue="excel-upload" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="excel-upload">Employee Data Upload</TabsTrigger>
-            <TabsTrigger value="pricing-matrix">Pricing Matrix Management</TabsTrigger>
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
+        <Tabs defaultValue="excel-upload" className="space-y-4 sm:space-y-6">
+          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 h-auto sm:h-10">
+            <TabsTrigger value="excel-upload" className="text-xs sm:text-sm">Employee Data Upload</TabsTrigger>
+            <TabsTrigger value="pricing-matrix" className="text-xs sm:text-sm">Pricing Matrix Management</TabsTrigger>
           </TabsList>
 
           {/* Excel Upload Tab */}
@@ -525,7 +525,7 @@ export default function AdminDashboard() {
                   <p className="text-slate-600">Select or create cohort pricing matrices</p>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>Select Active Cohort</Label>
                       <Select value={selectedCohort} onValueChange={setSelectedCohort}>
@@ -548,8 +548,9 @@ export default function AdminDashboard() {
                           value={newCohort}
                           onChange={(e) => setNewCohort(e.target.value)}
                           placeholder="e.g., C"
+                          className="flex-1"
                         />
-                        <Button onClick={handleCreateCohort} disabled={!newCohort.trim()}>
+                        <Button onClick={handleCreateCohort} disabled={!newCohort.trim()} size="sm" className="px-3">
                           <Plus className="w-4 h-4" />
                         </Button>
                       </div>
@@ -563,7 +564,7 @@ export default function AdminDashboard() {
                 <CardHeader>
                   <CardTitle>Manage Matrix for Cohort {selectedCohort}</CardTitle>
                 </CardHeader>
-                <CardContent className="grid md:grid-cols-2 gap-4">
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Add Location</Label>
                     <div className="flex gap-2">
@@ -571,8 +572,9 @@ export default function AdminDashboard() {
                         value={newLocation}
                         onChange={(e) => setNewLocation(e.target.value)}
                         placeholder="e.g., FC6"
+                        className="flex-1"
                       />
-                      <Button onClick={handleAddLocation} disabled={!newLocation.trim()}>
+                      <Button onClick={handleAddLocation} disabled={!newLocation.trim()} size="sm" className="px-3">
                         <Plus className="w-4 h-4" />
                       </Button>
                     </div>
@@ -584,8 +586,9 @@ export default function AdminDashboard() {
                         value={newDate}
                         onChange={(e) => setNewDate(e.target.value)}
                         placeholder="e.g., 13-Jun"
+                        className="flex-1"
                       />
-                      <Button onClick={handleAddDate} disabled={!newDate.trim()}>
+                      <Button onClick={handleAddDate} disabled={!newDate.trim()} size="sm" className="px-3">
                         <Plus className="w-4 h-4" />
                       </Button>
                     </div>
@@ -603,225 +606,424 @@ export default function AdminDashboard() {
                   {shiftDataLoading ? (
                     <div className="text-center py-8">Loading pricing data...</div>
                   ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full border border-slate-200 rounded-lg overflow-hidden table-fixed">
-                        <thead className="bg-slate-50">
-                          <tr>
-                            <th className="w-32 px-4 py-3 text-left text-sm font-semibold text-slate-700 border-b border-slate-200">
-                              Location
-                            </th>
-                            {dates.map(date => (
-                              <th key={date} className="w-40 px-4 py-3 text-center text-sm font-semibold text-slate-700 border-b border-l border-slate-200" colSpan={2}>
-                                <div className="flex items-center justify-center gap-1">
-                                  {editingDate === date ? (
-                                    <div className="flex items-center gap-1">
-                                      <Input
-                                        value={editDateValue}
-                                        onChange={(e) => setEditDateValue(e.target.value)}
-                                        className="h-6 text-xs w-16"
-                                        onKeyDown={(e) => {
-                                          if (e.key === 'Enter') handleSaveDate(date);
-                                          if (e.key === 'Escape') {
+                    <>
+                      {/* Desktop Table View */}
+                      <div className="hidden lg:block overflow-x-auto">
+                        <table className="w-full border border-slate-200 rounded-lg overflow-hidden table-fixed min-w-[800px]">
+                          <thead className="bg-slate-50">
+                            <tr>
+                              <th className="w-32 px-4 py-3 text-left text-sm font-semibold text-slate-700 border-b border-slate-200">
+                                Location
+                              </th>
+                              {dates.map(date => (
+                                <th key={date} className="w-40 px-4 py-3 text-center text-sm font-semibold text-slate-700 border-b border-l border-slate-200" colSpan={2}>
+                                  <div className="flex items-center justify-center gap-1">
+                                    {editingDate === date ? (
+                                      <div className="flex items-center gap-1">
+                                        <Input
+                                          value={editDateValue}
+                                          onChange={(e) => setEditDateValue(e.target.value)}
+                                          className="h-6 text-xs w-16"
+                                          onKeyDown={(e) => {
+                                            if (e.key === 'Enter') handleSaveDate(date);
+                                            if (e.key === 'Escape') {
+                                              setEditingDate(null);
+                                              setEditDateValue("");
+                                            }
+                                          }}
+                                        />
+                                        <Button
+                                          size="sm"
+                                          className="h-5 px-1 text-xs"
+                                          onClick={() => handleSaveDate(date)}
+                                        >
+                                          ✓
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          className="h-5 px-1 text-xs"
+                                          onClick={() => {
                                             setEditingDate(null);
                                             setEditDateValue("");
-                                          }
-                                        }}
-                                      />
-                                      <Button
-                                        size="sm"
-                                        className="h-5 px-1 text-xs"
-                                        onClick={() => handleSaveDate(date)}
-                                      >
-                                        ✓
-                                      </Button>
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        className="h-5 px-1 text-xs"
-                                        onClick={() => {
-                                          setEditingDate(null);
-                                          setEditDateValue("");
-                                        }}
-                                      >
-                                        ✕
-                                      </Button>
-                                    </div>
-                                  ) : (
-                                    <div className="flex items-center gap-1">
-                                      <span onClick={() => handleEditDate(date)} className="cursor-pointer hover:text-blue-600">
-                                        {date}
-                                      </span>
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        className="h-4 w-4 p-0 text-red-500 hover:text-red-700"
-                                        onClick={() => handleDeleteDate(date)}
-                                      >
-                                        <Trash2 className="h-3 w-3" />
-                                      </Button>
-                                    </div>
-                                  )}
-                                </div>
-                              </th>
-                            ))}
-                          </tr>
-                          <tr className="bg-slate-50">
-                            <th className="w-32 px-4 py-2 text-left text-xs font-medium text-slate-600 border-b border-slate-200"></th>
-                            {dates.map(date => (
-                              <React.Fragment key={date}>
-                                <th className="w-20 px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
-                                  MS
+                                          }}
+                                        >
+                                          ✕
+                                        </Button>
+                                      </div>
+                                    ) : (
+                                      <div className="flex items-center gap-1">
+                                        <span onClick={() => handleEditDate(date)} className="cursor-pointer hover:text-blue-600">
+                                          {date}
+                                        </span>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          className="h-4 w-4 p-0 text-red-500 hover:text-red-700"
+                                          onClick={() => handleDeleteDate(date)}
+                                        >
+                                          <Trash2 className="h-3 w-3" />
+                                        </Button>
+                                      </div>
+                                    )}
+                                  </div>
                                 </th>
-                                <th className="w-20 px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
-                                  ES
-                                </th>
-                              </React.Fragment>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody className="bg-white">
-                          {locations.map((location, locationIndex) => (
-                            <tr key={location} className={`h-16 ${locationIndex < locations.length - 1 ? 'border-b border-slate-100' : ''}`}>
-                              <td className="w-32 h-16 px-4 py-3 border-r border-slate-200">
-                                <div className="flex items-center gap-1">
-                                  {editingLocation === location ? (
-                                    <div className="flex items-center gap-1">
-                                      <Input
-                                        value={editLocationValue}
-                                        onChange={(e) => setEditLocationValue(e.target.value)}
-                                        className="h-6 text-xs w-16"
-                                        onKeyDown={(e) => {
-                                          if (e.key === 'Enter') handleSaveLocation(location);
-                                          if (e.key === 'Escape') {
-                                            setEditingLocation(null);
-                                            setEditLocationValue("");
-                                          }
-                                        }}
-                                      />
-                                      <Button
-                                        size="sm"
-                                        className="h-5 px-1 text-xs"
-                                        onClick={() => handleSaveLocation(location)}
-                                      >
-                                        ✓
-                                      </Button>
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        className="h-5 px-1 text-xs"
-                                        onClick={() => {
-                                          setEditingLocation(null);
-                                          setEditLocationValue("");
-                                        }}
-                                      >
-                                        ✕
-                                      </Button>
-                                    </div>
-                                  ) : (
-                                    <div className="flex items-center gap-1">
-                                      <span onClick={() => handleEditLocation(location)} className="font-medium text-slate-700 cursor-pointer hover:text-blue-600">
-                                        {location}
-                                      </span>
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        className="h-4 w-4 p-0 text-red-500 hover:text-red-700"
-                                        onClick={() => handleDeleteLocation(location)}
-                                      >
-                                        <Trash2 className="h-3 w-3" />
-                                      </Button>
-                                    </div>
-                                  )}
-                                </div>
-                              </td>
+                              ))}
+                            </tr>
+                            <tr className="bg-slate-50">
+                              <th className="w-32 px-4 py-2 text-left text-xs font-medium text-slate-600 border-b border-slate-200"></th>
                               {dates.map(date => (
-                                <React.Fragment key={`${location}-${date}`}>
-                                  {['DS', 'SS'].map(shift => {
-                                    const shiftEntry = groupedShiftData[`${location}-${date}`]?.[shift];
-                                    const isEditingRate = editingRate === shiftEntry?.id.toString();
-                                    const isEditingCapacity = editingCapacity === shiftEntry?.id.toString();
-                                    
-                                    return (
-                                      <td key={`${location}-${date}-${shift}`} className="w-20 h-16 px-2 py-2 text-center border-l border-slate-200">
-                                        {isEditingRate ? (
-                                          <div className="flex flex-col gap-1">
-                                            <Input
-                                              value={editingValue}
-                                              onChange={(e) => setEditingValue(e.target.value)}
-                                              className="h-6 text-xs text-center"
-                                              placeholder="1x"
-                                            />
-                                            <div className="flex gap-1">
-                                              <Button
-                                                size="sm"
-                                                className="h-5 px-1 text-xs"
-                                                onClick={() => handleSaveRate(shiftEntry!.id)}
-                                              >
-                                                ✓
-                                              </Button>
-                                              <Button
-                                                size="sm"
-                                                variant="ghost"
-                                                className="h-5 px-1 text-xs"
-                                                onClick={handleCancelEdit}
-                                              >
-                                                ✕
-                                              </Button>
-                                            </div>
-                                          </div>
-                                        ) : isEditingCapacity ? (
-                                          <div className="flex flex-col gap-1">
-                                            <Input
-                                              value={editingValue}
-                                              onChange={(e) => setEditingValue(e.target.value)}
-                                              className="h-6 text-xs text-center"
-                                              placeholder="10"
-                                              type="number"
-                                            />
-                                            <div className="flex gap-1">
-                                              <Button
-                                                size="sm"
-                                                className="h-5 px-1 text-xs"
-                                                onClick={() => handleSaveCapacity(shiftEntry!.id)}
-                                              >
-                                                ✓
-                                              </Button>
-                                              <Button
-                                                size="sm"
-                                                variant="ghost"
-                                                className="h-5 px-1 text-xs"
-                                                onClick={handleCancelEdit}
-                                              >
-                                                ✕
-                                              </Button>
-                                            </div>
-                                          </div>
-                                        ) : (
-                                          <div className="w-full h-12 flex flex-col items-center justify-center text-xs">
-                                            <button
-                                              onClick={() => shiftEntry && handleEditRate(shiftEntry.id, shiftEntry.rate)}
-                                              className="w-full text-sm font-medium hover:bg-blue-50 py-1 rounded transition-colors"
-                                            >
-                                              NT${shiftEntry?.rate || '800'}
-                                            </button>
-                                            <button
-                                              onClick={() => shiftEntry && handleEditCapacity(shiftEntry.id, shiftEntry.capacity?.toString() || '10')}
-                                              className="w-full text-xs text-slate-600 hover:bg-green-50 py-1 rounded transition-colors"
-                                            >
-                                              Cap: {shiftEntry?.capacity || 10}
-                                            </button>
-                                          </div>
-                                        )}
-                                      </td>
-                                    );
-                                  })}
+                                <React.Fragment key={date}>
+                                  <th className="w-20 px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
+                                    MS
+                                  </th>
+                                  <th className="w-20 px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
+                                    ES
+                                  </th>
                                 </React.Fragment>
                               ))}
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                          </thead>
+                          <tbody className="bg-white">
+                            {locations.map((location, locationIndex) => (
+                              <tr key={location} className={`h-16 ${locationIndex < locations.length - 1 ? 'border-b border-slate-100' : ''}`}>
+                                <td className="w-32 h-16 px-4 py-3 border-r border-slate-200">
+                                  <div className="flex items-center gap-1">
+                                    {editingLocation === location ? (
+                                      <div className="flex items-center gap-1">
+                                        <Input
+                                          value={editLocationValue}
+                                          onChange={(e) => setEditLocationValue(e.target.value)}
+                                          className="h-6 text-xs w-16"
+                                          onKeyDown={(e) => {
+                                            if (e.key === 'Enter') handleSaveLocation(location);
+                                            if (e.key === 'Escape') {
+                                              setEditingLocation(null);
+                                              setEditLocationValue("");
+                                            }
+                                          }}
+                                        />
+                                        <Button
+                                          size="sm"
+                                          className="h-5 px-1 text-xs"
+                                          onClick={() => handleSaveLocation(location)}
+                                        >
+                                          ✓
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          className="h-5 px-1 text-xs"
+                                          onClick={() => {
+                                            setEditingLocation(null);
+                                            setEditLocationValue("");
+                                          }}
+                                        >
+                                          ✕
+                                        </Button>
+                                      </div>
+                                    ) : (
+                                      <div className="flex items-center gap-1">
+                                        <span onClick={() => handleEditLocation(location)} className="font-medium text-slate-700 cursor-pointer hover:text-blue-600">
+                                          {location}
+                                        </span>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          className="h-4 w-4 p-0 text-red-500 hover:text-red-700"
+                                          onClick={() => handleDeleteLocation(location)}
+                                        >
+                                          <Trash2 className="h-3 w-3" />
+                                        </Button>
+                                      </div>
+                                    )}
+                                  </div>
+                                </td>
+                                {dates.map(date => (
+                                  <React.Fragment key={`${location}-${date}`}>
+                                    {['DS', 'SS'].map(shift => {
+                                      const shiftEntry = groupedShiftData[`${location}-${date}`]?.[shift];
+                                      const isEditingRate = editingRate === shiftEntry?.id.toString();
+                                      const isEditingCapacity = editingCapacity === shiftEntry?.id.toString();
+                                      
+                                      return (
+                                        <td key={`${location}-${date}-${shift}`} className="w-20 h-16 px-2 py-2 text-center border-l border-slate-200">
+                                          {isEditingRate ? (
+                                            <div className="flex flex-col gap-1">
+                                              <Input
+                                                value={editingValue}
+                                                onChange={(e) => setEditingValue(e.target.value)}
+                                                className="h-6 text-xs text-center"
+                                                placeholder="1x"
+                                              />
+                                              <div className="flex gap-1">
+                                                <Button
+                                                  size="sm"
+                                                  className="h-5 px-1 text-xs"
+                                                  onClick={() => handleSaveRate(shiftEntry!.id)}
+                                                >
+                                                  ✓
+                                                </Button>
+                                                <Button
+                                                  size="sm"
+                                                  variant="ghost"
+                                                  className="h-5 px-1 text-xs"
+                                                  onClick={handleCancelEdit}
+                                                >
+                                                  ✕
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          ) : isEditingCapacity ? (
+                                            <div className="flex flex-col gap-1">
+                                              <Input
+                                                value={editingValue}
+                                                onChange={(e) => setEditingValue(e.target.value)}
+                                                className="h-6 text-xs text-center"
+                                                placeholder="10"
+                                                type="number"
+                                              />
+                                              <div className="flex gap-1">
+                                                <Button
+                                                  size="sm"
+                                                  className="h-5 px-1 text-xs"
+                                                  onClick={() => handleSaveCapacity(shiftEntry!.id)}
+                                                >
+                                                  ✓
+                                                </Button>
+                                                <Button
+                                                  size="sm"
+                                                  variant="ghost"
+                                                  className="h-5 px-1 text-xs"
+                                                  onClick={handleCancelEdit}
+                                                >
+                                                  ✕
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            <div className="w-full h-12 flex flex-col items-center justify-center text-xs">
+                                              <button
+                                                onClick={() => shiftEntry && handleEditRate(shiftEntry.id, shiftEntry.rate)}
+                                                className="w-full text-sm font-medium hover:bg-blue-50 py-1 rounded transition-colors"
+                                              >
+                                                NT${shiftEntry?.rate || '800'}
+                                              </button>
+                                              <button
+                                                onClick={() => shiftEntry && handleEditCapacity(shiftEntry.id, shiftEntry.capacity?.toString() || '10')}
+                                                className="w-full text-xs text-slate-600 hover:bg-green-50 py-1 rounded transition-colors"
+                                              >
+                                                Cap: {shiftEntry?.capacity || 10}
+                                              </button>
+                                            </div>
+                                          )}
+                                        </td>
+                                      );
+                                    })}
+                                  </React.Fragment>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Mobile Card View */}
+                      <div className="lg:hidden space-y-4">
+                        {locations.map(location => (
+                          <div key={location} className="border border-slate-200 rounded-lg">
+                            <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
+                              <div className="flex items-center justify-between">
+                                {editingLocation === location ? (
+                                  <div className="flex items-center gap-2">
+                                    <Input
+                                      value={editLocationValue}
+                                      onChange={(e) => setEditLocationValue(e.target.value)}
+                                      className="h-8 text-sm flex-1"
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') handleSaveLocation(location);
+                                        if (e.key === 'Escape') {
+                                          setEditingLocation(null);
+                                          setEditLocationValue("");
+                                        }
+                                      }}
+                                    />
+                                    <Button
+                                      size="sm"
+                                      onClick={() => handleSaveLocation(location)}
+                                    >
+                                      ✓
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      onClick={() => {
+                                        setEditingLocation(null);
+                                        setEditLocationValue("");
+                                      }}
+                                    >
+                                      ✕
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center justify-between w-full">
+                                    <span onClick={() => handleEditLocation(location)} className="font-semibold text-slate-700 cursor-pointer hover:text-blue-600">
+                                      {location}
+                                    </span>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="text-red-500 hover:text-red-700"
+                                      onClick={() => handleDeleteLocation(location)}
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="p-4 space-y-3">
+                              {dates.map(date => (
+                                <div key={date} className="border border-slate-200 rounded-lg p-3">
+                                  <div className="flex items-center justify-between mb-3">
+                                    {editingDate === date ? (
+                                      <div className="flex items-center gap-2">
+                                        <Input
+                                          value={editDateValue}
+                                          onChange={(e) => setEditDateValue(e.target.value)}
+                                          className="h-7 text-sm flex-1"
+                                          onKeyDown={(e) => {
+                                            if (e.key === 'Enter') handleSaveDate(date);
+                                            if (e.key === 'Escape') {
+                                              setEditingDate(null);
+                                              setEditDateValue("");
+                                            }
+                                          }}
+                                        />
+                                        <Button
+                                          size="sm"
+                                          onClick={() => handleSaveDate(date)}
+                                        >
+                                          ✓
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={() => {
+                                            setEditingDate(null);
+                                            setEditDateValue("");
+                                          }}
+                                        >
+                                          ✕
+                                        </Button>
+                                      </div>
+                                    ) : (
+                                      <div className="flex items-center justify-between w-full">
+                                        <span onClick={() => handleEditDate(date)} className="font-medium text-slate-700 cursor-pointer hover:text-blue-600">
+                                          {date}
+                                        </span>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          className="text-red-500 hover:text-red-700"
+                                          onClick={() => handleDeleteDate(date)}
+                                        >
+                                          <Trash2 className="h-3 w-3" />
+                                        </Button>
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-3">
+                                    {['DS', 'SS'].map(shift => {
+                                      const shiftEntry = groupedShiftData[`${location}-${date}`]?.[shift];
+                                      const isEditingRate = editingRate === shiftEntry?.id.toString();
+                                      const isEditingCapacity = editingCapacity === shiftEntry?.id.toString();
+                                      
+                                      return (
+                                        <div key={shift} className="bg-slate-50 rounded p-3">
+                                          <div className="text-xs font-medium text-slate-600 mb-2 text-center">
+                                            {shift === 'DS' ? 'Morning Shift' : 'Evening Shift'}
+                                          </div>
+                                          {isEditingRate ? (
+                                            <div className="space-y-2">
+                                              <Input
+                                                value={editingValue}
+                                                onChange={(e) => setEditingValue(e.target.value)}
+                                                className="h-8 text-center"
+                                                placeholder="Rate"
+                                              />
+                                              <div className="flex gap-1">
+                                                <Button
+                                                  size="sm"
+                                                  className="flex-1"
+                                                  onClick={() => handleSaveRate(shiftEntry!.id)}
+                                                >
+                                                  Save
+                                                </Button>
+                                                <Button
+                                                  size="sm"
+                                                  variant="ghost"
+                                                  className="flex-1"
+                                                  onClick={handleCancelEdit}
+                                                >
+                                                  Cancel
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          ) : isEditingCapacity ? (
+                                            <div className="space-y-2">
+                                              <Input
+                                                value={editingValue}
+                                                onChange={(e) => setEditingValue(e.target.value)}
+                                                className="h-8 text-center"
+                                                placeholder="Capacity"
+                                                type="number"
+                                              />
+                                              <div className="flex gap-1">
+                                                <Button
+                                                  size="sm"
+                                                  className="flex-1"
+                                                  onClick={() => handleSaveCapacity(shiftEntry!.id)}
+                                                >
+                                                  Save
+                                                </Button>
+                                                <Button
+                                                  size="sm"
+                                                  variant="ghost"
+                                                  className="flex-1"
+                                                  onClick={handleCancelEdit}
+                                                >
+                                                  Cancel
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            <div className="space-y-1">
+                                              <button
+                                                onClick={() => shiftEntry && handleEditRate(shiftEntry.id, shiftEntry.rate)}
+                                                className="w-full bg-white hover:bg-blue-50 py-2 px-3 rounded border text-sm font-medium transition-colors"
+                                              >
+                                                NT${shiftEntry?.rate || '800'}
+                                              </button>
+                                              <button
+                                                onClick={() => shiftEntry && handleEditCapacity(shiftEntry.id, shiftEntry.capacity?.toString() || '10')}
+                                                className="w-full bg-white hover:bg-green-50 py-1 px-3 rounded border text-xs text-slate-600 transition-colors"
+                                              >
+                                                Capacity: {shiftEntry?.capacity || 10}
+                                              </button>
+                                            </div>
+                                          )}
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </>
                   )}
                 </CardContent>
               </Card>

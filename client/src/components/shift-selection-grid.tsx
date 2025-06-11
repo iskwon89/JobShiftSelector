@@ -159,33 +159,33 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
 
   return (
     <div>
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <div className="mb-4">
-          <h2 className="text-2xl font-semibold text-slate-800">Available Shifts & Rates</h2>
-          <p className="text-slate-600 mt-1">Select up to 1 shift per day. Rates shown in NTD (New Taiwan Dollar).</p>
+          <h2 className="text-xl sm:text-2xl font-semibold text-slate-800">Available Shifts & Rates</h2>
+          <p className="text-slate-600 mt-1 text-sm sm:text-base">Select up to 1 shift per day. Rates shown in NTD (New Taiwan Dollar).</p>
         </div>
 
         {/* Returning User Notification */}
         {isReturningUser && initialSelectedShifts.length > 0 && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start space-x-3 mb-4">
-            <Info className="w-5 h-5 text-blue-600 mt-0.5" />
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4 flex items-start space-x-3 mb-4">
+            <Info className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 mt-0.5 flex-shrink-0" />
             <div>
-              <h3 className="font-medium text-blue-900">Previous Selections Loaded</h3>
-              <p className="text-blue-700 text-sm">
+              <h3 className="font-medium text-blue-900 text-sm sm:text-base">Previous Selections Loaded</h3>
+              <p className="text-blue-700 text-xs sm:text-sm">
                 Your previous shift selections have been loaded. You can modify them as needed and resubmit your application.
               </p>
             </div>
           </div>
         )}
         
-        <div className="text-sm text-slate-500 mb-6">
+        <div className="text-xs sm:text-sm text-slate-500 mb-4 sm:mb-6">
           <span className="font-medium">MS</span> = Morning Shift, <span className="font-medium">ES</span> = Evening Shift
         </div>
       </div>
 
-      {/* Pricing Matrix Table */}
-      <div className="overflow-x-auto mb-8">
-        <table className="w-full border border-slate-200 rounded-lg overflow-hidden table-fixed">
+      {/* Desktop Table View */}
+      <div className="hidden lg:block overflow-x-auto mb-8">
+        <table className="w-full border border-slate-200 rounded-lg overflow-hidden table-fixed min-w-[800px]">
           <thead className="bg-slate-50">
             <tr>
               <th className="w-32 px-4 py-3 text-left text-sm font-semibold text-slate-700 border-b border-slate-200">
@@ -267,29 +267,92 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
         </table>
       </div>
 
+      {/* Mobile Card View */}
+      <div className="lg:hidden space-y-4 mb-8">
+        {locations.map(location => (
+          <div key={location} className="border border-slate-200 rounded-lg bg-white">
+            <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 rounded-t-lg">
+              <div className="flex items-center">
+                <MapPin className="w-4 h-4 text-slate-400 mr-2" />
+                <span className="font-semibold text-slate-700">{location}</span>
+              </div>
+            </div>
+            <div className="p-4 space-y-4">
+              {dates.map(date => (
+                <div key={date} className="border border-slate-200 rounded-lg p-3">
+                  <h4 className="font-medium text-slate-700 mb-3 text-center">{date}</h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    {shifts.map(shift => {
+                      const rate = getShiftRate(location, date, shift);
+                      const selected = isShiftSelected(location, date, shift);
+                      const { remaining } = getShiftCapacity(location, date, shift);
+                      const fullyBooked = isShiftFullyBooked(location, date, shift);
+                      
+                      return (
+                        <button
+                          key={shift}
+                          onClick={() => handleShiftClick(location, date, shift)}
+                          disabled={fullyBooked}
+                          className={`p-3 rounded-lg border-2 transition-all ${
+                            fullyBooked 
+                              ? 'text-gray-400 cursor-not-allowed bg-gray-50 border-gray-200' 
+                              : selected 
+                                ? 'bg-blue-600 text-white border-blue-700 shadow-md' 
+                                : 'hover:bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300'
+                          }`}
+                        >
+                          <div className="text-center">
+                            <div className="text-xs font-medium text-slate-500 mb-1">
+                              {shift === 'DS' ? 'Morning Shift' : 'Evening Shift'}
+                            </div>
+                            {fullyBooked ? (
+                              <div className="text-sm font-medium">Fully Booked</div>
+                            ) : (
+                              <>
+                                <div className="text-lg font-bold">NT${rate}</div>
+                                <div className="text-xs opacity-75">{remaining} slots left</div>
+                                {selected && (
+                                  <div className="text-xs font-medium mt-1 bg-white bg-opacity-20 rounded px-2 py-1">
+                                    Selected
+                                  </div>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
       {/* Earnings Summary */}
       {selectedShifts.length > 0 && (
-        <Card className="mb-8 bg-blue-50 border-blue-200">
-          <CardContent className="pt-6">
-            <div className="flex justify-between items-center">
+        <Card className="mb-6 sm:mb-8 bg-blue-50 border-blue-200">
+          <CardContent className="pt-4 sm:pt-6">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0">
               <div>
-                <h3 className="text-lg font-semibold text-blue-900">Total Earnings Potential</h3>
-                <p className="text-blue-700 text-sm">Based on your selected shifts</p>
+                <h3 className="text-base sm:text-lg font-semibold text-blue-900">Total Earnings Potential</h3>
+                <p className="text-blue-700 text-xs sm:text-sm">Based on your selected shifts</p>
               </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-blue-900">
+              <div className="text-left sm:text-right">
+                <div className="text-xl sm:text-2xl font-bold text-blue-900">
                   NT${selectedShifts.reduce((total, shift) => {
                     const rate = parseInt(shift.rate.replace(/[^\d]/g, ''));
                     return total + rate;
                   }, 0).toLocaleString()}
                 </div>
-                <p className="text-blue-700 text-sm">{selectedShifts.length} shift{selectedShifts.length > 1 ? 's' : ''} selected</p>
+                <p className="text-blue-700 text-xs sm:text-sm">{selectedShifts.length} shift{selectedShifts.length > 1 ? 's' : ''} selected</p>
               </div>
             </div>
             
-            <div className="mt-4 space-y-2">
+            <div className="mt-3 sm:mt-4 space-y-1 sm:space-y-2">
               {selectedShifts.map((shift, index) => (
-                <div key={index} className="flex justify-between text-sm text-blue-800">
+                <div key={index} className="flex justify-between text-xs sm:text-sm text-blue-800">
                   <span>{shift.location} - {shift.date} ({shift.shift})</span>
                   <span>NT${parseInt(shift.rate.replace(/[^\d]/g, '')).toLocaleString()}</span>
                 </div>
@@ -300,11 +363,11 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
       )}
 
       {/* Navigation */}
-      <div className="flex justify-between">
-        <Button variant="ghost" onClick={onBack}>
+      <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
+        <Button variant="ghost" onClick={onBack} className="order-2 sm:order-1">
           ← Back to ID Verification
         </Button>
-        <Button onClick={handleContinue}>
+        <Button onClick={handleContinue} className="order-1 sm:order-2">
           Continue to Contact Info →
         </Button>
       </div>
