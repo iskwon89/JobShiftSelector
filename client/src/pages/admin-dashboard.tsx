@@ -826,7 +826,7 @@ export default function AdminDashboard() {
                                       const isEditingCapacity = editingCapacity === shiftEntry?.id.toString();
                                       
                                       return (
-                                        <td key={`${location}-${date}-${shift}`} className="w-20 h-16 px-2 py-2 text-center border-l border-slate-200">
+                                        <td key={`${location}-${date}-${shift}`} className="min-w-[100px] h-16 px-2 py-2 text-center border-l border-slate-200">
                                           {isEditingRate ? (
                                             <div className="flex flex-col gap-1">
                                               <Input
