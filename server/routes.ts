@@ -63,7 +63,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const data = XLSX.utils.sheet_to_json(worksheet);
 
       console.log("Raw Excel data parsed:", data.length, "rows");
-      console.log("Sample row data:", data[0]);
+      console.log("All Excel data:", JSON.stringify(data, null, 2));
 
       // Clear existing employees
       console.log("Clearing existing employees...");
@@ -72,27 +72,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Validate and insert employees
       const employees = data.map((row: any, index: number) => {
+        console.log(`\n--- Processing Row ${index + 1} ---`);
+        console.log("Raw row data:", JSON.stringify(row, null, 2));
+        console.log("Available keys:", Object.keys(row));
+        
         try {
-          const employeeId = String(row.ID || row.id || '').trim().toUpperCase();
-          const name = String(row.Name || row.name || '').trim();
+          // Try multiple possible column names for ID
+          const possibleIds = [row.ID, row.id, row['Employee ID'], row['员工编号'], row['身份证'], row['National ID']];
+          const employeeId = possibleIds.find(id => id != null && String(id).trim())?.toString().trim().toUpperCase() || '';
+          
+          // Try multiple possible column names for Name
+          const possibleNames = [row.Name, row.name, row['Employee Name'], row['姓名'], row['Full Name']];
+          const name = possibleNames.find(n => n != null && String(n).trim())?.toString().trim() || '';
+          
+          console.log(`Extracted - ID: "${employeeId}", Name: "${name}"`);
           
           if (!employeeId || !name) {
             console.log(`Row ${index + 1}: Missing required data - ID: "${employeeId}", Name: "${name}"`);
             return null;
           }
           
+          // Try multiple possible column names for Eligible
+          const possibleEligible = [row.Eligible, row.eligible, row['Is Eligible'], row['合格'], row['Eligible Status']];
+          const eligibleValue = possibleEligible.find(e => e != null);
+          const eligible = Boolean(
+            eligibleValue === true || 
+            eligibleValue === 'TRUE' || 
+            eligibleValue === 'true' || 
+            eligibleValue === 'Yes' || 
+            eligibleValue === 'YES' ||
+            eligibleValue === 1 ||
+            eligibleValue === '1'
+          );
+          
+          // Try multiple possible column names for Cohort
+          const possibleCohorts = [row.Cohort, row.cohort, row['Group'], row['班组'], row['Team']];
+          const cohort = possibleCohorts.find(c => c != null)?.toString().trim() || 'A';
+          
           const employeeData = {
             employeeId,
             name,
-            eligible: Boolean(row.Eligible === true || row.Eligible === 'TRUE' || row.Eligible === 'true' || row.eligible === true),
-            cohort: row.Cohort || row.cohort || null
+            eligible,
+            cohort
           };
 
-          console.log(`Row ${index + 1}: Processing employee:`, employeeData);
+          console.log(`Row ${index + 1}: Final employee data:`, employeeData);
           
           return insertEmployeeSchema.parse(employeeData);
         } catch (error) {
-          console.error(`Row ${index + 1}: Invalid row data:`, row, error);
+          console.error(`Row ${index + 1}: Invalid row data:`, error);
+          console.error("Raw row for debugging:", row);
           return null;
         }
       }).filter((emp): emp is NonNullable<typeof emp> => emp !== null);
