@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ExternalLink, CheckCircle } from "lucide-react";
-import lineQrCodePath from "@assets/Screenshot%202025-06-11%20at%204.33.20%20PM_1749627405160.png";
+import lineQrCodePath from "@assets/line-qr-code.png";
 
 interface LineConfirmationProps {
   applicationId: string;
