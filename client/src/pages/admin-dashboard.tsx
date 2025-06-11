@@ -330,6 +330,42 @@ export default function AdminDashboard() {
     window.location.href = "/";
   };
 
+  const handleDownloadApplications = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/admin/applications/download');
+      
+      if (!response.ok) {
+        throw new Error('Failed to download applications');
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = `applications_${new Date().toISOString().split('T')[0]}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast({
+        title: "Success",
+        description: "Applications downloaded successfully",
+      });
+    } catch (error) {
+      console.error('Download error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to download applications",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleAddLocation = () => {
     if (newLocation.trim()) {
       addLocationMutation.mutate(newLocation.trim());
@@ -455,10 +491,23 @@ export default function AdminDashboard() {
           <TabsContent value="excel-upload">
             <Card>
               <CardHeader>
-                <CardTitle>Employee Database Upload</CardTitle>
-                <p className="text-slate-600">
-                  Upload Excel file with employee data (ID, Name, Eligible, Cohort)
-                </p>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <CardTitle>Employee Database Upload</CardTitle>
+                    <p className="text-slate-600">
+                      Upload Excel file with employee data (ID, Name, Eligible, Cohort)
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={handleDownloadApplications}
+                    disabled={isLoading}
+                    className="flex items-center gap-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    Download Applications
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>

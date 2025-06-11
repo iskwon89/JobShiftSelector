@@ -472,6 +472,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Download applications as Excel
+  app.get('/api/admin/applications/download', async (req, res) => {
+    try {
+      const applications = await storage.getApplications();
+      
+      // Transform applications into Excel format
+      const excelData = applications.map(app => ({
+        'Application ID': app.id,
+        'Employee ID': app.employeeId,
+        'Name': app.name,
+        'Cohort': app.cohort,
+        'Phone': app.phone,
+        'National ID': app.nationalId,
+        'Date of Birth': app.dateOfBirth,
+        'Line Account': app.lineAccount,
+        'Selected Shifts': Array.isArray(app.selectedShifts) 
+          ? app.selectedShifts.map(shift => 
+              `${shift.location} - ${shift.date} (${shift.shift}) - ${shift.rate}`
+            ).join('; ')
+          : 'No shifts selected',
+        'Total Rate': Array.isArray(app.selectedShifts)
+          ? app.selectedShifts.reduce((total, shift) => {
+              const rate = parseInt(shift.rate.replace(/[^\d]/g, '')) || 0;
+              return total + rate;
+            }, 0)
+          : 0,
+        'Submitted At': app.submittedAt,
+        'Line Confirmed': app.lineConfirmed ? 'Yes' : 'No'
+      }));
+      
+      // Create Excel workbook
+      const ws = XLSX.utils.json_to_sheet(excelData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Applications');
+      
+      // Generate Excel buffer
+      const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+      
+      // Set headers for file download
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename=applications.xlsx');
+      res.setHeader('Content-Length', buffer.length);
+      
+      res.send(buffer);
+    } catch (error) {
+      console.error('Error generating Excel file:', error);
+      res.status(500).json({ message: 'Failed to generate Excel file' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
