@@ -51,6 +51,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
   // Initialize shift selections from initial data with current pricing
   useEffect(() => {
     if (initialSelectedShifts.length > 0 && shiftData) {
+      console.log('Loading initial shift selections:', initialSelectedShifts);
       const initialSelections: Record<string, ShiftSelection> = {};
       const updatedShifts: ShiftSelection[] = [];
       
@@ -64,6 +65,8 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
         updatedShifts.push(updatedShift);
       });
       
+      console.log('Setting shift selections:', initialSelections);
+      console.log('Setting selected shifts:', updatedShifts);
       setShiftSelections(initialSelections);
       setSelectedShifts(updatedShifts);
     }

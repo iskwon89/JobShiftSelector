@@ -26,6 +26,15 @@ export default function JobApplication() {
   // Query to get existing application when user data is available
   const { data: previousApplication } = useQuery({
     queryKey: ['/api/application', userData?.id],
+    queryFn: async () => {
+      if (!userData?.id) return null;
+      const response = await fetch(`/api/application/${userData.id}`);
+      if (!response.ok) {
+        if (response.status === 404) return null; // No previous application
+        throw new Error('Failed to fetch previous application');
+      }
+      return response.json();
+    },
     enabled: !!userData?.id,
     retry: false,
   });
