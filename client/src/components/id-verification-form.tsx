@@ -69,14 +69,14 @@ export function IDVerificationForm({ onVerified }: IDVerificationFormProps) {
       onVerified(userData);
       
       toast({
-        title: "Success",
-        description: `Welcome ${userData.name}! You are eligible to apply.`,
+        title: "Success!",
+        description: `Welcome ${userData.name}!`,
       });
     } catch (error: any) {
       const errorMessage = error.message.includes('404') 
         ? "National ID not found. Please check your ID."
         : error.message.includes('403')
-        ? "You are not eligible for this job application. Please contact HR."
+        ? "You are not eligible for scheduling through Couflex."
         : "An error occurred. Please try again.";
       
       toast({
