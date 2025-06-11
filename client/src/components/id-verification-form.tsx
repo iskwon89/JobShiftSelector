@@ -20,17 +20,37 @@ interface IDVerificationFormProps {
 export function IDVerificationForm({ onVerified }: IDVerificationFormProps) {
   const [employeeId, setEmployeeId] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [validationError, setValidationError] = useState("");
   const { toast } = useToast();
+
+  const validateEmployeeId = (id: string) => {
+    const trimmedId = id.trim();
+    if (!trimmedId) {
+      setValidationError("Please enter your National ID");
+      return false;
+    }
+    if (trimmedId.length !== 10) {
+      setValidationError("National ID must be exactly 10 characters long");
+      return false;
+    }
+    setValidationError("");
+    return true;
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setEmployeeId(value);
+    if (value.trim()) {
+      validateEmployeeId(value);
+    } else {
+      setValidationError("");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!employeeId.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter your National ID",
-        variant: "destructive",
-      });
+    if (!validateEmployeeId(employeeId)) {
       return;
     }
 
@@ -84,8 +104,8 @@ export function IDVerificationForm({ onVerified }: IDVerificationFormProps) {
       </div>
 
       <div className="text-center mb-6 sm:mb-8 pt-8 sm:pt-0">
-        <h2 className="text-xl sm:text-2xl font-semibold text-slate-800 mb-2">Verify Your Eligibility</h2>
-        <p className="text-slate-600 text-sm sm:text-base px-4 sm:px-0">Enter your National ID to check job eligibility</p>
+        <h2 className="text-xl sm:text-2xl font-semibold text-slate-800 mb-2">National ID Verification</h2>
+        <p className="text-slate-600 text-sm sm:text-base px-4 sm:px-0">Please enter your Taiwan National ID to begin your application.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-4 sm:space-y-6 px-4 sm:px-0">
@@ -95,10 +115,13 @@ export function IDVerificationForm({ onVerified }: IDVerificationFormProps) {
             id="national-id"
             type="text"
             value={employeeId}
-            onChange={(e) => setEmployeeId(e.target.value)}
-            placeholder="Enter your National ID"
-            className="mt-1 text-base sm:text-sm"
+            onChange={handleInputChange}
+            placeholder="e.g. A123456789"
+            className={`mt-1 text-base sm:text-sm ${validationError ? 'border-red-500' : ''}`}
           />
+          {validationError && (
+            <p className="text-red-500 text-xs mt-1">{validationError}</p>
+          )}
         </div>
 
         <Button 
