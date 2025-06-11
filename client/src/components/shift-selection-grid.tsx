@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import React from "react";
+import { useState, useEffect, Fragment } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -200,14 +199,14 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
             <tr className="bg-slate-50">
               <th className="w-32 px-4 py-2 text-left text-xs font-medium text-slate-600 border-b border-slate-200"></th>
               {dates.map(date => (
-                <React.Fragment key={date}>
+                <Fragment key={date}>
                   <th className="w-20 px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
                     MS
                   </th>
                   <th className="w-20 px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
                     ES
                   </th>
-                </React.Fragment>
+                </Fragment>
               ))}
             </tr>
           </thead>
@@ -221,7 +220,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                   </div>
                 </td>
                 {dates.map(date => (
-                  <React.Fragment key={`${location}-${date}`}>
+                  <Fragment key={`${location}-${date}`}>
                     {shifts.map(shift => {
                       const rate = getShiftRate(location, date, shift);
                       const selected = isShiftSelected(location, date, shift);
@@ -259,7 +258,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                         </td>
                       );
                     })}
-                  </React.Fragment>
+                  </Fragment>
                 ))}
               </tr>
             ))}
