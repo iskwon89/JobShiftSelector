@@ -5,6 +5,7 @@ import { insertEmployeeSchema, insertApplicationSchema } from "@shared/schema";
 import { z } from "zod";
 import multer from "multer";
 import * as XLSX from "xlsx";
+import crypto from "crypto";
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -58,32 +59,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Parse Excel file
       const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
-      console.log("Available worksheets:", workbook.SheetNames);
       const sheetName = workbook.SheetNames[0];
-      console.log("Using worksheet:", sheetName);
       const worksheet = workbook.Sheets[sheetName];
-      
-      // Check worksheet range
-      const range = worksheet['!ref'];
-      console.log("Worksheet range:", range);
-      
-      // Parse with different options to capture all data
-      const data = XLSX.utils.sheet_to_json(worksheet, { 
-        header: 1,  // Use array format first to see raw structure
-        defval: '',  // Default value for empty cells
-        blankrows: true  // Include blank rows
-      });
-      
-      console.log("Raw array format data:", data);
-      
-      // Now parse with object format
-      const objectData = XLSX.utils.sheet_to_json(worksheet, {
-        defval: '',
-        blankrows: false
-      });
+      const data = XLSX.utils.sheet_to_json(worksheet);
 
-      console.log("Raw Excel data parsed:", objectData.length, "rows");
-      console.log("Object format Excel data:", JSON.stringify(objectData, null, 2));
+      console.log("Raw Excel data parsed:", data.length, "rows");
 
       // Clear existing employees
       console.log("Clearing existing employees...");
@@ -91,60 +71,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Existing employees cleared");
 
       // Validate and insert employees
-      const employees = objectData.map((row: any, index: number) => {
-        console.log(`\n--- Processing Row ${index + 1} ---`);
-        console.log("Raw row data:", JSON.stringify(row, null, 2));
-        console.log("Available keys:", Object.keys(row));
-        
+      const employees = data.map((row: any, index: number) => {
         try {
-          // Try multiple possible column names for ID
-          const possibleIds = [row.ID, row.id, row['Employee ID'], row['员工编号'], row['身份证'], row['National ID']];
-          const employeeId = possibleIds.find(id => id != null && String(id).trim())?.toString().trim().toUpperCase() || '';
-          
-          // Try multiple possible column names for Name
-          const possibleNames = [row.Name, row.name, row['Employee Name'], row['姓名'], row['Full Name']];
-          const name = possibleNames.find(n => n != null && String(n).trim())?.toString().trim() || '';
-          
-          console.log(`Extracted - ID: "${employeeId}", Name: "${name}"`);
+          const employeeId = String(row.ID || row.id || '').trim().toUpperCase();
+          const name = String(row.Name || row.name || '').trim();
           
           if (!employeeId || !name) {
-            console.log(`Row ${index + 1}: Missing required data - ID: "${employeeId}", Name: "${name}"`);
             return null;
           }
-          
-          // Try multiple possible column names for Eligible
-          const possibleEligible = [row.Eligible, row.eligible, row['Is Eligible'], row['合格'], row['Eligible Status']];
-          const eligibleValue = possibleEligible.find(e => e != null);
-          const eligible = Boolean(
-            eligibleValue === true || 
-            eligibleValue === 'TRUE' || 
-            eligibleValue === 'true' || 
-            eligibleValue === 'Yes' || 
-            eligibleValue === 'YES' ||
-            eligibleValue === 1 ||
-            eligibleValue === '1'
-          );
-          
-          // Try multiple possible column names for Cohort
-          const possibleCohorts = [row.Cohort, row.cohort, row['Group'], row['班组'], row['Team']];
-          const cohort = possibleCohorts.find(c => c != null)?.toString().trim() || 'A';
           
           const employeeData = {
             employeeId,
             name,
-            eligible,
-            cohort
+            eligible: Boolean(row.Eligible === true || row.Eligible === 'TRUE' || row.Eligible === 'true' || row.eligible === true),
+            cohort: row.Cohort || row.cohort || 'A'
           };
-
-          console.log(`Row ${index + 1}: Final employee data:`, employeeData);
           
           return insertEmployeeSchema.parse(employeeData);
         } catch (error) {
           console.error(`Row ${index + 1}: Invalid row data:`, error);
-          console.error("Raw row for debugging:", row);
           return null;
         }
-      }).filter((emp): emp is NonNullable<typeof emp> => emp !== null);
+      }).filter(emp => emp !== null);
 
       console.log("Valid employees to insert:", employees.length);
 
