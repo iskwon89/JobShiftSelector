@@ -425,9 +425,14 @@ export class DatabaseStorage implements IStorage {
 
   // Application management
   async createApplication(insertApplication: InsertApplication): Promise<Application> {
+    const applicationData = {
+      ...insertApplication,
+      submittedAt: new Date().toISOString(),
+    };
+    
     const [application] = await db
       .insert(applications)
-      .values(insertApplication)
+      .values(applicationData)
       .returning();
     return application;
   }
@@ -549,7 +554,7 @@ export class DatabaseStorage implements IStorage {
     if (existingData.length === 0) return;
 
     // Get unique locations
-    const locations = [...new Set(existingData.map(d => d.location))];
+    const locations = Array.from(new Set(existingData.map(d => d.location)));
     const shifts = ['DS', 'SS'];
 
     // Create entries for new date
@@ -561,7 +566,7 @@ export class DatabaseStorage implements IStorage {
         shift,
         rate: cohort === 'A' ? (shift === 'DS' ? '800' : '1200') : (shift === 'DS' ? '900' : '1600'),
         capacity: 10,
-        bookings: 0,
+        currentBookings: 0,
       }))
     );
 
@@ -637,7 +642,7 @@ export class DatabaseStorage implements IStorage {
           shift,
           rate: cohort === 'A' ? (shift === 'DS' ? '800' : '1200') : (shift === 'DS' ? '900' : '1600'),
           capacity: 10,
-          bookings: 0,
+          currentBookings: 0,
         }))
       )
     );
@@ -664,7 +669,7 @@ export class DatabaseStorage implements IStorage {
       shift: data.shift,
       rate: data.rate,
       capacity: data.capacity,
-      bookings: 0, // Reset bookings for new cohort
+      currentBookings: 0, // Reset bookings for new cohort
     }));
 
     await db.insert(shiftData).values(duplicatedData);

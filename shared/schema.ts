@@ -1,4 +1,4 @@
-import { pgTable, text, serial, boolean, json, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, boolean, json, integer, uniqueIndex } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -30,7 +30,9 @@ export const shiftData = pgTable("shift_data", {
   rate: text("rate").notNull(), // 1x, 1.5x, 2x
   capacity: integer("capacity").default(10).notNull(), // Maximum number of applicants
   currentBookings: integer("current_bookings").default(0).notNull(), // Current number of applications
-});
+}, (table) => ({
+  uniqueShift: unique().on(table.cohort, table.location, table.date, table.shift),
+}));
 
 export const insertEmployeeSchema = createInsertSchema(employees).pick({
   employeeId: true,
