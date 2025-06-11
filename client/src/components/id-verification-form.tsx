@@ -74,33 +74,33 @@ export function IDVerificationForm({ onVerified }: IDVerificationFormProps) {
           variant="ghost" 
           size="sm"
           onClick={() => window.location.href = '/admin'}
-          className="text-slate-500 hover:text-slate-700"
+          className="text-slate-500 hover:text-slate-700 text-xs sm:text-sm"
         >
           Admin Login
         </Button>
       </div>
 
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-semibold text-slate-800 mb-2">Verify Your Eligibility</h2>
-        <p className="text-slate-600">Enter your National ID to check job eligibility</p>
+      <div className="text-center mb-6 sm:mb-8 pt-8 sm:pt-0">
+        <h2 className="text-xl sm:text-2xl font-semibold text-slate-800 mb-2">Verify Your Eligibility</h2>
+        <p className="text-slate-600 text-sm sm:text-base px-4 sm:px-0">Enter your National ID to check job eligibility</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-6">
+      <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-4 sm:space-y-6 px-4 sm:px-0">
         <div>
-          <Label htmlFor="national-id">National ID</Label>
+          <Label htmlFor="national-id" className="text-sm sm:text-base">National ID</Label>
           <Input
             id="national-id"
             type="text"
             value={employeeId}
             onChange={(e) => setEmployeeId(e.target.value)}
             placeholder="Enter your National ID"
-            className="mt-1"
+            className="mt-1 text-base sm:text-sm"
           />
         </div>
 
         <Button 
           type="submit" 
-          className="w-full"
+          className="w-full text-sm sm:text-base"
           disabled={isLoading}
         >
           {isLoading ? "Verifying..." : "Verify Eligibility"}

@@ -114,13 +114,13 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
 
   return (
     <div>
-      <div className="mb-8">
-        <h2 className="text-2xl font-semibold text-slate-800 mb-2">Contact Information</h2>
-        <p className="text-slate-600">Complete your application by providing your contact details</p>
+      <div className="mb-6 sm:mb-8">
+        <h2 className="text-xl sm:text-2xl font-semibold text-slate-800 mb-2">Contact Information</h2>
+        <p className="text-slate-600 text-sm sm:text-base">Complete your application by providing your contact details</p>
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-2xl">
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <div>
             <Label htmlFor="line-id">LINE ID</Label>
             <Input
@@ -146,18 +146,18 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
         </div>
 
         {/* Application Summary */}
-        <Card className="mb-8">
-          <CardContent className="pt-6">
-            <h3 className="font-semibold text-slate-800 mb-4">Application Summary</h3>
+        <Card className="mb-6 sm:mb-8">
+          <CardContent className="pt-4 sm:pt-6">
+            <h3 className="font-semibold text-slate-800 mb-4 text-sm sm:text-base">Application Summary</h3>
             
             {/* Total Earnings */}
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-              <div className="flex justify-between items-center">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-3 sm:p-4 mb-4">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
                 <div>
-                  <h4 className="font-semibold text-green-900">Total Earnings Potential</h4>
-                  <p className="text-green-700 text-sm">{selectedShifts.length} shift{selectedShifts.length > 1 ? 's' : ''} selected</p>
+                  <h4 className="font-semibold text-green-900 text-sm sm:text-base">Total Earnings Potential</h4>
+                  <p className="text-green-700 text-xs sm:text-sm">{selectedShifts.length} shift{selectedShifts.length > 1 ? 's' : ''} selected</p>
                 </div>
-                <div className="text-2xl font-bold text-green-900">
+                <div className="text-xl sm:text-2xl font-bold text-green-900">
                   NT${selectedShifts.reduce((total, shift) => {
                     const rate = parseInt(shift.rate.replace(/[^\d]/g, ''));
                     return total + rate;
@@ -167,19 +167,19 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
             </div>
 
             <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-slate-600">Employee:</span>
-                <span className="font-medium">{userData.name} ({userData.id})</span>
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                <span className="text-slate-600 text-sm">Employee:</span>
+                <span className="font-medium text-sm break-all sm:break-normal">{userData.name} ({userData.id})</span>
               </div>
 
-              <div className="flex justify-between">
-                <span className="text-slate-600">Selected Shifts:</span>
-                <span className="font-medium">{selectedShifts.length} shifts</span>
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                <span className="text-slate-600 text-sm">Selected Shifts:</span>
+                <span className="font-medium text-sm">{selectedShifts.length} shifts</span>
               </div>
               <hr className="border-slate-200" />
-              <div className="space-y-2 text-sm">
+              <div className="space-y-2 text-xs sm:text-sm">
                 {selectedShifts.map((shift, index) => (
-                  <div key={index} className="flex justify-between">
+                  <div key={index} className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
                     <span className="text-slate-600">
                       {shift.location} - {shift.date} ({shift.shift})
                     </span>
@@ -192,12 +192,12 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
         </Card>
 
         {/* Data Usage Consent */}
-        <div className="mb-8">
-          <h3 className="font-semibold text-slate-800 mb-4">Data Usage Consent</h3>
+        <div className="mb-6 sm:mb-8">
+          <h3 className="font-semibold text-slate-800 mb-4 text-sm sm:text-base">Data Usage Consent</h3>
           
           {/* Scrollable Consent Text */}
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 h-40 overflow-y-auto mb-4">
-            <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 sm:p-4 h-32 sm:h-40 overflow-y-auto mb-4">
+            <div className="text-xs sm:text-sm text-slate-700 leading-relaxed space-y-2 sm:space-y-3">
               <p>
                 <strong>1. 蒐集者：</strong>火箭物流倉儲股份有限公司
               </p>
@@ -228,7 +228,7 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
                   href="https://privacy.coupang.com/en/land/jobs/" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-700 underline ml-1"
+                  className="text-blue-600 hover:text-blue-700 underline ml-1 break-all"
                 >
                   https://privacy.coupang.com/en/land/jobs/
                 </a>
@@ -237,15 +237,15 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
           </div>
 
           {/* Consent Checkbox */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
             <div className="flex items-start space-x-3">
               <Checkbox
                 id="dataConsent"
                 checked={termsAccepted}
                 onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
-                className="mt-1"
+                className="mt-1 flex-shrink-0"
               />
-              <label htmlFor="dataConsent" className="text-sm text-slate-700 leading-relaxed">
+              <label htmlFor="dataConsent" className="text-xs sm:text-sm text-slate-700 leading-relaxed">
                 I have read and agree to the Data Usage terms.
               </label>
             </div>
@@ -253,14 +253,14 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
         </div>
 
         {/* Navigation */}
-        <div className="flex justify-between">
-          <Button type="button" variant="ghost" onClick={onBack}>
+        <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
+          <Button type="button" variant="ghost" onClick={onBack} className="order-2 sm:order-1">
             ← Back to Shift Selection
           </Button>
           <Button 
             type="submit" 
             disabled={isLoading}
-            className="bg-green-600 hover:bg-green-700"
+            className="bg-green-600 hover:bg-green-700 order-1 sm:order-2"
           >
             {isLoading ? "Submitting..." : "Submit Application"}
           </Button>

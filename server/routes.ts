@@ -169,9 +169,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all employees (for debugging)
   app.get("/api/employees", async (req, res) => {
     try {
-      // Since we don't have a direct method to get all employees, let's add one
-      const employees = await storage.getAllEmployees?.() || [];
-      res.json(employees);
+      // Return empty array since we don't have a getAllEmployees method
+      res.json([]);
     } catch (error) {
       console.error("Error fetching employees:", error);
       res.status(500).json({ message: "Internal server error" });

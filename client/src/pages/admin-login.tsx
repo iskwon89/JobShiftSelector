@@ -42,53 +42,54 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-6">
       <div className="w-full max-w-md">
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <Button 
             variant="ghost" 
             onClick={() => window.location.href = '/'}
-            className="text-slate-600 hover:text-slate-800"
+            className="text-slate-600 hover:text-slate-800 text-sm sm:text-base"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Application
+            <ArrowLeft className="w-4 h-4 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">Back to Application</span>
+            <span className="sm:hidden">Back</span>
           </Button>
         </div>
         
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-semibold text-slate-800">
+            <CardTitle className="text-xl sm:text-2xl font-semibold text-slate-800">
               Admin Login
             </CardTitle>
-            <p className="text-slate-600">Access administrative functions</p>
+            <p className="text-slate-600 text-sm sm:text-base">Access administrative functions</p>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="admin-id">Admin ID</Label>
+                <Label htmlFor="admin-id" className="text-sm sm:text-base">Admin ID</Label>
                 <Input
                   id="admin-id"
                   type="text"
                   value={adminId}
                   onChange={(e) => setAdminId(e.target.value)}
                   placeholder="Enter admin ID"
-                  className="mt-1"
+                  className="mt-1 text-base sm:text-sm"
                 />
               </div>
               <div>
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password" className="text-sm sm:text-base">Password</Label>
                 <Input
                   id="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter password"
-                  className="mt-1"
+                  className="mt-1 text-base sm:text-sm"
                 />
               </div>
               <Button 
                 type="submit" 
-                className="w-full"
+                className="w-full text-sm sm:text-base"
                 disabled={isLoading}
               >
                 {isLoading ? "Logging in..." : "Login"}
