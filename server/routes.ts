@@ -160,6 +160,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get latest application for an employee
+  app.get("/api/application/:employeeId", async (req, res) => {
+    try {
+      const { employeeId } = req.params;
+      const application = await storage.getLatestApplicationByEmployeeId(employeeId);
+      
+      if (!application) {
+        return res.status(404).json({ message: "No application found for this employee" });
+      }
+      
+      res.json(application);
+    } catch (error) {
+      console.error("Error fetching application:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Update existing application
+  app.put("/api/application/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      
+      // Remove read-only fields
+      delete updates.id;
+      delete updates.employeeId;
+      
+      const updatedApplication = await storage.updateApplication(parseInt(id), updates);
+      
+      res.json({
+        message: "Application updated successfully",
+        application: updatedApplication
+      });
+    } catch (error) {
+      console.error("Error updating application:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // Admin routes for shift data management
   app.get('/api/admin/shift-data', async (req, res) => {
     try {

@@ -12,6 +12,8 @@ export interface IStorage {
   // Application management
   createApplication(application: InsertApplication): Promise<Application>;
   getApplications(): Promise<Application[]>;
+  getLatestApplicationByEmployeeId(employeeId: string): Promise<Application | undefined>;
+  updateApplication(id: number, updates: Partial<Application>): Promise<Application>;
 
   // Shift data management
   getShiftDataByCohort(cohort: string): Promise<ShiftData[]>;
@@ -162,6 +164,24 @@ export class MemStorage implements IStorage {
 
   async getApplications(): Promise<Application[]> {
     return Array.from(this.applications.values());
+  }
+
+  async getLatestApplicationByEmployeeId(employeeId: string): Promise<Application | undefined> {
+    const userApplications = Array.from(this.applications.values())
+      .filter(app => app.employeeId === employeeId)
+      .sort((a, b) => b.id - a.id);
+    return userApplications[0];
+  }
+
+  async updateApplication(id: number, updates: Partial<Application>): Promise<Application> {
+    const existing = this.applications.get(id);
+    if (!existing) {
+      throw new Error(`Application with id ${id} not found`);
+    }
+    
+    const updated = { ...existing, ...updates };
+    this.applications.set(id, updated);
+    return updated;
   }
 
   async getShiftDataByCohort(cohort: string): Promise<ShiftData[]> {
@@ -439,6 +459,25 @@ export class DatabaseStorage implements IStorage {
 
   async getApplications(): Promise<Application[]> {
     return await db.select().from(applications);
+  }
+
+  async getLatestApplicationByEmployeeId(employeeId: string): Promise<Application | undefined> {
+    const [application] = await db
+      .select()
+      .from(applications)
+      .where(eq(applications.employeeId, employeeId))
+      .orderBy(sql`${applications.id} DESC`)
+      .limit(1);
+    return application;
+  }
+
+  async updateApplication(id: number, updates: Partial<Application>): Promise<Application> {
+    const [updated] = await db
+      .update(applications)
+      .set(updates)
+      .where(eq(applications.id, id))
+      .returning();
+    return updated;
   }
 
   // Shift data management

@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { StepIndicator } from "@/components/step-indicator";
 import { IDVerificationForm } from "@/components/id-verification-form";
 import { ShiftSelectionGrid } from "@/components/shift-selection-grid";
 import { ContactInfoForm } from "@/components/contact-info-form";
 import { CheckCircle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import type { ShiftSelection } from "@shared/schema";
 
 interface UserData {
@@ -18,6 +19,24 @@ export default function JobApplication() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [selectedShifts, setSelectedShifts] = useState<ShiftSelection[]>([]);
   const [applicationId, setApplicationId] = useState<string>("");
+  const [existingApplication, setExistingApplication] = useState<any>(null);
+  const [isReturningUser, setIsReturningUser] = useState(false);
+
+  // Query to get existing application when user data is available
+  const { data: previousApplication } = useQuery({
+    queryKey: ['/api/application', userData?.id],
+    enabled: !!userData?.id,
+    retry: false,
+  });
+
+  // Load previous application data when available
+  useEffect(() => {
+    if (previousApplication && userData) {
+      setExistingApplication(previousApplication);
+      setSelectedShifts(previousApplication.selectedShifts || []);
+      setIsReturningUser(true);
+    }
+  }, [previousApplication, userData]);
 
   const handleIDVerified = (user: UserData) => {
     setUserData(user);
@@ -67,6 +86,8 @@ export default function JobApplication() {
               userData={userData}
               onShiftsSelected={handleShiftsSelected}
               onBack={() => goToStep(1)}
+              initialSelectedShifts={selectedShifts}
+              isReturningUser={isReturningUser}
             />
           </div>
         )}
@@ -78,6 +99,8 @@ export default function JobApplication() {
               selectedShifts={selectedShifts}
               onSubmitted={handleApplicationSubmitted}
               onBack={() => goToStep(2)}
+              existingApplication={existingApplication}
+              isUpdate={isReturningUser}
             />
           </div>
         )}
