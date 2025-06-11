@@ -17,16 +17,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { employeeId } = req.body;
       
       if (!employeeId) {
+        console.log("ID Verification - Missing employeeId in request body");
         return res.status(400).json({ message: "Employee ID is required" });
       }
 
-      console.log("Verification request - received employeeId:", employeeId);
+      console.log("=== ID Verification Request ===");
+      console.log("Received hashed employeeId:", employeeId);
+      console.log("Request timestamp:", new Date().toISOString());
+      console.log("Request IP:", req.ip || req.connection.remoteAddress);
       
       // The employeeId received should already be hashed from the frontend
       // Look it up directly in the database
       const employee = await storage.getEmployeeByEmployeeId(employeeId);
       
-      console.log("Database lookup result:", employee ? "Found" : "Not found");
+      if (employee) {
+        console.log("Database lookup: FOUND");
+        console.log("Employee details:", {
+          name: employee.name,
+          eligible: employee.eligible,
+          cohort: employee.cohort
+        });
+      } else {
+        console.log("Database lookup: NOT FOUND");
+        console.log("Searched for hashed ID:", employeeId);
+      }
       
       if (!employee) {
         return res.status(404).json({ 
@@ -35,18 +49,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       if (!employee.eligible) {
+        console.log("Employee found but NOT ELIGIBLE for applications");
         return res.status(403).json({ 
           message: "You are not eligible for shift applications. Please contact HR for more information." 
         });
       }
 
       // Return employee data with cohort for pricing matrix
-      res.json({
+      const responseData = {
         id: employee.employeeId,
         name: employee.name,
         eligible: employee.eligible,
         cohort: employee.cohort || "A"
-      });
+      };
+      
+      console.log("Verification SUCCESS - Sending response:", responseData);
+      console.log("=== End ID Verification ===");
+      
+      res.json(responseData);
     } catch (error) {
       console.error("Error verifying employee:", error);
       res.status(500).json({ message: "Internal server error" });
