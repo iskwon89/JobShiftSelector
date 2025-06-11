@@ -208,11 +208,6 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
 
             <div className="space-y-3">
               <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                <span className="text-slate-600 text-sm">Employee:</span>
-                <span className="font-medium text-sm break-all sm:break-normal">{userData.name} ({userData.id})</span>
-              </div>
-
-              <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
                 <span className="text-slate-600 text-sm">Selected Shifts:</span>
                 <span className="font-medium text-sm">{selectedShifts.length} shifts</span>
               </div>
@@ -223,7 +218,7 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
                     <span className="text-slate-600">
                       {shift.location} - {shift.date} ({shift.shift})
                     </span>
-                    <span className="font-medium">{shift.rate} rate</span>
+                    <span className="font-medium">{shift.rate}</span>
                   </div>
                 ))}
               </div>
