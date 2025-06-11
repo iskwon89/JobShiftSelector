@@ -37,7 +37,10 @@ export function IDVerificationForm({ onVerified }: IDVerificationFormProps) {
     try {
       setIsLoading(true);
       // Hash the employee ID before sending to server
-      const hashedId = CryptoJS.MD5(employeeId.trim().toUpperCase()).toString();
+      const normalizedId = employeeId.trim().toUpperCase();
+      const hashedId = CryptoJS.MD5(normalizedId).toString();
+      console.log("Frontend verification - Input:", normalizedId, "-> Hash:", hashedId);
+      
       const response = await apiRequest('POST', '/api/verify-employee', {
         employeeId: hashedId
       });

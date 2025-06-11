@@ -20,8 +20,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Employee ID is required" });
       }
 
-      // Check against uploaded employee data
-      const employee = await storage.getEmployeeByEmployeeId(employeeId.trim().toUpperCase());
+      console.log("Verification request - received employeeId:", employeeId);
+      
+      // The employeeId received should already be hashed from the frontend
+      // Look it up directly in the database
+      const employee = await storage.getEmployeeByEmployeeId(employeeId);
+      
+      console.log("Database lookup result:", employee ? "Found" : "Not found");
       
       if (!employee) {
         return res.status(404).json({ 
