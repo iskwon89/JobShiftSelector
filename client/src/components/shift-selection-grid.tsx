@@ -212,6 +212,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
           <span className="font-medium">MS</span> = Morning Shift, <span className="font-medium">ES</span> = Evening Shift
         </div>
       </div>
+
       {/* Desktop Table View */}
       <div className="hidden lg:block overflow-x-auto border border-slate-200 rounded-lg mb-8">
         <table className="w-full bg-white" style={{ minWidth: `${128 + dates.length * 160}px` }}>
@@ -255,30 +256,31 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                     const fullyBooked = isShiftFullyBooked(location, date, shift);
                     
                     return (
-                      <td key={`${location}-${date}-${shift}`} className={`min-w-[120px] h-24 px-4 py-4 text-center border-l border-slate-200 ${
+                      <td key={`${location}-${date}-${shift}`} className={`min-w-[100px] h-20 px-3 py-3 text-center border-l border-slate-200 ${
                         selected ? 'bg-blue-50' : fullyBooked ? 'bg-gray-100' : ''
                       }`}>
                         <button
                           onClick={() => handleShiftClick(location, date, shift)}
                           disabled={fullyBooked}
-                          className={`w-full h-16 flex flex-col items-center justify-center rounded-xl transition-all duration-200 ${
+                          className={`w-full h-14 flex flex-col items-center justify-center rounded-lg transition-colors ${
                             fullyBooked 
-                              ? 'text-gray-400 cursor-not-allowed bg-gray-50 border-2 border-gray-200' 
+                              ? 'text-gray-400 cursor-not-allowed bg-gray-50 border border-gray-200' 
                               : selected 
-                                ? 'bg-blue-600 text-white border-2 border-blue-700 shadow-lg scale-105' 
-                                : 'hover:bg-slate-50 text-slate-700 border-2 border-slate-200 hover:border-slate-300 hover:shadow-md'
+                                ? 'bg-blue-600 text-white border-2 border-blue-700' 
+                                : 'hover:bg-slate-50 text-slate-700 border border-slate-200'
                           }`}
                         >
                           {fullyBooked ? (
-                            <div className="space-y-1">
-                              <div className="text-sm font-medium">Fully Booked</div>
-                            </div>
+                            <>
+                              <span className="font-medium text-sm">Fully</span>
+                              <span className="font-medium text-sm">Booked</span>
+                            </>
                           ) : (
-                            <div className="space-y-1">
-                              <div className="text-[14px] pl-[4px] pr-[4px] ml-[-3px] mr-[-3px] pt-[-2px] pb-[-2px] mt-[-3px] mb-[-3px] text-[#404040] font-medium">NT${rate}</div>
-                              <div className="text-xs opacity-75">{remaining} left</div>
-                              {selected && <div className="text-xs font-semibold bg-white bg-opacity-20 rounded-full px-2 py-0.5 mt-1">Selected</div>}
-                            </div>
+                            <>
+                              <span className={`text-base font-semibold mb-1 ${getRateTextColor(rate, selected, fullyBooked)}`}>NT${rate}</span>
+                              <span className="text-xs opacity-75">{remaining} left</span>
+                              {selected && <span className="text-xs font-medium mt-1">Selected</span>}
+                            </>
                           )}
                         </button>
                       </td>
@@ -290,6 +292,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
           </tbody>
         </table>
       </div>
+
       {/* Mobile Card View */}
       <div className="lg:hidden space-y-4 mb-8">
         {locations.map(location => (
@@ -316,30 +319,30 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                           key={shift}
                           onClick={() => handleShiftClick(location, date, shift)}
                           disabled={fullyBooked}
-                          className={`p-6 rounded-xl border-2 transition-all duration-200 min-h-[120px] ${
+                          className={`p-4 rounded-lg border-2 transition-all min-h-[100px] ${
                             fullyBooked 
                               ? 'text-gray-400 cursor-not-allowed bg-gray-50 border-gray-200' 
                               : selected 
-                                ? 'bg-blue-600 text-white border-blue-700 shadow-lg scale-105' 
-                                : 'hover:bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300 hover:shadow-md'
+                                ? 'bg-blue-600 text-white border-blue-700 shadow-md' 
+                                : 'hover:bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300'
                           }`}
                         >
-                          <div className="text-center space-y-3">
-                            <div className="text-sm font-medium text-slate-500 mb-3">
+                          <div className="text-center">
+                            <div className="text-sm font-medium text-slate-500 mb-2">
                               {shift === 'DS' ? 'Morning Shift' : 'Evening Shift'}
                             </div>
                             {fullyBooked ? (
-                              <div className="text-lg font-semibold">Fully Booked</div>
+                              <div className="text-base font-medium">Fully Booked</div>
                             ) : (
-                              <div className="space-y-2">
-                                <div className={`text-2xl font-bold ${getRateTextColor(rate, selected, fullyBooked)}`}>NT${rate}</div>
+                              <>
+                                <div className={`text-xl font-bold mb-2 ${getRateTextColor(rate, selected, fullyBooked)}`}>NT${rate}</div>
                                 <div className="text-sm opacity-75">{remaining} slots left</div>
                                 {selected && (
-                                  <div className="text-sm font-semibold mt-3 bg-white bg-opacity-20 rounded-full px-4 py-1 inline-block">
+                                  <div className="text-sm font-medium mt-2 bg-white bg-opacity-20 rounded px-3 py-1">
                                     Selected
                                   </div>
                                 )}
-                              </div>
+                              </>
                             )}
                           </div>
                         </button>
@@ -352,6 +355,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
           </div>
         ))}
       </div>
+
       {/* Earnings Summary */}
       {selectedShifts.length > 0 && (
         <Card className="mb-6 sm:mb-8 bg-blue-50 border-blue-200">
@@ -383,6 +387,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
           </CardContent>
         </Card>
       )}
+
       {/* Navigation */}
       <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
         <Button variant="ghost" onClick={onBack} className="order-2 sm:order-1">
