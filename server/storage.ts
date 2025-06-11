@@ -1,4 +1,6 @@
 import { employees, applications, shiftData, type Employee, type InsertEmployee, type Application, type InsertApplication, type ShiftData } from "@shared/schema";
+import { db } from "./db";
+import { eq, and, sql } from "drizzle-orm";
 
 export interface IStorage {
   // Employee management
@@ -381,4 +383,292 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  // Employee management
+  async createEmployee(insertEmployee: InsertEmployee): Promise<Employee> {
+    const [employee] = await db
+      .insert(employees)
+      .values(insertEmployee)
+      .returning();
+    return employee;
+  }
+
+  async getEmployeeByEmployeeId(employeeId: string): Promise<Employee | undefined> {
+    const [employee] = await db
+      .select()
+      .from(employees)
+      .where(eq(employees.employeeId, employeeId));
+    return employee;
+  }
+
+  async bulkCreateEmployees(insertEmployees: InsertEmployee[]): Promise<Employee[]> {
+    if (insertEmployees.length === 0) return [];
+    
+    const createdEmployees = await db
+      .insert(employees)
+      .values(insertEmployees)
+      .onConflictDoUpdate({
+        target: employees.employeeId,
+        set: {
+          name: sql`excluded.name`,
+          eligible: sql`excluded.eligible`,
+          cohort: sql`excluded.cohort`,
+        },
+      })
+      .returning();
+    return createdEmployees;
+  }
+
+  async clearEmployees(): Promise<void> {
+    await db.delete(employees);
+  }
+
+  // Application management
+  async createApplication(insertApplication: InsertApplication): Promise<Application> {
+    const [application] = await db
+      .insert(applications)
+      .values(insertApplication)
+      .returning();
+    return application;
+  }
+
+  async getApplications(): Promise<Application[]> {
+    return await db.select().from(applications);
+  }
+
+  // Shift data management
+  async getShiftDataByCohort(cohort: string): Promise<ShiftData[]> {
+    return await db
+      .select()
+      .from(shiftData)
+      .where(eq(shiftData.cohort, cohort));
+  }
+
+  async getAllShiftData(): Promise<ShiftData[]> {
+    return await db.select().from(shiftData);
+  }
+
+  async createShiftData(insertShiftData: Omit<ShiftData, 'id'>): Promise<ShiftData> {
+    const [created] = await db
+      .insert(shiftData)
+      .values(insertShiftData)
+      .returning();
+    return created;
+  }
+
+  async updateShiftData(id: number, updates: Partial<ShiftData>): Promise<ShiftData> {
+    const [updated] = await db
+      .update(shiftData)
+      .set(updates)
+      .where(eq(shiftData.id, id))
+      .returning();
+    return updated;
+  }
+
+  async bulkCreateShiftData(shiftDataList: Omit<ShiftData, 'id'>[]): Promise<ShiftData[]> {
+    if (shiftDataList.length === 0) return [];
+    
+    const created = await db
+      .insert(shiftData)
+      .values(shiftDataList)
+      .onConflictDoUpdate({
+        target: [shiftData.cohort, shiftData.location, shiftData.date, shiftData.shift],
+        set: {
+          rate: sql`excluded.rate`,
+          capacity: sql`excluded.capacity`,
+          currentBookings: sql`excluded.current_bookings`,
+        },
+      })
+      .returning();
+    return created;
+  }
+
+  async updateShiftCapacity(id: number, capacity: number): Promise<ShiftData> {
+    const [updated] = await db
+      .update(shiftData)
+      .set({ capacity })
+      .where(eq(shiftData.id, id))
+      .returning();
+    return updated;
+  }
+
+  async incrementShiftBookings(cohort: string, location: string, date: string, shift: string): Promise<void> {
+    await db
+      .update(shiftData)
+      .set({ 
+        currentBookings: sql`${shiftData.currentBookings} + 1`
+      })
+      .where(
+        and(
+          eq(shiftData.cohort, cohort),
+          eq(shiftData.location, location),
+          eq(shiftData.date, date),
+          eq(shiftData.shift, shift)
+        )
+      );
+  }
+
+  async addLocationToCohort(cohort: string, location: string): Promise<void> {
+    // Get existing dates and shifts for this cohort
+    const existingData = await db
+      .select()
+      .from(shiftData)
+      .where(eq(shiftData.cohort, cohort));
+
+    if (existingData.length === 0) return;
+
+    // Get unique dates and shifts
+    const dates = Array.from(new Set(existingData.map(d => d.date)));
+    const shifts = ['DS', 'SS'];
+
+    // Create entries for new location
+    const newEntries = dates.flatMap(date =>
+      shifts.map(shift => ({
+        cohort,
+        location,
+        date,
+        shift,
+        rate: cohort === 'A' ? (shift === 'DS' ? '800' : '1200') : (shift === 'DS' ? '900' : '1600'),
+        capacity: 10,
+        currentBookings: 0,
+      }))
+    );
+
+    if (newEntries.length > 0) {
+      await db.insert(shiftData).values(newEntries);
+    }
+  }
+
+  async addDateToCohort(cohort: string, date: string): Promise<void> {
+    // Get existing locations for this cohort
+    const existingData = await db
+      .select()
+      .from(shiftData)
+      .where(eq(shiftData.cohort, cohort));
+
+    if (existingData.length === 0) return;
+
+    // Get unique locations
+    const locations = [...new Set(existingData.map(d => d.location))];
+    const shifts = ['DS', 'SS'];
+
+    // Create entries for new date
+    const newEntries = locations.flatMap(location =>
+      shifts.map(shift => ({
+        cohort,
+        location,
+        date,
+        shift,
+        rate: cohort === 'A' ? (shift === 'DS' ? '800' : '1200') : (shift === 'DS' ? '900' : '1600'),
+        capacity: 10,
+        bookings: 0,
+      }))
+    );
+
+    if (newEntries.length > 0) {
+      await db.insert(shiftData).values(newEntries);
+    }
+  }
+
+  async deleteLocationFromCohort(cohort: string, location: string): Promise<void> {
+    await db
+      .delete(shiftData)
+      .where(
+        and(
+          eq(shiftData.cohort, cohort),
+          eq(shiftData.location, location)
+        )
+      );
+  }
+
+  async deleteDateFromCohort(cohort: string, date: string): Promise<void> {
+    await db
+      .delete(shiftData)
+      .where(
+        and(
+          eq(shiftData.cohort, cohort),
+          eq(shiftData.date, date)
+        )
+      );
+  }
+
+  async updateLocationInCohort(cohort: string, oldLocation: string, newLocation: string): Promise<void> {
+    await db
+      .update(shiftData)
+      .set({ location: newLocation })
+      .where(
+        and(
+          eq(shiftData.cohort, cohort),
+          eq(shiftData.location, oldLocation)
+        )
+      );
+  }
+
+  async updateDateInCohort(cohort: string, oldDate: string, newDate: string): Promise<void> {
+    await db
+      .update(shiftData)
+      .set({ date: newDate })
+      .where(
+        and(
+          eq(shiftData.cohort, cohort),
+          eq(shiftData.date, oldDate)
+        )
+      );
+  }
+
+  async getAvailableCohorts(): Promise<string[]> {
+    const result = await db
+      .selectDistinct({ cohort: shiftData.cohort })
+      .from(shiftData);
+    return result.map(r => r.cohort);
+  }
+
+  async createCohortMatrix(cohort: string): Promise<void> {
+    const defaultLocations = ['FC1', 'FC2', 'FC3'];
+    const defaultDates = ['11-Jun', '12-Jun', '13-Jun', '14-Jun', '15-Jun'];
+    const shifts = ['DS', 'SS'];
+
+    const entries = defaultLocations.flatMap(location =>
+      defaultDates.flatMap(date =>
+        shifts.map(shift => ({
+          cohort,
+          location,
+          date,
+          shift,
+          rate: cohort === 'A' ? (shift === 'DS' ? '800' : '1200') : (shift === 'DS' ? '900' : '1600'),
+          capacity: 10,
+          bookings: 0,
+        }))
+      )
+    );
+
+    await db.insert(shiftData).values(entries);
+  }
+
+  async deleteCohortMatrix(cohort: string): Promise<void> {
+    await db.delete(shiftData).where(eq(shiftData.cohort, cohort));
+  }
+
+  async duplicateCohortMatrix(fromCohort: string, toCohort: string): Promise<void> {
+    const sourceData = await db
+      .select()
+      .from(shiftData)
+      .where(eq(shiftData.cohort, fromCohort));
+
+    if (sourceData.length === 0) return;
+
+    const duplicatedData = sourceData.map(data => ({
+      cohort: toCohort,
+      location: data.location,
+      date: data.date,
+      shift: data.shift,
+      rate: data.rate,
+      capacity: data.capacity,
+      bookings: 0, // Reset bookings for new cohort
+    }));
+
+    await db.insert(shiftData).values(duplicatedData);
+  }
+}
+
+export const storage = new DatabaseStorage();
