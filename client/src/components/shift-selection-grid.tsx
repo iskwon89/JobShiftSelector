@@ -262,25 +262,32 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                         <button
                           onClick={() => handleShiftClick(location, date, shift)}
                           disabled={fullyBooked}
-                          className={`w-full h-14 flex flex-col items-center justify-center rounded-lg transition-colors ${
+                          className={`w-full h-16 flex flex-col items-center justify-center rounded-xl transition-all duration-200 transform hover:scale-[1.02] ${
                             fullyBooked 
-                              ? 'text-gray-400 cursor-not-allowed bg-gray-50 border border-gray-200' 
+                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-2 border-gray-200' 
                               : selected 
-                                ? 'bg-blue-600 text-white border-2 border-blue-700' 
-                                : 'hover:bg-slate-50 text-slate-700 border border-slate-200'
+                                ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white border-2 border-blue-400 shadow-lg' 
+                                : 'bg-white hover:bg-gray-50 text-gray-700 border-2 border-gray-200 hover:border-gray-300 shadow-sm hover:shadow-md'
                           }`}
                         >
                           {fullyBooked ? (
-                            <>
-                              <span className="font-medium text-sm">Fully</span>
-                              <span className="font-medium text-sm">Booked</span>
-                            </>
+                            <div className="text-center">
+                              <div className="text-sm font-medium">Fully Booked</div>
+                            </div>
                           ) : (
-                            <>
-                              <span className={`text-xs font-semibold mb-1 ${getRateTextColor(rate, selected, fullyBooked)}`} style={{ fontSize: '12pt' }}>NT${rate}</span>
-                              <span className="text-xs opacity-75">{remaining} left</span>
-                              {selected && <span className="text-xs font-semibold text-white bg-blue-800 px-1 py-0.5 rounded mt-1">Selected</span>}
-                            </>
+                            <div className="text-center space-y-1">
+                              <div className={`font-bold ${selected ? 'text-white' : getRateTextColor(rate, selected, fullyBooked)}`} style={{ fontSize: '14px' }}>
+                                NT${rate}
+                              </div>
+                              <div className={`text-xs ${selected ? 'text-blue-100' : 'text-gray-500'}`}>
+                                {remaining} available
+                              </div>
+                              {selected && (
+                                <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-white bg-opacity-20 text-xs font-medium text-white">
+                                  ✓ Selected
+                                </div>
+                              )}
+                            </div>
                           )}
                         </button>
                       </td>
@@ -319,27 +326,31 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                           key={shift}
                           onClick={() => handleShiftClick(location, date, shift)}
                           disabled={fullyBooked}
-                          className={`p-4 rounded-lg border-2 transition-all min-h-[100px] ${
+                          className={`p-5 rounded-2xl border-2 transition-all duration-200 transform hover:scale-[1.02] min-h-[120px] ${
                             fullyBooked 
-                              ? 'text-gray-400 cursor-not-allowed bg-gray-50 border-gray-200' 
+                              ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' 
                               : selected 
-                                ? 'bg-blue-600 text-white border-blue-700 shadow-md' 
-                                : 'hover:bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300'
+                                ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white border-blue-400 shadow-xl' 
+                                : 'bg-white hover:bg-gray-50 text-gray-700 border-gray-200 hover:border-gray-300 shadow-md hover:shadow-lg'
                           }`}
                         >
-                          <div className="text-center">
-                            <div className="text-sm font-medium text-slate-500 mb-2">
+                          <div className="text-center flex flex-col justify-center h-full space-y-2">
+                            <div className={`text-sm font-medium ${selected ? 'text-blue-100' : 'text-gray-500'} mb-1`}>
                               {shift === 'DS' ? 'Morning Shift' : 'Evening Shift'}
                             </div>
                             {fullyBooked ? (
-                              <div className="text-base font-medium">Fully Booked</div>
+                              <div className="text-lg font-semibold">Fully Booked</div>
                             ) : (
                               <>
-                                <div className={`font-bold mb-2 ${getRateTextColor(rate, selected, fullyBooked)}`} style={{ fontSize: '12pt' }}>NT${rate}</div>
-                                <div className="text-sm opacity-75">{remaining} slots left</div>
+                                <div className={`text-2xl font-bold ${selected ? 'text-white' : getRateTextColor(rate, selected, fullyBooked)}`}>
+                                  NT${rate}
+                                </div>
+                                <div className={`text-sm ${selected ? 'text-blue-100' : 'text-gray-500'}`}>
+                                  {remaining} available
+                                </div>
                                 {selected && (
-                                  <div className="text-sm font-semibold mt-2 bg-blue-800 bg-opacity-90 text-white rounded px-3 py-1">
-                                    Selected
+                                  <div className="inline-flex items-center justify-center px-3 py-1.5 rounded-full bg-white bg-opacity-20 text-sm font-medium text-white mt-2">
+                                    ✓ Selected
                                   </div>
                                 )}
                               </>
