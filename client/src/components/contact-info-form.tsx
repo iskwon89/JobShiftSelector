@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-
+import { useLanguage } from "@/lib/language";
+import { LanguageToggle } from "@/components/language-toggle";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { ShiftSelection } from "@shared/schema";
@@ -27,6 +28,7 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
   const [lineId, setLineId] = useState(existingApplication?.lineId || "");
   const [phone, setPhone] = useState(existingApplication?.phone || "");
   const [phoneError, setPhoneError] = useState("");
+  const { t } = useLanguage();
 
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -101,8 +103,8 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
         result = await response.json();
         
         toast({
-          title: "Success",
-          description: "Your application has been updated successfully!",
+          title: t('common.success'),
+          description: t('success.applicationUpdated'),
         });
         
         // Generate application ID for display
@@ -123,8 +125,8 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
         onSubmitted(result.applicationId);
         
         toast({
-          title: "Success",
-          description: "Your application has been submitted successfully!",
+          title: t('common.success'),
+          description: t('success.applicationSubmitted'),
         });
       }
       
@@ -132,7 +134,7 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
       queryClient.invalidateQueries({ queryKey: ['/api/shift-data'] });
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: t('common.error'),
         description: "Failed to submit application. Please try again.",
         variant: "destructive",
       });
@@ -143,10 +145,15 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
   };
 
   return (
-    <div>
+    <div className="relative">
+      {/* Language Toggle */}
+      <div className="absolute top-0 right-0">
+        <LanguageToggle />
+      </div>
+
       <div className="mb-6 sm:mb-8">
-        <h2 className="text-xl sm:text-2xl font-semibold text-slate-800 mb-2">Contact Information</h2>
-        <p className="text-slate-600 text-sm sm:text-base">Complete your application by providing your contact details</p>
+        <h2 className="text-xl sm:text-2xl font-semibold text-slate-800 mb-2">{t('contact.title')}</h2>
+        <p className="text-slate-600 text-sm sm:text-base">{t('contact.subtitle')}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-2xl">

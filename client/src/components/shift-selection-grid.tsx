@@ -238,7 +238,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
           <thead className="bg-slate-50 sticky top-0 z-10">
             <tr>
               <th className="sticky left-0 bg-slate-50 z-20 w-32 px-4 py-3 text-left text-sm font-semibold text-slate-700 border-b border-r border-slate-200">
-                Location
+                {t('shift.location')}
               </th>
               {dates.map(date => (
                 <th key={date} className="min-w-[160px] px-4 py-3 text-center text-sm font-semibold text-slate-700 border-b border-l border-slate-200" colSpan={2}>
@@ -411,10 +411,10 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
       {/* Navigation */}
       <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
         <Button variant="ghost" onClick={onBack} className="order-2 sm:order-1">
-          ← Back to ID Verification
+          ← {t('common.back')}
         </Button>
         <Button onClick={handleContinue} className="order-1 sm:order-2">
-          Continue to Contact Info →
+          {t('common.next')} →
         </Button>
       </div>
     </div>
