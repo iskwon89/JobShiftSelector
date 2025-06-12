@@ -233,6 +233,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
           <span className="font-medium">DS</span> = {t('shift.dayShift')}, <span className="font-medium">NS</span> = {t('shift.nightShift')}
         </div>
       </div>
+
       {/* Desktop Table View */}
       <div className="hidden lg:block overflow-x-auto border border-slate-200 rounded-lg mb-8">
         <table className="w-full bg-white" style={{ minWidth: `${128 + dates.length * 160}px` }}>
@@ -296,7 +297,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                             </div>
                           ) : (
                             <div className="text-center space-y-1">
-                              <div className="font-bold text-[#157f4a]" style={{ fontSize: '14px' }}>
+                              <div className={`font-bold ${selected ? 'text-white' : getRateTextColor(rate, selected, fullyBooked)}`} style={{ fontSize: '14px' }}>
                                 NT${rate}
                               </div>
                               <div className={`text-xs ${selected ? 'text-blue-100' : 'text-gray-500'}`}>
@@ -314,6 +315,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
           </tbody>
         </table>
       </div>
+
       {/* Mobile Card View */}
       <div className="lg:hidden space-y-4 mb-8">
         {locations.map(location => (
@@ -375,6 +377,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
           </div>
         ))}
       </div>
+
       {/* Earnings Summary */}
       {selectedShifts.length > 0 && (
         <Card className="mb-6 sm:mb-8 bg-blue-50 border-blue-200">
@@ -406,6 +409,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
           </CardContent>
         </Card>
       )}
+
       {/* Navigation */}
       <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
         <Button variant="ghost" onClick={onBack} className="order-2 sm:order-1">
