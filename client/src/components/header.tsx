@@ -1,8 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { LanguageToggle } from "@/components/language-toggle";
 import { useLanguage } from "@/lib/language";
+import { LogOut } from "lucide-react";
 
-export function Header() {
+interface HeaderProps {
+  showLogout?: boolean;
+  onLogout?: () => void;
+}
+
+export function Header({ showLogout = false, onLogout }: HeaderProps) {
   const { t } = useLanguage();
 
   return (

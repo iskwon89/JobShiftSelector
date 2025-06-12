@@ -6,7 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Header } from "@/components/header";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/lib/language";
 import { Upload, CheckCircle, LogOut, Trash2, Plus, Download } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -65,6 +67,7 @@ export default function AdminDashboard() {
   const [editDateValue, setEditDateValue] = useState("");
   
   const { toast } = useToast();
+  const { t } = useLanguage();
   const queryClient = useQueryClient();
 
   // Check authentication
@@ -497,16 +500,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50 pt-safe">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-slate-200 pt-2 sm:pt-0">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-4 flex justify-between items-center">
-          <h1 className="text-lg sm:text-2xl font-semibold text-slate-800">Couflex Admin</h1>
-          <Button variant="outline" onClick={handleLogout} size="sm" className="sm:size-default">
-            <LogOut className="w-4 h-4 sm:mr-2" />
-            <span className="hidden sm:inline">Logout</span>
-          </Button>
-        </div>
-      </header>
+      <Header showLogout={true} onLogout={handleLogout} />
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">

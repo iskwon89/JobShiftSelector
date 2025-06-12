@@ -70,61 +70,65 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 sm:p-6 pt-safe">
-      <div className="w-full max-w-md">
-        <div className="mb-4 sm:mb-6">
-          <Button 
-            variant="ghost" 
-            onClick={() => window.location.href = '/'}
-            className="text-slate-600 hover:text-slate-800 text-sm sm:text-base"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1 sm:mr-2" />
-            <span className="hidden sm:inline">Back to Application</span>
-            <span className="sm:hidden">Back</span>
-          </Button>
+    <div className="min-h-screen bg-slate-50 pt-safe">
+      <Header />
+      
+      <div className="flex items-center justify-center p-4 sm:p-6" style={{ minHeight: 'calc(100vh - 70px)' }}>
+        <div className="w-full max-w-md">
+          <div className="mb-4 sm:mb-6">
+            <Button 
+              variant="ghost" 
+              onClick={() => window.location.href = '/'}
+              className="text-slate-600 hover:text-slate-800 text-sm sm:text-base"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Back to Application</span>
+              <span className="sm:hidden">Back</span>
+            </Button>
+          </div>
+          
+          <Card>
+            <CardHeader className="text-center">
+              <CardTitle className="text-xl sm:text-2xl font-semibold text-slate-800">
+                Couflex Admin
+              </CardTitle>
+              <p className="text-slate-600 text-sm sm:text-base">Access administrative functions</p>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <Label htmlFor="username" className="text-sm sm:text-base">Username</Label>
+                  <Input
+                    id="username"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Enter username"
+                    className="mt-1 text-base sm:text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="password" className="text-sm sm:text-base">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter password"
+                    className="mt-1 text-base sm:text-sm"
+                  />
+                </div>
+                <Button 
+                  type="submit" 
+                  className="w-full text-sm sm:text-base"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Logging in..." : "Login"}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
         </div>
-        
-        <Card>
-          <CardHeader className="text-center">
-            <CardTitle className="text-xl sm:text-2xl font-semibold text-slate-800">
-              Couflex Admin
-            </CardTitle>
-            <p className="text-slate-600 text-sm sm:text-base">Access administrative functions</p>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="username" className="text-sm sm:text-base">Username</Label>
-                <Input
-                  id="username"
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Enter username"
-                  className="mt-1 text-base sm:text-sm"
-                />
-              </div>
-              <div>
-                <Label htmlFor="password" className="text-sm sm:text-base">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter password"
-                  className="mt-1 text-base sm:text-sm"
-                />
-              </div>
-              <Button 
-                type="submit" 
-                className="w-full text-sm sm:text-base"
-                disabled={isLoading}
-              >
-                {isLoading ? "Logging in..." : "Login"}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
