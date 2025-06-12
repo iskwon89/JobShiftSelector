@@ -6,8 +6,64 @@ import { MapPin, X, Info } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/lib/language";
+import { format } from "date-fns";
 
 import type { ShiftSelection, ShiftData } from "@shared/schema";
+
+// Convert "13-Jun" format or "Mon, Jun 16" format to Date object
+const backendFormatToDate = (dateStr: string): Date | null => {
+  try {
+    const currentYear = new Date().getFullYear();
+    
+    // Handle "13-Jun" format
+    if (dateStr.includes('-')) {
+      const [day, monthAbbr] = dateStr.split('-');
+      const monthMap: { [key: string]: number } = {
+        'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+        'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+      };
+      
+      const monthIndex = monthMap[monthAbbr];
+      if (monthIndex === undefined) return null;
+      
+      return new Date(currentYear, monthIndex, parseInt(day));
+    }
+    
+    // Handle "Mon, Jun 16" format - extract day and month
+    if (dateStr.includes(', ')) {
+      const parts = dateStr.split(', ');
+      if (parts.length === 2) {
+        const [, monthDay] = parts;
+        const monthDayParts = monthDay.split(' ');
+        if (monthDayParts.length === 2) {
+          const [month, day] = monthDayParts;
+          
+          const monthMap: { [key: string]: number } = {
+            'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+            'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+          };
+          
+          const monthIndex = monthMap[month];
+          if (monthIndex !== undefined) {
+            return new Date(currentYear, monthIndex, parseInt(day));
+          }
+        }
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    return null;
+  }
+};
+
+// Format date to "Mon, Jun 16" format
+const formatDateDisplay = (dateStr: string) => {
+  const date = backendFormatToDate(dateStr);
+  if (!date) return dateStr;
+  
+  return format(date, "EEE, MMM d");
+};
 
 interface UserData {
   id: string;
@@ -26,6 +82,7 @@ interface ShiftSelectionGridProps {
 export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initialSelectedShifts = [], isReturningUser = false }: ShiftSelectionGridProps) {
   const [selectedShifts, setSelectedShifts] = useState<ShiftSelection[]>(initialSelectedShifts);
   const [shiftSelections, setShiftSelections] = useState<Record<string, ShiftSelection>>({});
+  const [lastDataTimestamp, setLastDataTimestamp] = useState<number>(0);
   const { toast } = useToast();
   const { t } = useLanguage();
 
@@ -35,12 +92,20 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
       const response = await fetch(`/api/shift-data/${userData.cohort}`);
       if (!response.ok) throw new Error('Failed to fetch shift data');
       return response.json();
-    }
+    },
+    refetchInterval: 30000, // Refetch every 30 seconds to get updated pricing
+    refetchOnWindowFocus: true, // Refetch when user returns to tab
+    staleTime: 10000 // Consider data stale after 10 seconds
   });
 
   // Extract unique locations and dates from the fetched shift data
   const locations = shiftData ? Array.from(new Set(shiftData.map(s => s.location))).sort() : [];
-  const dates = shiftData ? Array.from(new Set(shiftData.map(s => s.date))).sort() : [];
+  const dates = shiftData ? Array.from(new Set(shiftData.map(s => s.date))).sort((a, b) => {
+    const dateA = backendFormatToDate(a);
+    const dateB = backendFormatToDate(b);
+    if (!dateA || !dateB) return 0;
+    return dateA.getTime() - dateB.getTime();
+  }) : [];
   const shifts = ['DS', 'NS'];
 
   const getShiftRate = (location: string, date: string, shift: string) => {
@@ -240,7 +305,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
               </th>
               {dates.map(date => (
                 <th key={date} className="min-w-[160px] px-4 py-3 text-center text-sm font-semibold text-slate-700 border-b border-l border-slate-200" colSpan={2}>
-                  {date}
+                  {formatDateDisplay(date)}
                 </th>
               ))}
             </tr>
@@ -325,7 +390,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
             <div className="p-4 space-y-4">
               {dates.map(date => (
                 <div key={date} className="border border-slate-200 rounded-lg p-3">
-                  <h4 className="font-medium text-slate-700 mb-3 text-center">{date}</h4>
+                  <h4 className="font-medium text-slate-700 mb-3 text-center">{formatDateDisplay(date)}</h4>
                   <div className="grid grid-cols-2 gap-3">
                     {shifts.map(shift => {
                       const rate = getShiftRate(location, date, shift);
