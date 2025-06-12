@@ -244,11 +244,11 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
             <tr className="bg-slate-50">
               <th className="sticky left-0 bg-slate-50 z-20 w-32 px-4 py-2 text-left text-xs font-medium text-slate-600 border-b border-r border-slate-200"></th>
               {dates.flatMap(date => [
-                <th key={`${date}-ms`} className="min-w-[80px] px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
-                  MS
+                <th key={`${date}-ds`} className="min-w-[80px] px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
+                  DS
                 </th>,
-                <th key={`${date}-es`} className="min-w-[80px] px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
-                  ES
+                <th key={`${date}-ns`} className="min-w-[80px] px-3 py-2 text-center text-xs font-medium text-slate-600 border-b border-l border-slate-200">
+                  NS
                 </th>
               ])}
             </tr>

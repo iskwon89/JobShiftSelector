@@ -814,7 +814,7 @@ export default function AdminDashboard() {
                                 </td>
                                 {dates.map(date => (
                                   <React.Fragment key={`${location}-${date}`}>
-                                    {['DS', 'SS'].map(shift => {
+                                    {['DS', 'NS'].map(shift => {
                                       const shiftEntry = groupedShiftData[`${location}-${date}`]?.[shift];
                                       const isEditingRate = editingRate === shiftEntry?.id.toString();
                                       const isEditingCapacity = editingCapacity === shiftEntry?.id.toString();
@@ -1008,7 +1008,7 @@ export default function AdminDashboard() {
                                     )}
                                   </div>
                                   <div className="grid grid-cols-2 gap-3">
-                                    {['DS', 'SS'].map(shift => {
+                                    {['DS', 'NS'].map(shift => {
                                       const shiftEntry = groupedShiftData[`${location}-${date}`]?.[shift];
                                       const isEditingRate = editingRate === shiftEntry?.id.toString();
                                       const isEditingCapacity = editingCapacity === shiftEntry?.id.toString();
@@ -1016,7 +1016,7 @@ export default function AdminDashboard() {
                                       return (
                                         <div key={shift} className="bg-slate-50 rounded p-3">
                                           <div className="text-xs font-medium text-slate-600 mb-2 text-center">
-                                            {shift === 'DS' ? 'Morning Shift' : 'Evening Shift'}
+                                            {shift === 'DS' ? 'Day Shift' : 'Night Shift'}
                                           </div>
                                           {isEditingRate ? (
                                             <div className="space-y-2">
