@@ -345,7 +345,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                         >
                           <div className="text-center flex flex-col justify-center h-full space-y-2">
                             <div className={`text-sm font-medium ${selected ? 'text-blue-100' : 'text-gray-500'} mb-1`}>
-                              {shift === 'DS' ? 'Morning Shift' : 'Evening Shift'}
+                              {shift === 'DS' ? t('shift.dayShift') : t('shift.nightShift')}
                             </div>
                             {fullyBooked ? (
                               <div className="text-lg font-semibold">Fully Booked</div>
