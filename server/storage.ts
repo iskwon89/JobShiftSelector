@@ -233,13 +233,13 @@ export class MemStorage implements IStorage {
         .map(s => s.date)
     ));
     
-    const shifts = ['DS', 'SS'];
+    const shifts = ['DS', 'NS'];
     
     for (const date of dates) {
       for (const shift of shifts) {
         // Default rates based on cohort and shift (in NTD)
         let rate = '800';
-        if (shift === 'SS') {
+        if (shift === 'NS') {
           rate = cohort === 'A' ? '1200' : '1600';
         } else if (cohort === 'B') {
           rate = '900';
@@ -267,13 +267,13 @@ export class MemStorage implements IStorage {
         .map(s => s.location)
     ));
     
-    const shifts = ['DS', 'SS'];
+    const shifts = ['DS', 'NS'];
     
     for (const location of locations) {
       for (const shift of shifts) {
         // Default rates based on cohort and shift (in NTD)
         let rate = '800';
-        if (shift === 'SS') {
+        if (shift === 'NS') {
           rate = cohort === 'A' ? '1200' : '1600';
         } else if (cohort === 'B') {
           rate = '900';
@@ -341,14 +341,14 @@ export class MemStorage implements IStorage {
     // Create a basic matrix with default locations and dates
     const defaultLocations = ['FC1', 'FC2', 'FC3', 'FC4', 'FC5'];
     const defaultDates = ['10-Jun', '11-Jun', '12-Jun'];
-    const shifts = ['DS', 'SS'];
+    const shifts = ['DS', 'NS'];
     
     for (const location of defaultLocations) {
       for (const date of defaultDates) {
         for (const shift of shifts) {
           // Default rates based on cohort and shift (in NTD)
           let rate = '800';
-          if (shift === 'SS') {
+          if (shift === 'NS') {
             rate = cohort === 'A' ? '1200' : '1600';
           } else if (cohort === 'B') {
             rate = '900';
@@ -563,7 +563,7 @@ export class DatabaseStorage implements IStorage {
 
     // Get unique dates and shifts
     const dates = Array.from(new Set(existingData.map(d => d.date)));
-    const shifts = ['DS', 'SS'];
+    const shifts = ['DS', 'NS'];
 
     // Create entries for new location
     const newEntries = dates.flatMap(date =>
@@ -594,7 +594,7 @@ export class DatabaseStorage implements IStorage {
 
     // Get unique locations
     const locations = Array.from(new Set(existingData.map(d => d.location)));
-    const shifts = ['DS', 'SS'];
+    const shifts = ['DS', 'NS'];
 
     // Create entries for new date
     const newEntries = locations.flatMap(location =>
@@ -670,7 +670,7 @@ export class DatabaseStorage implements IStorage {
   async createCohortMatrix(cohort: string): Promise<void> {
     const defaultLocations = ['FC1', 'FC2', 'FC3'];
     const defaultDates = ['11-Jun', '12-Jun', '13-Jun', '14-Jun', '15-Jun'];
-    const shifts = ['DS', 'SS'];
+    const shifts = ['DS', 'NS'];
 
     const entries = defaultLocations.flatMap(location =>
       defaultDates.flatMap(date =>
