@@ -514,7 +514,12 @@ export default function AdminDashboard() {
   }, {} as Record<string, Record<string, ShiftData>>) || {};
 
   const locations = Array.from(new Set(shiftData?.map(s => s.location) || [])).sort();
-  const dates = Array.from(new Set(shiftData?.map(s => s.date) || []));
+  const dates = Array.from(new Set(shiftData?.map(s => s.date) || [])).sort((a, b) => {
+    const dateA = backendFormatToDate(a);
+    const dateB = backendFormatToDate(b);
+    if (!dateA || !dateB) return 0;
+    return dateA.getTime() - dateB.getTime();
+  });
 
   return (
     <div className="min-h-screen bg-slate-50 pt-safe">
