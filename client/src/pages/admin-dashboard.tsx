@@ -22,21 +22,48 @@ const dateToBackendFormat = (date: Date): string => {
   return format(date, "d-MMM");
 };
 
-// Convert "13-Jun" format to Date object
+// Convert "13-Jun" format or "Mon, Jun 16" format to Date object
 const backendFormatToDate = (dateStr: string): Date | null => {
   try {
-    const [day, monthAbbr] = dateStr.split('-');
     const currentYear = new Date().getFullYear();
     
-    const monthMap: { [key: string]: number } = {
-      'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
-      'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
-    };
+    // Handle "13-Jun" format
+    if (dateStr.includes('-')) {
+      const [day, monthAbbr] = dateStr.split('-');
+      const monthMap: { [key: string]: number } = {
+        'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+        'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+      };
+      
+      const monthIndex = monthMap[monthAbbr];
+      if (monthIndex === undefined) return null;
+      
+      return new Date(currentYear, monthIndex, parseInt(day));
+    }
     
-    const monthIndex = monthMap[monthAbbr];
-    if (monthIndex === undefined) return null;
+    // Handle "Mon, Jun 16" format - extract day and month
+    if (dateStr.includes(', ')) {
+      const parts = dateStr.split(', ');
+      if (parts.length === 2) {
+        const [, monthDay] = parts;
+        const monthDayParts = monthDay.split(' ');
+        if (monthDayParts.length === 2) {
+          const [month, day] = monthDayParts;
+          
+          const monthMap: { [key: string]: number } = {
+            'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
+            'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
+          };
+          
+          const monthIndex = monthMap[month];
+          if (monthIndex !== undefined) {
+            return new Date(currentYear, monthIndex, parseInt(day));
+          }
+        }
+      }
+    }
     
-    return new Date(currentYear, monthIndex, parseInt(day));
+    return null;
   } catch (error) {
     return null;
   }
