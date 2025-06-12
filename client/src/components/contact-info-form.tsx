@@ -151,7 +151,7 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
         <p className="text-slate-600 text-sm sm:text-base">{t('contact.subtitle')}</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="max-w-2xl">
+      <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <div>
             <Label htmlFor="line-id">{t('contact.lineId')}</Label>
