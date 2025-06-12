@@ -164,6 +164,7 @@ export default function AdminDashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/shift-data'] });
       setNewDate("");
+      setSelectedDate(undefined);
       toast({
         title: "Success",
         description: "Date added successfully",
@@ -298,6 +299,7 @@ export default function AdminDashboard() {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/shift-data'] });
       setEditingDate(null);
       setEditDateValue("");
+      setEditSelectedDate(undefined);
       toast({
         title: "Success",
         description: "Date updated successfully",
@@ -470,15 +472,22 @@ export default function AdminDashboard() {
 
   const handleEditDate = (date: string) => {
     setEditingDate(date);
-    setEditDateValue(date);
+    const dateObj = backendFormatToDate(date);
+    setEditSelectedDate(dateObj || undefined);
   };
 
   const handleSaveDate = (oldDate: string) => {
-    if (editDateValue.trim() && editDateValue !== oldDate) {
-      updateDateMutation.mutate({ oldDate, newDate: editDateValue.trim() });
+    if (editSelectedDate) {
+      const newDateStr = dateToBackendFormat(editSelectedDate);
+      if (newDateStr !== oldDate) {
+        updateDateMutation.mutate({ oldDate, newDate: newDateStr });
+      } else {
+        setEditingDate(null);
+        setEditSelectedDate(undefined);
+      }
     } else {
       setEditingDate(null);
-      setEditDateValue("");
+      setEditSelectedDate(undefined);
     }
   };
 
@@ -663,13 +672,13 @@ export default function AdminDashboard() {
                   <div className="space-y-2">
                     <Label>Add Date</Label>
                     <div className="flex gap-2">
-                      <Input
-                        value={newDate}
-                        onChange={(e) => setNewDate(e.target.value)}
-                        placeholder="e.g., 13-Jun"
+                      <DatePicker
+                        date={selectedDate}
+                        onDateChange={setSelectedDate}
+                        placeholder="Select a date"
                         className="flex-1"
                       />
-                      <Button onClick={handleAddDate} disabled={!newDate.trim()} size="sm" className="px-3">
+                      <Button onClick={handleAddDate} disabled={!selectedDate} size="sm" className="px-3">
                         <Plus className="w-4 h-4" />
                       </Button>
                     </div>
@@ -702,17 +711,11 @@ export default function AdminDashboard() {
                                   <div className="flex items-center justify-center gap-1">
                                     {editingDate === date ? (
                                       <div className="flex items-center gap-1">
-                                        <Input
-                                          value={editDateValue}
-                                          onChange={(e) => setEditDateValue(e.target.value)}
-                                          className="h-6 text-xs w-16"
-                                          onKeyDown={(e) => {
-                                            if (e.key === 'Enter') handleSaveDate(date);
-                                            if (e.key === 'Escape') {
-                                              setEditingDate(null);
-                                              setEditDateValue("");
-                                            }
-                                          }}
+                                        <DatePicker
+                                          date={editSelectedDate}
+                                          onDateChange={setEditSelectedDate}
+                                          placeholder="Select date"
+                                          className="h-6 text-xs w-28"
                                         />
                                         <Button
                                           size="sm"
@@ -727,7 +730,7 @@ export default function AdminDashboard() {
                                           className="h-5 px-1 text-xs"
                                           onClick={() => {
                                             setEditingDate(null);
-                                            setEditDateValue("");
+                                            setEditSelectedDate(undefined);
                                           }}
                                         >
                                           ✕
@@ -971,17 +974,11 @@ export default function AdminDashboard() {
                                   <div className="flex items-center justify-between mb-3">
                                     {editingDate === date ? (
                                       <div className="flex items-center gap-2">
-                                        <Input
-                                          value={editDateValue}
-                                          onChange={(e) => setEditDateValue(e.target.value)}
+                                        <DatePicker
+                                          date={editSelectedDate}
+                                          onDateChange={setEditSelectedDate}
+                                          placeholder="Select date"
                                           className="h-7 text-sm flex-1"
-                                          onKeyDown={(e) => {
-                                            if (e.key === 'Enter') handleSaveDate(date);
-                                            if (e.key === 'Escape') {
-                                              setEditingDate(null);
-                                              setEditDateValue("");
-                                            }
-                                          }}
                                         />
                                         <Button
                                           size="sm"
@@ -994,7 +991,7 @@ export default function AdminDashboard() {
                                           variant="ghost"
                                           onClick={() => {
                                             setEditingDate(null);
-                                            setEditDateValue("");
+                                            setEditSelectedDate(undefined);
                                           }}
                                         >
                                           ✕
