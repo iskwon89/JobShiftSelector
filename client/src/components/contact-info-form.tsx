@@ -105,6 +105,7 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
         toast({
           title: t('common.success'),
           description: t('success.applicationUpdated'),
+          duration: 1000,
         });
         
         // Generate application ID for display
@@ -127,6 +128,7 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
         toast({
           title: t('common.success'),
           description: t('success.applicationSubmitted'),
+          duration: 1000,
         });
       }
       
