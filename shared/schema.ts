@@ -26,7 +26,7 @@ export const shiftData = pgTable("shift_data", {
   cohort: text("cohort").notNull(),
   location: text("location").notNull(),
   date: text("date").notNull(),
-  shift: text("shift").notNull(), // DS or SS
+  shift: text("shift").notNull(), // DS or NS
   rate: text("rate").notNull(), // 1x, 1.5x, 2x
   capacity: integer("capacity").default(10).notNull(), // Maximum number of applicants
   currentBookings: integer("current_bookings").default(0).notNull(), // Current number of applications
@@ -51,7 +51,7 @@ export const insertApplicationSchema = createInsertSchema(applications).pick({
 export const shiftSelectionSchema = z.object({
   location: z.string(),
   date: z.string(),
-  shift: z.enum(['DS', 'SS']),
+  shift: z.enum(['DS', 'NS']),
   rate: z.string(),
 });
 

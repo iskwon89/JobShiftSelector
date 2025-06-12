@@ -41,7 +41,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
   // Extract unique locations and dates from the fetched shift data
   const locations = shiftData ? Array.from(new Set(shiftData.map(s => s.location))).sort() : [];
   const dates = shiftData ? Array.from(new Set(shiftData.map(s => s.date))).sort() : [];
-  const shifts = ['DS', 'SS'];
+  const shifts = ['DS', 'NS'];
 
   const getShiftRate = (location: string, date: string, shift: string) => {
     if (!shiftData) return '1x';
@@ -181,7 +181,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
       ));
     } else {
       // Select
-      const newShift: ShiftSelection = { location, date, shift: shift as 'DS' | 'SS', rate };
+      const newShift: ShiftSelection = { location, date, shift: shift as 'DS' | 'NS', rate };
       setShiftSelections(prev => ({ ...prev, [shiftKey]: newShift }));
       setSelectedShifts(prev => [...prev, newShift]);
     }

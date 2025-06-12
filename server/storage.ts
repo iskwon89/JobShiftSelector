@@ -60,18 +60,18 @@ export class MemStorage implements IStorage {
   private initializeShiftData() {
     const locations = ['FC1', 'FC2', 'FC3', 'FC4', 'FC5'];
     const dates = ['10-Jun', '11-Jun', '12-Jun'];
-    const shifts = ['DS', 'SS'];
+    const shifts = ['DS', 'NS'];
     
     // Cohort A rates (in NTD)
     const cohortARates = {
       'DS': '800',
-      'SS': '1200'
+      'NS': '1200'
     };
     
     // Cohort B rates (higher rates in NTD)
     const cohortBRates = {
       'DS': '900',
-      'SS': '1600'
+      'NS': '1600'
     };
 
     // Create shift data for both cohorts
