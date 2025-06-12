@@ -1,13 +1,17 @@
+import { useLanguage } from "@/lib/language";
+
 interface StepIndicatorProps {
   currentStep: number;
   totalSteps: number;
 }
 
 export function StepIndicator({ currentStep, totalSteps }: StepIndicatorProps) {
+  const { t } = useLanguage();
+  
   const steps = [
-    { number: 1, label: "Verify ID", shortLabel: "ID" },
-    { number: 2, label: "Select Shifts", shortLabel: "Shifts" },
-    { number: 3, label: "Contact Info", shortLabel: "Info" }
+    { number: 1, label: t('steps.idVerification'), shortLabel: t('steps.verifyIdShort') },
+    { number: 2, label: t('steps.shiftSelection'), shortLabel: t('steps.selectShiftsShort') },
+    { number: 3, label: t('steps.contactInfo'), shortLabel: t('steps.contactInfoShort') }
   ];
 
   return (

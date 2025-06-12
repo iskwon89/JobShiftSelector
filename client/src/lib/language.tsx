@@ -36,6 +36,11 @@ const translations: Record<Language, Record<string, string>> = {
     'common.required': 'Required',
     'common.optional': 'Optional',
     
+    // Step Indicator
+    'steps.verifyIdShort': 'ID',
+    'steps.selectShiftsShort': 'Shifts',
+    'steps.contactInfoShort': 'Info',
+    
     // ID Verification
     'id.title': 'Employee ID Verification',
     'id.subtitle': 'Enter your National ID to verify eligibility',
@@ -157,6 +162,11 @@ const translations: Record<Language, Record<string, string>> = {
     'common.success': '成功',
     'common.required': '必填',
     'common.optional': '選填',
+    
+    // Step Indicator
+    'steps.verifyIdShort': 'ID',
+    'steps.selectShiftsShort': '班次',
+    'steps.contactInfoShort': '資訊',
     
     // ID Verification
     'id.title': '員工身份驗證',
