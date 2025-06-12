@@ -1,0 +1,123 @@
+import fs from 'fs';
+
+// Create CSV content for test cases
+const csvContent = `Test Case ID,Module,Test Scenario,Test Data,Expected Result,Priority,Test Type
+TC_ID_001,ID Verification,Valid ID - Eligible Employee,A134382733,Success - Navigate to shift selection,High,Positive
+TC_ID_002,ID Verification,Valid ID - Ineligible Employee,A999999999,Error - Not eligible message,High,Negative
+TC_ID_003,ID Verification,Invalid ID - Not Found,A000000000,Error - ID not found,High,Negative
+TC_ID_004,ID Verification,Empty ID Field,"",Validation error - Required field,Medium,Negative
+TC_ID_005,ID Verification,ID Too Short,A12345,Validation error - Must be 10 characters,Medium,Negative
+TC_ID_006,ID Verification,ID Too Long,A12345678901,Validation error - Must be 10 characters,Medium,Negative
+TC_ID_007,ID Verification,Submit Without Consent,A134382733,Error - Must agree to data usage terms,High,Negative
+TC_ID_008,ID Verification,Lowercase ID Input,a134382733,Success - Normalized to uppercase,Medium,Positive
+TC_SHIFT_001,Shift Selection,Select Single Day Shift,"TAO4, Jun 16, DS",Shift selected successfully,High,Positive
+TC_SHIFT_002,Shift Selection,Select Single Night Shift,"TAO4, Jun 16, NS",Shift selected successfully,High,Positive
+TC_SHIFT_003,Shift Selection,Select Multiple Different Days,"TAO4 Jun 16 DS, TAO4 Jun 17 NS",Multiple shifts selected,High,Positive
+TC_SHIFT_004,Shift Selection,Change Shift Same Day,"Select TAO4 Jun 16 DS, then TAO4 Jun 16 NS",Previous selection replaced,Medium,Positive
+TC_SHIFT_005,Shift Selection,Deselect Shift,Select then click same shift again,Shift deselected,Medium,Positive
+TC_SHIFT_006,Shift Selection,Select Fully Booked Shift,Click on fully booked shift,Error - Shift is fully booked,High,Negative
+TC_SHIFT_007,Shift Selection,Continue Without Selection,No shifts selected,Error - Must select at least one shift,High,Negative
+TC_SHIFT_008,Shift Selection,Maximum Shifts Selection,Select all available shifts,All shifts selected successfully,Low,Positive
+TC_CONTACT_001,Contact Information,Valid Phone and Line ID,"Phone: 0912345678, Line: testuser123",Application submitted successfully,High,Positive
+TC_CONTACT_002,Contact Information,Empty Phone Number,"Phone: """", Line: testuser123",Validation error - Phone required,High,Negative
+TC_CONTACT_003,Contact Information,Empty Line ID,"Phone: 0912345678, Line: """"",Validation error - Line ID required,High,Negative
+TC_CONTACT_004,Contact Information,Invalid Phone Format,"Phone: 12345, Line: testuser123",Validation error - Invalid Taiwan phone,Medium,Negative
+TC_CONTACT_005,Contact Information,Phone with Country Code,"Phone: +886912345678, Line: testuser123",Phone normalized and accepted,Medium,Positive
+TC_CONTACT_006,Contact Information,Phone with Spaces,"Phone: 091 234 5678, Line: testuser123",Phone normalized and accepted,Low,Positive
+TC_CONTACT_007,Contact Information,Update Existing Application,Returning user updates contact info,Application updated successfully,High,Positive
+TC_LINE_001,Line Confirmation,QR Code Display,Navigate to Line confirmation,QR code and instructions displayed,Medium,Positive
+TC_LINE_002,Line Confirmation,Add via Link Button,Click "Add via link" button,Line app opens with add friend page,Medium,Positive
+TC_LANG_001,Language Toggle,Switch to English,Click English when Chinese is active,All text displays in English,Medium,Positive
+TC_LANG_002,Language Toggle,Switch to Chinese,Click 中文 when English is active,All text displays in Chinese,Medium,Positive
+TC_LANG_003,Language Toggle,Language Persistence,Change language and refresh page,Selected language persists,Low,Positive
+TC_NAV_001,Navigation,Back Button Functionality,Click back on any step,Navigate to previous step,Medium,Positive
+TC_NAV_002,Navigation,Step Indicator Display,Progress through application,Current step highlighted correctly,Low,Positive
+TC_NAV_003,Navigation,Direct URL Access,Access application URL directly,Start from ID verification step,Low,Positive
+TC_MOBILE_001,Mobile UI,Mobile Shift Selection,Use mobile viewport for shift selection,Card layout displays correctly,Medium,Positive
+TC_MOBILE_002,Mobile UI,Touch Interactions,Tap to select shifts on mobile,Touch events work properly,Medium,Positive
+TC_MOBILE_003,Mobile UI,Form Input on Mobile,Fill contact form on mobile,Forms are easily usable,Medium,Positive
+TC_TOAST_001,Toast Messages,Success Toast Duration,Complete any successful action,Toast appears for 1 second,Low,Positive
+TC_TOAST_002,Toast Messages,Success Toast Language,Success action in Chinese mode,Toast displays in Chinese,Low,Positive
+TC_TOAST_003,Toast Messages,Error Toast Display,Trigger validation error,Error toast shows with description,Medium,Positive
+TC_DATA_001,Data Persistence,Return User Flow,User with existing application,Previous data pre-populated,High,Positive
+TC_DATA_002,Data Persistence,Shift Capacity Updates,Multiple users selecting same shift,Capacity decrements correctly,High,Positive
+TC_DATA_003,Data Persistence,Application ID Generation,Submit new application,Unique application ID generated,Medium,Positive
+TC_EDGE_001,Edge Cases,Network Interruption,Disconnect network during submission,Error message displayed,Low,Negative
+TC_EDGE_002,Edge Cases,Concurrent User Actions,Multiple users same shift simultaneously,First user gets shift others see error,Medium,Positive
+TC_EDGE_003,Edge Cases,Browser Refresh During Flow,Refresh page mid-application,Returns to appropriate step,Low,Positive
+TC_SEC_001,Security,ID Hash Protection,Check network requests,ID is hashed before transmission,High,Positive
+TC_SEC_002,Security,Data Consent Requirement,Try to proceed without consent,Blocked until consent given,High,Negative
+TC_ADMIN_001,Admin Panel,Admin Login,Valid admin credentials,Access to admin dashboard,High,Positive
+TC_ADMIN_002,Admin Panel,Download Applications,Click download applications,Excel file with all applications,Medium,Positive
+TC_ADMIN_003,Admin Panel,Upload Employee Data,Upload valid Excel file,Employee data imported successfully,High,Positive
+TC_PRICING_001,Pricing Display,Green Text Unselected,View shift matrix,Unselected shifts show green NT$ text,Medium,Positive
+TC_PRICING_002,Pricing Display,White Text Selected,Select a shift,Selected shift shows white NT$ text,Medium,Positive
+TC_PRICING_003,Pricing Display,Gray Text Fully Booked,View fully booked shift,Fully booked shifts show gray text,Medium,Positive
+TC_TRANSLATION_001,Translation,Chinese Default Language,Load application,Application starts in Chinese by default,High,Positive
+TC_TRANSLATION_002,Translation,Line Confirmation Chinese,Navigate to Line page in Chinese,All Line instructions in Chinese,Medium,Positive
+TC_TRANSLATION_003,Translation,Toast Messages Chinese,Trigger toast in Chinese mode,Toast messages display in Chinese,Medium,Positive
+TC_SHIFT_TERM_001,Shift Terminology,Day Shift Display,View shift matrix,Shows DS = Day Shift terminology,Medium,Positive
+TC_SHIFT_TERM_002,Shift Terminology,Night Shift Display,View shift matrix,Shows NS = Night Shift terminology,Medium,Positive
+TC_SHIFT_TERM_003,Shift Terminology,Legend Translation,Switch to Chinese,Legend shows Chinese translations,Medium,Positive`;
+
+// Write CSV file
+fs.writeFileSync('couflex-test-cases.csv', csvContent);
+console.log('Test cases CSV file created successfully: couflex-test-cases.csv');
+
+// Also create a simple HTML table version for easy viewing
+const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+    <title>Couflex Test Cases</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; font-weight: bold; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .high { color: #d63384; font-weight: bold; }
+        .medium { color: #fd7e14; }
+        .low { color: #198754; }
+        .positive { background-color: #d1e7dd; }
+        .negative { background-color: #f8d7da; }
+    </style>
+</head>
+<body>
+    <h1>Couflex Application Test Cases</h1>
+    <p>Total Test Cases: 54</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Test Case ID</th>
+                <th>Module</th>
+                <th>Test Scenario</th>
+                <th>Test Data</th>
+                <th>Expected Result</th>
+                <th>Priority</th>
+                <th>Test Type</th>
+            </tr>
+        </thead>
+        <tbody>
+${csvContent.split('\n').slice(1).map(row => {
+    const cells = row.split(',');
+    if (cells.length >= 7) {
+        const priority = cells[5].toLowerCase();
+        const testType = cells[6].toLowerCase();
+        return `            <tr>
+                <td>${cells[0]}</td>
+                <td>${cells[1]}</td>
+                <td>${cells[2]}</td>
+                <td>${cells[3]}</td>
+                <td>${cells[4]}</td>
+                <td class="${priority}">${cells[5]}</td>
+                <td class="${testType}">${cells[6]}</td>
+            </tr>`;
+    }
+    return '';
+}).join('\n')}
+        </tbody>
+    </table>
+</body>
+</html>`;
+
+fs.writeFileSync('couflex-test-cases.html', htmlContent);
+console.log('Test cases HTML file created successfully: couflex-test-cases.html');

@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Couflex Test Cases</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; font-weight: bold; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .high { color: #d63384; font-weight: bold; }
+        .medium { color: #fd7e14; }
+        .low { color: #198754; }
+        .positive { background-color: #d1e7dd; }
+        .negative { background-color: #f8d7da; }
+    </style>
+</head>
+<body>
+    <h1>Couflex Application Test Cases</h1>
+    <p>Total Test Cases: 54</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Test Case ID</th>
+                <th>Module</th>
+                <th>Test Scenario</th>
+                <th>Test Data</th>
+                <th>Expected Result</th>
+                <th>Priority</th>
+                <th>Test Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>TC_ID_001</td>
+                <td>ID Verification</td>
+                <td>Valid ID - Eligible Employee</td>
+                <td>A134382733</td>
+                <td>Success - Navigate to shift selection</td>
+                <td class="high">High</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_ID_002</td>
+                <td>ID Verification</td>
+                <td>Valid ID - Ineligible Employee</td>
+                <td>A999999999</td>
+                <td>Error - Not eligible message</td>
+                <td class="high">High</td>
+                <td class="negative">Negative</td>
+            </tr>
+            <tr>
+                <td>TC_ID_003</td>
+                <td>ID Verification</td>
+                <td>Invalid ID - Not Found</td>
+                <td>A000000000</td>
+                <td>Error - ID not found</td>
+                <td class="high">High</td>
+                <td class="negative">Negative</td>
+            </tr>
+            <tr>
+                <td>TC_ID_004</td>
+                <td>ID Verification</td>
+                <td>Empty ID Field</td>
+                <td>""</td>
+                <td>Validation error - Required field</td>
+                <td class="medium">Medium</td>
+                <td class="negative">Negative</td>
+            </tr>
+            <tr>
+                <td>TC_ID_005</td>
+                <td>ID Verification</td>
+                <td>ID Too Short</td>
+                <td>A12345</td>
+                <td>Validation error - Must be 10 characters</td>
+                <td class="medium">Medium</td>
+                <td class="negative">Negative</td>
+            </tr>
+            <tr>
+                <td>TC_ID_006</td>
+                <td>ID Verification</td>
+                <td>ID Too Long</td>
+                <td>A12345678901</td>
+                <td>Validation error - Must be 10 characters</td>
+                <td class="medium">Medium</td>
+                <td class="negative">Negative</td>
+            </tr>
+            <tr>
+                <td>TC_ID_007</td>
+                <td>ID Verification</td>
+                <td>Submit Without Consent</td>
+                <td>A134382733</td>
+                <td>Error - Must agree to data usage terms</td>
+                <td class="high">High</td>
+                <td class="negative">Negative</td>
+            </tr>
+            <tr>
+                <td>TC_ID_008</td>
+                <td>ID Verification</td>
+                <td>Lowercase ID Input</td>
+                <td>a134382733</td>
+                <td>Success - Normalized to uppercase</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_SHIFT_001</td>
+                <td>Shift Selection</td>
+                <td>Select Single Day Shift</td>
+                <td>"TAO4</td>
+                <td> Jun 16</td>
+                <td class=" ds""> DS"</td>
+                <td class="shift selected successfully">Shift selected successfully</td>
+            </tr>
+            <tr>
+                <td>TC_SHIFT_002</td>
+                <td>Shift Selection</td>
+                <td>Select Single Night Shift</td>
+                <td>"TAO4</td>
+                <td> Jun 16</td>
+                <td class=" ns""> NS"</td>
+                <td class="shift selected successfully">Shift selected successfully</td>
+            </tr>
+            <tr>
+                <td>TC_SHIFT_003</td>
+                <td>Shift Selection</td>
+                <td>Select Multiple Different Days</td>
+                <td>"TAO4 Jun 16 DS</td>
+                <td> TAO4 Jun 17 NS"</td>
+                <td class="multiple shifts selected">Multiple shifts selected</td>
+                <td class="high">High</td>
+            </tr>
+            <tr>
+                <td>TC_SHIFT_004</td>
+                <td>Shift Selection</td>
+                <td>Change Shift Same Day</td>
+                <td>"Select TAO4 Jun 16 DS</td>
+                <td> then TAO4 Jun 16 NS"</td>
+                <td class="previous selection replaced">Previous selection replaced</td>
+                <td class="medium">Medium</td>
+            </tr>
+            <tr>
+                <td>TC_SHIFT_005</td>
+                <td>Shift Selection</td>
+                <td>Deselect Shift</td>
+                <td>Select then click same shift again</td>
+                <td>Shift deselected</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_SHIFT_006</td>
+                <td>Shift Selection</td>
+                <td>Select Fully Booked Shift</td>
+                <td>Click on fully booked shift</td>
+                <td>Error - Shift is fully booked</td>
+                <td class="high">High</td>
+                <td class="negative">Negative</td>
+            </tr>
+            <tr>
+                <td>TC_SHIFT_007</td>
+                <td>Shift Selection</td>
+                <td>Continue Without Selection</td>
+                <td>No shifts selected</td>
+                <td>Error - Must select at least one shift</td>
+                <td class="high">High</td>
+                <td class="negative">Negative</td>
+            </tr>
+            <tr>
+                <td>TC_SHIFT_008</td>
+                <td>Shift Selection</td>
+                <td>Maximum Shifts Selection</td>
+                <td>Select all available shifts</td>
+                <td>All shifts selected successfully</td>
+                <td class="low">Low</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_CONTACT_001</td>
+                <td>Contact Information</td>
+                <td>Valid Phone and Line ID</td>
+                <td>"Phone: 0912345678</td>
+                <td> Line: testuser123"</td>
+                <td class="application submitted successfully">Application submitted successfully</td>
+                <td class="high">High</td>
+            </tr>
+            <tr>
+                <td>TC_CONTACT_002</td>
+                <td>Contact Information</td>
+                <td>Empty Phone Number</td>
+                <td>"Phone: """"</td>
+                <td> Line: testuser123"</td>
+                <td class="validation error - phone required">Validation error - Phone required</td>
+                <td class="high">High</td>
+            </tr>
+            <tr>
+                <td>TC_CONTACT_003</td>
+                <td>Contact Information</td>
+                <td>Empty Line ID</td>
+                <td>"Phone: 0912345678</td>
+                <td> Line: """""</td>
+                <td class="validation error - line id required">Validation error - Line ID required</td>
+                <td class="high">High</td>
+            </tr>
+            <tr>
+                <td>TC_CONTACT_004</td>
+                <td>Contact Information</td>
+                <td>Invalid Phone Format</td>
+                <td>"Phone: 12345</td>
+                <td> Line: testuser123"</td>
+                <td class="validation error - invalid taiwan phone">Validation error - Invalid Taiwan phone</td>
+                <td class="medium">Medium</td>
+            </tr>
+            <tr>
+                <td>TC_CONTACT_005</td>
+                <td>Contact Information</td>
+                <td>Phone with Country Code</td>
+                <td>"Phone: +886912345678</td>
+                <td> Line: testuser123"</td>
+                <td class="phone normalized and accepted">Phone normalized and accepted</td>
+                <td class="medium">Medium</td>
+            </tr>
+            <tr>
+                <td>TC_CONTACT_006</td>
+                <td>Contact Information</td>
+                <td>Phone with Spaces</td>
+                <td>"Phone: 091 234 5678</td>
+                <td> Line: testuser123"</td>
+                <td class="phone normalized and accepted">Phone normalized and accepted</td>
+                <td class="low">Low</td>
+            </tr>
+            <tr>
+                <td>TC_CONTACT_007</td>
+                <td>Contact Information</td>
+                <td>Update Existing Application</td>
+                <td>Returning user updates contact info</td>
+                <td>Application updated successfully</td>
+                <td class="high">High</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_LINE_001</td>
+                <td>Line Confirmation</td>
+                <td>QR Code Display</td>
+                <td>Navigate to Line confirmation</td>
+                <td>QR code and instructions displayed</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_LINE_002</td>
+                <td>Line Confirmation</td>
+                <td>Add via Link Button</td>
+                <td>Click "Add via link" button</td>
+                <td>Line app opens with add friend page</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_LANG_001</td>
+                <td>Language Toggle</td>
+                <td>Switch to English</td>
+                <td>Click English when Chinese is active</td>
+                <td>All text displays in English</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_LANG_002</td>
+                <td>Language Toggle</td>
+                <td>Switch to Chinese</td>
+                <td>Click 中文 when English is active</td>
+                <td>All text displays in Chinese</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_LANG_003</td>
+                <td>Language Toggle</td>
+                <td>Language Persistence</td>
+                <td>Change language and refresh page</td>
+                <td>Selected language persists</td>
+                <td class="low">Low</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_NAV_001</td>
+                <td>Navigation</td>
+                <td>Back Button Functionality</td>
+                <td>Click back on any step</td>
+                <td>Navigate to previous step</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_NAV_002</td>
+                <td>Navigation</td>
+                <td>Step Indicator Display</td>
+                <td>Progress through application</td>
+                <td>Current step highlighted correctly</td>
+                <td class="low">Low</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_NAV_003</td>
+                <td>Navigation</td>
+                <td>Direct URL Access</td>
+                <td>Access application URL directly</td>
+                <td>Start from ID verification step</td>
+                <td class="low">Low</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_MOBILE_001</td>
+                <td>Mobile UI</td>
+                <td>Mobile Shift Selection</td>
+                <td>Use mobile viewport for shift selection</td>
+                <td>Card layout displays correctly</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_MOBILE_002</td>
+                <td>Mobile UI</td>
+                <td>Touch Interactions</td>
+                <td>Tap to select shifts on mobile</td>
+                <td>Touch events work properly</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_MOBILE_003</td>
+                <td>Mobile UI</td>
+                <td>Form Input on Mobile</td>
+                <td>Fill contact form on mobile</td>
+                <td>Forms are easily usable</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_TOAST_001</td>
+                <td>Toast Messages</td>
+                <td>Success Toast Duration</td>
+                <td>Complete any successful action</td>
+                <td>Toast appears for 1 second</td>
+                <td class="low">Low</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_TOAST_002</td>
+                <td>Toast Messages</td>
+                <td>Success Toast Language</td>
+                <td>Success action in Chinese mode</td>
+                <td>Toast displays in Chinese</td>
+                <td class="low">Low</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_TOAST_003</td>
+                <td>Toast Messages</td>
+                <td>Error Toast Display</td>
+                <td>Trigger validation error</td>
+                <td>Error toast shows with description</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_DATA_001</td>
+                <td>Data Persistence</td>
+                <td>Return User Flow</td>
+                <td>User with existing application</td>
+                <td>Previous data pre-populated</td>
+                <td class="high">High</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_DATA_002</td>
+                <td>Data Persistence</td>
+                <td>Shift Capacity Updates</td>
+                <td>Multiple users selecting same shift</td>
+                <td>Capacity decrements correctly</td>
+                <td class="high">High</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_DATA_003</td>
+                <td>Data Persistence</td>
+                <td>Application ID Generation</td>
+                <td>Submit new application</td>
+                <td>Unique application ID generated</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_EDGE_001</td>
+                <td>Edge Cases</td>
+                <td>Network Interruption</td>
+                <td>Disconnect network during submission</td>
+                <td>Error message displayed</td>
+                <td class="low">Low</td>
+                <td class="negative">Negative</td>
+            </tr>
+            <tr>
+                <td>TC_EDGE_002</td>
+                <td>Edge Cases</td>
+                <td>Concurrent User Actions</td>
+                <td>Multiple users same shift simultaneously</td>
+                <td>First user gets shift others see error</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_EDGE_003</td>
+                <td>Edge Cases</td>
+                <td>Browser Refresh During Flow</td>
+                <td>Refresh page mid-application</td>
+                <td>Returns to appropriate step</td>
+                <td class="low">Low</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_SEC_001</td>
+                <td>Security</td>
+                <td>ID Hash Protection</td>
+                <td>Check network requests</td>
+                <td>ID is hashed before transmission</td>
+                <td class="high">High</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_SEC_002</td>
+                <td>Security</td>
+                <td>Data Consent Requirement</td>
+                <td>Try to proceed without consent</td>
+                <td>Blocked until consent given</td>
+                <td class="high">High</td>
+                <td class="negative">Negative</td>
+            </tr>
+            <tr>
+                <td>TC_ADMIN_001</td>
+                <td>Admin Panel</td>
+                <td>Admin Login</td>
+                <td>Valid admin credentials</td>
+                <td>Access to admin dashboard</td>
+                <td class="high">High</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_ADMIN_002</td>
+                <td>Admin Panel</td>
+                <td>Download Applications</td>
+                <td>Click download applications</td>
+                <td>Excel file with all applications</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_ADMIN_003</td>
+                <td>Admin Panel</td>
+                <td>Upload Employee Data</td>
+                <td>Upload valid Excel file</td>
+                <td>Employee data imported successfully</td>
+                <td class="high">High</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_PRICING_001</td>
+                <td>Pricing Display</td>
+                <td>Green Text Unselected</td>
+                <td>View shift matrix</td>
+                <td>Unselected shifts show green NT$ text</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_PRICING_002</td>
+                <td>Pricing Display</td>
+                <td>White Text Selected</td>
+                <td>Select a shift</td>
+                <td>Selected shift shows white NT$ text</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_PRICING_003</td>
+                <td>Pricing Display</td>
+                <td>Gray Text Fully Booked</td>
+                <td>View fully booked shift</td>
+                <td>Fully booked shifts show gray text</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_TRANSLATION_001</td>
+                <td>Translation</td>
+                <td>Chinese Default Language</td>
+                <td>Load application</td>
+                <td>Application starts in Chinese by default</td>
+                <td class="high">High</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_TRANSLATION_002</td>
+                <td>Translation</td>
+                <td>Line Confirmation Chinese</td>
+                <td>Navigate to Line page in Chinese</td>
+                <td>All Line instructions in Chinese</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_TRANSLATION_003</td>
+                <td>Translation</td>
+                <td>Toast Messages Chinese</td>
+                <td>Trigger toast in Chinese mode</td>
+                <td>Toast messages display in Chinese</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_SHIFT_TERM_001</td>
+                <td>Shift Terminology</td>
+                <td>Day Shift Display</td>
+                <td>View shift matrix</td>
+                <td>Shows DS = Day Shift terminology</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_SHIFT_TERM_002</td>
+                <td>Shift Terminology</td>
+                <td>Night Shift Display</td>
+                <td>View shift matrix</td>
+                <td>Shows NS = Night Shift terminology</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+            <tr>
+                <td>TC_SHIFT_TERM_003</td>
+                <td>Shift Terminology</td>
+                <td>Legend Translation</td>
+                <td>Switch to Chinese</td>
+                <td>Legend shows Chinese translations</td>
+                <td class="medium">Medium</td>
+                <td class="positive">Positive</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
