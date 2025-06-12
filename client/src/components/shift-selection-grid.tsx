@@ -146,6 +146,30 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
     return 'text-green-600 font-bold';
   };
 
+  // Monitor for pricing matrix changes and clear selections when dates are modified
+  useEffect(() => {
+    if (shiftData) {
+      const currentTimestamp = Date.now();
+      const currentDates = Array.from(new Set(shiftData.map(s => s.date))).sort();
+      
+      // If this is not the initial load and dates have changed, clear selections
+      if (lastDataTimestamp > 0) {
+        const hasDateChanges = JSON.stringify(currentDates) !== JSON.stringify(dates);
+        if (hasDateChanges) {
+          setSelectedShifts([]);
+          setShiftSelections({});
+          toast({
+            title: "Pricing Matrix Updated",
+            description: "The schedule has been updated. Please reselect your shifts.",
+            duration: 5000,
+          });
+        }
+      }
+      
+      setLastDataTimestamp(currentTimestamp);
+    }
+  }, [shiftData, toast]);
+
   // Initialize shift selections from initial data with current pricing, filtering out removed dates
   useEffect(() => {
     if (initialSelectedShifts.length > 0 && shiftData) {
