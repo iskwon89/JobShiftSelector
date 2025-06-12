@@ -5,6 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, X, Info } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/lib/language";
+import { LanguageToggle } from "@/components/language-toggle";
 import type { ShiftSelection, ShiftData } from "@shared/schema";
 
 interface UserData {
@@ -25,6 +27,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
   const [selectedShifts, setSelectedShifts] = useState<ShiftSelection[]>(initialSelectedShifts);
   const [shiftSelections, setShiftSelections] = useState<Record<string, ShiftSelection>>({});
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const { data: shiftData, isLoading } = useQuery<ShiftData[]>({
     queryKey: ['/api/shift-data', userData.cohort],
@@ -141,7 +144,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
     // Prevent clicking on fully booked shifts
     if (isShiftFullyBooked(location, date, shift)) {
       toast({
-        title: "Fully Booked",
+        title: t('shift.full'),
         description: "This shift has reached maximum capacity",
         variant: "destructive",
       });
@@ -198,8 +201,8 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
   const handleContinue = () => {
     if (selectedShifts.length === 0) {
       toast({
-        title: "Error",
-        description: "Please select at least one shift before proceeding.",
+        title: t('common.error'),
+        description: t('shift.noShifts'),
         variant: "destructive",
       });
       return;
@@ -208,21 +211,24 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
   };
 
   if (isLoading) {
-    return <div className="text-center py-8">Loading shift data...</div>;
+    return <div className="text-center py-8">{t('common.loading')}</div>;
   }
 
   return (
-    <div>
+    <div className="relative">
+      {/* Language Toggle */}
+      <div className="absolute top-0 right-0">
+        <LanguageToggle />
+      </div>
+
       <div className="mb-6 sm:mb-8">
         <div className="mb-4">
-          <h2 className="text-xl sm:text-2xl font-semibold text-slate-800">Available Shifts & Rates</h2>
-          <p className="text-slate-600 mt-1 text-sm sm:text-base">Select up to 1 shift per day. Rates shown in NTD (New Taiwan Dollar).</p>
+          <h2 className="text-xl sm:text-2xl font-semibold text-slate-800">{t('shift.title')}</h2>
+          <p className="text-slate-600 mt-1 text-sm sm:text-base">{t('shift.subtitle')}</p>
         </div>
-
-
         
         <div className="text-xs sm:text-sm text-slate-500 mb-4 sm:mb-6">
-          <span className="font-medium">MS</span> = Morning Shift, <span className="font-medium">ES</span> = Evening Shift
+          <span className="font-medium">DS</span> = {t('shift.dayShift')}, <span className="font-medium">SS</span> = {t('shift.swingShift')}
         </div>
       </div>
 

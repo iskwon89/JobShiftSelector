@@ -104,32 +104,33 @@ export function IDVerificationForm({ onVerified }: IDVerificationFormProps) {
 
   return (
     <div className="relative">
-      {/* Admin Login Button */}
-      <div className="absolute top-0 right-0">
+      {/* Language Toggle and Admin Login */}
+      <div className="absolute top-0 right-0 flex items-center gap-2">
+        <LanguageToggle />
         <Button 
           variant="ghost" 
           size="sm"
           onClick={() => window.location.href = '/admin'}
           className="text-slate-500 hover:text-slate-700 text-xs sm:text-sm"
         >
-          Admin Login
+          {t('nav.admin')}
         </Button>
       </div>
 
       <div className="text-center mb-6 sm:mb-8 pt-8 sm:pt-0">
-        <h2 className="text-xl sm:text-2xl font-semibold text-slate-800 mb-2">National ID Verification</h2>
-        <p className="text-slate-600 text-sm sm:text-base px-4 sm:px-0">Please enter your Taiwan National ID to begin your application.</p>
+        <h2 className="text-xl sm:text-2xl font-semibold text-slate-800 mb-2">{t('id.title')}</h2>
+        <p className="text-slate-600 text-sm sm:text-base px-4 sm:px-0">{t('id.subtitle')}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-6 px-4 sm:px-0">
         <div>
-          <Label htmlFor="national-id" className="text-sm sm:text-base">National ID</Label>
+          <Label htmlFor="national-id" className="text-sm sm:text-base">{t('id.nationalId')}</Label>
           <Input
             id="national-id"
             type="text"
             value={employeeId}
             onChange={handleInputChange}
-            placeholder="e.g. A123456789"
+            placeholder={t('id.placeholder')}
             className={`mt-1 text-base sm:text-sm ${validationError ? 'border-red-500' : ''}`}
           />
           {validationError && (
@@ -139,7 +140,7 @@ export function IDVerificationForm({ onVerified }: IDVerificationFormProps) {
 
         {/* Data Usage Consent */}
         <div className="mb-6">
-          <h3 className="font-semibold text-slate-800 mb-4 text-sm sm:text-base">Data Usage Consent</h3>
+          <h3 className="font-semibold text-slate-800 mb-4 text-sm sm:text-base">{t('id.consent.title')}</h3>
           
           {/* Scrollable Consent Text */}
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 sm:p-4 h-40 sm:h-48 overflow-y-auto mb-4">
@@ -192,7 +193,7 @@ export function IDVerificationForm({ onVerified }: IDVerificationFormProps) {
                 className="mt-1 flex-shrink-0"
               />
               <label htmlFor="dataConsent" className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                I have read and agree to the Data Usage terms.
+                {t('id.consent.text')}
               </label>
             </div>
           </div>
@@ -203,7 +204,7 @@ export function IDVerificationForm({ onVerified }: IDVerificationFormProps) {
           className="w-full text-sm sm:text-base"
           disabled={isLoading || !termsAccepted}
         >
-          {isLoading ? "Verifying..." : "Verify Eligibility"}
+          {isLoading ? t('common.loading') : t('id.verify')}
         </Button>
       </form>
     </div>
