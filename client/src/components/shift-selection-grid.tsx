@@ -145,7 +145,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
     if (isShiftFullyBooked(location, date, shift)) {
       toast({
         title: t('shift.full'),
-        description: "This shift has reached maximum capacity",
+        description: t('error.shiftFull'),
         variant: "destructive",
       });
       return;

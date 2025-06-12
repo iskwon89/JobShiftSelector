@@ -135,7 +135,7 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
     } catch (error: any) {
       toast({
         title: t('common.error'),
-        description: "Failed to submit application. Please try again.",
+        description: t('error.submitFailed'),
         variant: "destructive",
       });
       console.error("Submission error:", error);
@@ -188,14 +188,14 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
         {/* Application Summary */}
         <Card className="mb-6 sm:mb-8">
           <CardContent className="pt-4 sm:pt-6">
-            <h3 className="font-semibold text-slate-800 mb-4 text-sm sm:text-base">Application Summary</h3>
+            <h3 className="font-semibold text-slate-800 mb-4 text-sm sm:text-base">{t('summary.title')}</h3>
             
             {/* Total Earnings */}
             <div className="bg-green-50 border border-green-200 rounded-lg p-3 sm:p-4 mb-4">
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
                 <div>
-                  <h4 className="font-semibold text-green-900 text-sm sm:text-base">Total Earnings Potential</h4>
-                  <p className="text-green-700 text-xs sm:text-sm">{selectedShifts.length} shift{selectedShifts.length > 1 ? 's' : ''} selected</p>
+                  <h4 className="font-semibold text-green-900 text-sm sm:text-base">{t('summary.totalEarnings')}</h4>
+                  <p className="text-green-700 text-xs sm:text-sm">{selectedShifts.length} {selectedShifts.length === 1 ? t('summary.shiftSelected') : t('summary.shiftsSelected')}</p>
                 </div>
                 <div className="text-xl sm:text-2xl font-bold text-green-900">
                   NT${selectedShifts.reduce((total, shift) => {
@@ -208,8 +208,8 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
 
             <div className="space-y-3">
               <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                <span className="text-slate-600 text-sm">Selected Shifts:</span>
-                <span className="font-medium text-sm">{selectedShifts.length} shifts</span>
+                <span className="text-slate-600 text-sm">{t('summary.selectedShifts')}:</span>
+                <span className="font-medium text-sm">{selectedShifts.length} {selectedShifts.length === 1 ? t('summary.shiftSelected').replace('個', '') : t('summary.shiftsSelected').replace('個', '')}</span>
               </div>
               <hr className="border-slate-200" />
               <div className="space-y-2 text-xs sm:text-sm">

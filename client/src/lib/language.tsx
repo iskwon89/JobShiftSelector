@@ -117,12 +117,21 @@ const translations: Record<Language, Record<string, string>> = {
     'error.server': 'Server error occurred',
     'error.validation': 'Please check your input',
     'error.unauthorized': 'Unauthorized access',
+    'error.shiftFull': 'This shift has reached maximum capacity',
+    'error.submitFailed': 'Failed to submit application. Please try again.',
     
     // Success Messages
     'success.applicationSubmitted': 'Application submitted successfully',
     'success.applicationUpdated': 'Application updated successfully',
     'success.dataUploaded': 'Data uploaded successfully',
     'success.settingsSaved': 'Settings saved successfully',
+    
+    // Application Summary
+    'summary.title': 'Application Summary',
+    'summary.totalEarnings': 'Total Earnings Potential',
+    'summary.shiftsSelected': 'shifts selected',
+    'summary.shiftSelected': 'shift selected',
+    'summary.selectedShifts': 'Selected Shifts',
   },
   
   zh: {
@@ -230,19 +239,28 @@ const translations: Record<Language, Record<string, string>> = {
     'error.server': '發生伺服器錯誤',
     'error.validation': '請檢查您的輸入',
     'error.unauthorized': '未授權存取',
+    'error.shiftFull': '此班次已達最大容量',
+    'error.submitFailed': '提交申請失敗，請重試。',
     
     // Success Messages
     'success.applicationSubmitted': '申請提交成功',
     'success.applicationUpdated': '申請更新成功',
     'success.dataUploaded': '資料上傳成功',
     'success.settingsSaved': '設定保存成功',
+    
+    // Application Summary
+    'summary.title': '申請摘要',
+    'summary.totalEarnings': '總潛在收入',
+    'summary.shiftsSelected': '個班次已選擇',
+    'summary.shiftSelected': '個班次已選擇',
+    'summary.selectedShifts': '已選班次',
   }
 };
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguage] = useState<Language>(() => {
     const saved = localStorage.getItem('couflex-language');
-    return (saved as Language) || 'en';
+    return (saved as Language) || 'zh';
   });
 
   useEffect(() => {
