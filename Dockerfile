@@ -42,6 +42,10 @@ COPY --from=builder /app/drizzle.config.ts ./
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S appuser -u 1001 -G nodejs
 
+# Copy entrypoint script and set permissions
+COPY docker-entrypoint.sh ./
+RUN chmod +x docker-entrypoint.sh
+
 # Change ownership of the app directory
 RUN chown -R appuser:nodejs /app
 
@@ -57,6 +61,9 @@ ENV NODE_ENV=production
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node -e "require('http').get('http://localhost:5000/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })" || exit 1
+
+# Set entrypoint
+ENTRYPOINT ["./docker-entrypoint.sh"]
 
 # Start the application
 CMD ["npm", "start"]
