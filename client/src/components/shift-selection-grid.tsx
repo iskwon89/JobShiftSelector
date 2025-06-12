@@ -77,12 +77,8 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
     if (isFullyBooked) return 'text-gray-400';
     if (isSelected) return 'text-white';
     
-    const intensity = getRateColorIntensity(rate);
-    
-    if (intensity >= 0.8) return 'text-green-700 font-bold'; // High rates - dark green, bold
-    if (intensity >= 0.6) return 'text-green-600 font-semibold'; // Medium-high rates - green, semibold
-    if (intensity >= 0.4) return 'text-slate-700 font-medium'; // Medium rates - default color, medium weight
-    return 'text-slate-500'; // Low rates - lighter color
+    // All unselected rates should be green
+    return 'text-green-600 font-bold';
   };
 
   // Initialize shift selections from initial data with current pricing, filtering out removed dates
