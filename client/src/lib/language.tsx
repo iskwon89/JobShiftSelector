@@ -52,6 +52,7 @@ const translations: Record<Language, Record<string, string>> = {
     'id.verify': 'Verify ID',
     'id.notFound': 'Employee not found or not eligible',
     'id.notEligible': 'You are not eligible for shift selection at this time.',
+    'id.verificationSuccess': 'ID verification successful!',
     
     // Shift Selection
     'shift.title': 'Select Your Shifts',
@@ -181,6 +182,7 @@ const translations: Record<Language, Record<string, string>> = {
     'id.verify': '驗證身份',
     'id.notFound': '找不到員工或不符合資格',
     'id.notEligible': '您目前不符合班次選擇的資格。',
+    'id.verificationSuccess': '身份驗證成功！',
     
     // Shift Selection
     'shift.title': '選擇您的班次',

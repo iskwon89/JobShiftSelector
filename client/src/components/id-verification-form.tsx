@@ -83,7 +83,9 @@ export function IDVerificationForm({ onVerified }: IDVerificationFormProps) {
       onVerified(userData);
       
       toast({
-        title: "Success!",
+        title: t('common.success'),
+        description: t('id.verificationSuccess'),
+        duration: 1000,
       });
     } catch (error: any) {
       const errorMessage = error.message.includes('404') 
