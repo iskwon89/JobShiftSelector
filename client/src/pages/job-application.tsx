@@ -4,6 +4,7 @@ import { IDVerificationForm } from "@/components/id-verification-form";
 import { ShiftSelectionGrid } from "@/components/shift-selection-grid";
 import { ContactInfoForm } from "@/components/contact-info-form";
 import { LineConfirmation } from "@/components/line-confirmation";
+import { Header } from "@/components/header";
 import { CheckCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { ShiftSelection } from "@shared/schema";
@@ -73,12 +74,7 @@ export default function JobApplication() {
 
   return (
     <div className="min-h-screen bg-slate-50 pt-safe">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-slate-200 pt-2 sm:pt-0">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-4">
-          <h1 className="text-lg sm:text-2xl font-semibold text-slate-800">Couflex</h1>
-        </div>
-      </header>
+      <Header />
 
       {/* Main Container */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">

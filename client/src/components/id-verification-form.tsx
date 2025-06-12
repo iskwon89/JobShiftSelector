@@ -104,20 +104,7 @@ export function IDVerificationForm({ onVerified }: IDVerificationFormProps) {
 
   return (
     <div className="relative">
-      {/* Language Toggle and Admin Login */}
-      <div className="absolute top-0 right-0 flex items-center gap-2">
-        <LanguageToggle />
-        <Button 
-          variant="ghost" 
-          size="sm"
-          onClick={() => window.location.href = '/admin'}
-          className="text-slate-500 hover:text-slate-700 text-xs sm:text-sm"
-        >
-          {t('nav.admin')}
-        </Button>
-      </div>
-
-      <div className="text-center mb-6 sm:mb-8 pt-8 sm:pt-0">
+      <div className="text-center mb-6 sm:mb-8">
         <h2 className="text-xl sm:text-2xl font-semibold text-slate-800 mb-2">{t('id.title')}</h2>
         <p className="text-slate-600 text-sm sm:text-base px-4 sm:px-0">{t('id.subtitle')}</p>
       </div>

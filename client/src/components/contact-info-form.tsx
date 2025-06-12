@@ -146,11 +146,6 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
 
   return (
     <div className="relative">
-      {/* Language Toggle */}
-      <div className="absolute top-0 right-0">
-        <LanguageToggle />
-      </div>
-
       <div className="mb-6 sm:mb-8">
         <h2 className="text-xl sm:text-2xl font-semibold text-slate-800 mb-2">{t('contact.title')}</h2>
         <p className="text-slate-600 text-sm sm:text-base">{t('contact.subtitle')}</p>

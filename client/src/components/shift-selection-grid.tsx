@@ -216,11 +216,6 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
 
   return (
     <div className="relative">
-      {/* Language Toggle */}
-      <div className="absolute top-0 right-0">
-        <LanguageToggle />
-      </div>
-
       <div className="mb-6 sm:mb-8">
         <div className="mb-4">
           <h2 className="text-xl sm:text-2xl font-semibold text-slate-800">{t('shift.title')}</h2>
