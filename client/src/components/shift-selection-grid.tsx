@@ -382,8 +382,8 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
           <CardContent className="pt-4 sm:pt-6">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0">
               <div>
-                <h3 className="text-base sm:text-lg font-semibold text-blue-900">Total Earnings Potential</h3>
-                <p className="text-blue-700 text-xs sm:text-sm">Based on your selected shifts</p>
+                <h3 className="text-base sm:text-lg font-semibold text-blue-900">{t('summary.totalEarnings')}</h3>
+                <p className="text-blue-700 text-xs sm:text-sm">{t('shift.subtitle')}</p>
               </div>
               <div className="text-left sm:text-right">
                 <div className="text-xl sm:text-2xl font-bold text-blue-900">
@@ -392,7 +392,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                     return total + rate;
                   }, 0).toLocaleString()}
                 </div>
-                <p className="text-blue-700 text-xs sm:text-sm">{selectedShifts.length} shift{selectedShifts.length > 1 ? 's' : ''} selected</p>
+                <p className="text-blue-700 text-xs sm:text-sm">{selectedShifts.length} {selectedShifts.length === 1 ? t('summary.shiftSelected') : t('summary.shiftsSelected')}</p>
               </div>
             </div>
             
