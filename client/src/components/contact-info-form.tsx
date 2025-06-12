@@ -159,24 +159,24 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
       <form onSubmit={handleSubmit} className="max-w-2xl">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <div>
-            <Label htmlFor="line-id">LINE ID</Label>
+            <Label htmlFor="line-id">{t('contact.lineId')}</Label>
             <Input
               id="line-id"
               type="text"
               value={lineId}
               onChange={(e) => setLineId(e.target.value)}
-              placeholder="Enter your LINE ID"
+              placeholder={t('contact.lineIdPlaceholder')}
               className="mt-1"
             />
           </div>
           <div>
-            <Label htmlFor="phone">Phone Number</Label>
+            <Label htmlFor="phone">{t('contact.phone')}</Label>
             <Input
               id="phone"
               type="tel"
               value={phone}
               onChange={handlePhoneChange}
-              placeholder="e.g. 0912345678"
+              placeholder={t('contact.phonePlaceholder')}
               className={`mt-1 ${phoneError ? 'border-red-500' : ''}`}
             />
             {phoneError && (
@@ -231,14 +231,14 @@ export function ContactInfoForm({ userData, selectedShifts, onSubmitted, onBack,
         {/* Navigation */}
         <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0">
           <Button type="button" variant="ghost" onClick={onBack} className="order-2 sm:order-1">
-            ← Back to Shift Selection
+            ← {t('common.back')}
           </Button>
           <Button 
             type="submit" 
             disabled={isLoading}
             className="bg-green-600 hover:bg-green-700 order-1 sm:order-2"
           >
-            {isLoading ? "Submitting..." : "Submit Application"}
+            {isLoading ? t('common.loading') : (isUpdate ? t('contact.updateApplication') : t('contact.submitApplication'))}
           </Button>
         </div>
       </form>
