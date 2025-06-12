@@ -272,12 +272,16 @@ const translations: Record<Language, Record<string, string>> = {
 };
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguage] = useState<Language>(() => {
-    // Force Chinese as default, clearing any cached English preference
-    localStorage.removeItem('couflex-language');
+  const [language, setLanguage] = useState<Language>('zh');
+
+  useEffect(() => {
+    // Force clear any cached language and set to Chinese
+    localStorage.clear();
     localStorage.setItem('couflex-language', 'zh');
-    return 'zh';
-  });
+    document.documentElement.lang = 'zh';
+    // Force re-render by setting language again
+    setLanguage('zh');
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('couflex-language', language);
