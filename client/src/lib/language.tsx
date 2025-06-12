@@ -83,12 +83,13 @@ const translations: Record<Language, Record<string, string>> = {
     'contact.updateApplication': 'Update Application',
     
     // Line Confirmation
-    'line.title': 'Join Our Line Organization',
-    'line.subtitle': 'Scan the QR code to join our Line group',
-    'line.instruction': 'Please scan this QR code with Line to join our organization group.',
-    'line.completed': 'Application Completed!',
-    'line.completedMessage': 'Your job application has been submitted successfully.',
-    'line.applicationId': 'Application ID',
+    'line.title': 'Let\'s Connect!',
+    'line.step1': 'Add our official Coupang Line account for important updates and shift reminders.',
+    'line.step2': 'You will receive a confirmation message on Line/SMS shortly.',
+    'line.step3': 'Please arrive at the designated Fulfillment Center at least 15 minutes before your shift starts.',
+    'line.step4': 'Bring your National ID for verification on your first day.',
+    'line.qrInstructions': 'Scan this QR code with your LINE app to add our official account',
+    'line.addViaLink': 'Or click here to add via link',
     
     // Admin
     'admin.title': 'Admin Dashboard',
@@ -210,12 +211,13 @@ const translations: Record<Language, Record<string, string>> = {
     'contact.updateApplication': '更新申請',
     
     // Line Confirmation
-    'line.title': '加入我們的Line組織',
-    'line.subtitle': '掃描QR碼加入我們的Line群組',
-    'line.instruction': '請用Line掃描此QR碼加入我們的組織群組。',
-    'line.completed': '申請完成！',
-    'line.completedMessage': '您的工作申請已成功提交。',
-    'line.applicationId': '申請編號',
+    'line.title': '讓我們連接！',
+    'line.step1': '加入我們的官方 Coupang Line 帳號以獲取重要更新和班次提醒。',
+    'line.step2': '您將很快在 Line/SMS 上收到確認訊息。',
+    'line.step3': '請在班次開始前至少 15 分鐘到達指定的物流中心。',
+    'line.step4': '請在第一天帶上您的身分證進行驗證。',
+    'line.qrInstructions': '用您的 LINE 應用程式掃描此 QR 碼以加入我們的官方帳號',
+    'line.addViaLink': '或點擊此處透過連結加入',
     
     // Admin
     'admin.title': '管理員儀表板',
