@@ -184,6 +184,13 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
       const newShift: ShiftSelection = { location, date, shift: shift as 'DS' | 'NS', rate };
       setShiftSelections(prev => ({ ...prev, [shiftKey]: newShift }));
       setSelectedShifts(prev => [...prev, newShift]);
+      
+      // Show success toast
+      toast({
+        title: t('common.success'),
+        description: t('shift.selectedSuccess'),
+        duration: 1000,
+      });
     }
   };
 

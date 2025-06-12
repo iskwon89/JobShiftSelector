@@ -68,6 +68,7 @@ const translations: Record<Language, Record<string, string>> = {
     'shift.selectShifts': 'Select Shifts',
     'shift.totalEarnings': 'Total Potential Earnings',
     'shift.noShifts': 'Please select at least one shift to continue.',
+    'shift.selectedSuccess': 'Shift selected successfully!',
     
     // Contact Info
     'contact.title': 'Contact Information',
@@ -196,6 +197,7 @@ const translations: Record<Language, Record<string, string>> = {
     'shift.selectShifts': '選擇班次',
     'shift.totalEarnings': '總潛在收入',
     'shift.noShifts': '請至少選擇一個班次才能繼續。',
+    'shift.selectedSuccess': '班次選擇成功！',
     
     // Contact Info
     'contact.title': '聯絡資訊',
