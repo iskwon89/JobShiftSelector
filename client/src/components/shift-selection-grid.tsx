@@ -223,7 +223,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
         </div>
         
         <div className="text-xs sm:text-sm text-slate-500 mb-4 sm:mb-6">
-          <span className="font-medium">DS</span> = {t('shift.dayShift')}, <span className="font-medium">SS</span> = {t('shift.swingShift')}
+          <span className="font-medium">DS</span> = {t('shift.dayShift')}, <span className="font-medium">NS</span> = {t('shift.nightShift')}
         </div>
       </div>
 
