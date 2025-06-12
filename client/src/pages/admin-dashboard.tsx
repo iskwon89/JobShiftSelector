@@ -14,34 +14,40 @@ import { apiRequest } from "@/lib/queryClient";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ShiftData } from "@shared/schema";
 import { downloadSampleExcel } from "@/lib/sample-excel";
+import { DatePicker } from "@/components/date-picker";
+import { format } from "date-fns";
 
-// Format date from "13-Jun" to "Wed, Jun 11" format
-const formatDateDisplay = (dateStr: string) => {
+// Convert Date object to "13-Jun" format for backend
+const dateToBackendFormat = (date: Date): string => {
+  return format(date, "d-MMM");
+};
+
+// Convert "13-Jun" format to Date object
+const backendFormatToDate = (dateStr: string): Date | null => {
   try {
-    // Parse date like "13-Jun" and convert to "Wed, Jun 13" format
     const [day, monthAbbr] = dateStr.split('-');
     const currentYear = new Date().getFullYear();
     
-    // Create a mapping for month abbreviations
     const monthMap: { [key: string]: number } = {
       'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
       'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
     };
     
     const monthIndex = monthMap[monthAbbr];
-    if (monthIndex === undefined) return dateStr; // Return original if can't parse
+    if (monthIndex === undefined) return null;
     
-    const date = new Date(currentYear, monthIndex, parseInt(day));
-    
-    // Format as "Wed, Jun 11"
-    return date.toLocaleDateString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric'
-    });
+    return new Date(currentYear, monthIndex, parseInt(day));
   } catch (error) {
-    return dateStr; // Return original string if parsing fails
+    return null;
   }
+};
+
+// Format date from "13-Jun" to "Mon, Jun 16" format
+const formatDateDisplay = (dateStr: string) => {
+  const date = backendFormatToDate(dateStr);
+  if (!date) return dateStr;
+  
+  return format(date, "EEE, MMM d");
 };
 
 export default function AdminDashboard() {
@@ -56,6 +62,8 @@ export default function AdminDashboard() {
   // New location/date form states
   const [newLocation, setNewLocation] = useState("");
   const [newDate, setNewDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [editSelectedDate, setEditSelectedDate] = useState<Date>();
   const [editingRate, setEditingRate] = useState<string | null>(null);
   const [editingCapacity, setEditingCapacity] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState("");
@@ -405,8 +413,9 @@ export default function AdminDashboard() {
   };
 
   const handleAddDate = () => {
-    if (newDate.trim()) {
-      addDateMutation.mutate(newDate.trim());
+    if (selectedDate) {
+      const formattedDate = dateToBackendFormat(selectedDate);
+      addDateMutation.mutate(formattedDate);
     }
   };
 
