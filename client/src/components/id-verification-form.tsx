@@ -5,6 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { useLanguage } from "@/lib/language";
+import { LanguageToggle } from "@/components/language-toggle";
 import CryptoJS from 'crypto-js';
 
 interface UserData {
@@ -24,15 +26,16 @@ export function IDVerificationForm({ onVerified }: IDVerificationFormProps) {
   const [validationError, setValidationError] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const validateEmployeeId = (id: string) => {
     const trimmedId = id.trim();
     if (!trimmedId) {
-      setValidationError("Please enter your National ID");
+      setValidationError(t('id.placeholder'));
       return false;
     }
     if (trimmedId.length !== 10) {
-      setValidationError("National ID must be exactly 10 characters long");
+      setValidationError(t('id.nationalId') + ' must be exactly 10 characters long');
       return false;
     }
     setValidationError("");
