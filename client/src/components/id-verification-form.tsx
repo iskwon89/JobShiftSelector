@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useLanguage } from "@/lib/language";
-import { LanguageToggle } from "@/components/language-toggle";
+
 import CryptoJS from 'crypto-js';
 
 interface UserData {

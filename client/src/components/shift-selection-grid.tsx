@@ -6,7 +6,7 @@ import { MapPin, X, Info } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/lib/language";
-import { LanguageToggle } from "@/components/language-toggle";
+
 import type { ShiftSelection, ShiftData } from "@shared/schema";
 
 interface UserData {

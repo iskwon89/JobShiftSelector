@@ -23,14 +23,26 @@ export function Header({ showLogout = false, onLogout }: HeaderProps) {
           {/* Right side navigation */}
           <div className="flex items-center gap-3">
             <LanguageToggle />
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => window.location.href = '/admin'}
-              className="text-slate-500 hover:text-slate-700"
-            >
-              {t('nav.admin')}
-            </Button>
+            {showLogout ? (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={onLogout}
+                className="text-slate-600 hover:text-slate-800"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Logout</span>
+              </Button>
+            ) : (
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => window.location.href = '/admin'}
+                className="text-slate-500 hover:text-slate-700"
+              >
+                {t('nav.admin')}
+              </Button>
+            )}
           </div>
         </div>
       </div>
