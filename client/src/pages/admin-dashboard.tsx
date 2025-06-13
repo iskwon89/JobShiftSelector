@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/lib/language";
-import { Upload, CheckCircle, LogOut, Trash2, Plus, Download, DollarSign, Users, MessageSquare, Menu, X } from "lucide-react";
+import { Upload, CheckCircle, LogOut, Trash2, Plus, Download, Grid3X3, Users, MessageSquare, Menu, X } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ShiftData } from "@shared/schema";
@@ -314,7 +314,7 @@ export function AdminDashboard() {
   });
 
   const menuItems = [
-    { id: "pricing-matrix", label: "Pricing Matrix", icon: DollarSign },
+    { id: "pricing-matrix", label: "Pricing Matrix", icon: Grid3X3 },
     { id: "employee-data", label: "Employee Data Upload", icon: Users },
     { id: "line-notifications", label: "LINE Notifications", icon: MessageSquare },
   ];
@@ -358,7 +358,7 @@ export function AdminDashboard() {
         </nav>
         
         {/* Logout button at bottom */}
-        <div className="absolute bottom-4 left-0 right-0 px-4">
+        <div className="absolute bottom-4 left-4 right-4">
           <Button
             variant="ghost"
             onClick={handleLogout}
