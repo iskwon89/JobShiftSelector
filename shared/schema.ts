@@ -1,4 +1,5 @@
-import { pgTable, text, serial, boolean, json, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, boolean, json, integer, timestamp } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -32,6 +33,21 @@ export const shiftData = pgTable("shift_data", {
   currentBookings: integer("current_bookings").default(0).notNull(), // Current number of applications
 });
 
+export const lineNotifications = pgTable("line_notifications", {
+  id: serial("id").primaryKey(),
+  applicationId: integer("application_id").notNull().references(() => applications.id),
+  employeeId: text("employee_id").notNull(),
+  lineId: text("line_id").notNull(),
+  shiftLocation: text("shift_location").notNull(),
+  shiftDate: text("shift_date").notNull(),
+  shiftType: text("shift_type").notNull(), // 'DS' or 'NS'
+  scheduledFor: timestamp("scheduled_for").notNull(),
+  sentAt: timestamp("sent_at"),
+  status: text("status").notNull().default("pending"), // 'pending', 'sent', 'failed'
+  response: text("response"), // LINE API response or error message
+  createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`).notNull(),
+});
+
 export const insertEmployeeSchema = createInsertSchema(employees).pick({
   employeeId: true,
   name: true,
@@ -60,6 +76,16 @@ export const contactInfoSchema = z.object({
   phone: z.string().min(1, "Phone number is required"),
 });
 
+export const insertLineNotificationSchema = createInsertSchema(lineNotifications).pick({
+  applicationId: true,
+  employeeId: true,
+  lineId: true,
+  shiftLocation: true,
+  shiftDate: true,
+  shiftType: true,
+  scheduledFor: true,
+});
+
 export type InsertEmployee = z.infer<typeof insertEmployeeSchema>;
 export type Employee = typeof employees.$inferSelect;
 export type InsertApplication = z.infer<typeof insertApplicationSchema>;
@@ -67,3 +93,5 @@ export type Application = typeof applications.$inferSelect;
 export type ShiftData = typeof shiftData.$inferSelect;
 export type ShiftSelection = z.infer<typeof shiftSelectionSchema>;
 export type ContactInfo = z.infer<typeof contactInfoSchema>;
+export type LineNotification = typeof lineNotifications.$inferSelect;
+export type InsertLineNotification = z.infer<typeof insertLineNotificationSchema>;
