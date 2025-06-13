@@ -73,7 +73,6 @@ app.use((req, res, next) => {
       console.error('Error processing LINE notifications:', error);
     }
   }, {
-    scheduled: true,
     timezone: 'Asia/Taipei'
   });
 

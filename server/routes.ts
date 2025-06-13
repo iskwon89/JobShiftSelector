@@ -227,6 +227,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         );
       }
       
+      // Schedule LINE notifications for each shift
+      try {
+        const lineService = getLineService();
+        await lineService.scheduleNotificationsForApplication(application.id);
+      } catch (error) {
+        console.error('Failed to schedule LINE notifications:', error);
+        // Continue with application submission even if notification scheduling fails
+      }
+      
       // Generate application ID
       const applicationId = `APP-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${String(application.id).padStart(3, '0')}`;
       
@@ -580,6 +589,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error generating Excel file:', error);
       res.status(500).json({ message: 'Failed to generate Excel file' });
+    }
+  });
+
+  // LINE Notification management routes
+  app.get('/api/admin/line-notifications', async (req, res) => {
+    try {
+      const notifications = await storage.getNotificationLogs();
+      res.json(notifications);
+    } catch (error) {
+      console.error('Error fetching notification logs:', error);
+      res.status(500).json({ message: 'Failed to fetch notification logs' });
+    }
+  });
+
+  app.post('/api/admin/line-notifications/process', async (req, res) => {
+    try {
+      const lineService = getLineService();
+      await lineService.processPendingNotifications();
+      res.json({ message: 'Pending notifications processed successfully' });
+    } catch (error) {
+      console.error('Error processing notifications:', error);
+      res.status(500).json({ message: 'Failed to process notifications' });
     }
   });
 
