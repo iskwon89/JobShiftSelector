@@ -473,7 +473,7 @@ export function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              {/* Pricing Matrix Grid */}
+              {/* Pricing Matrix Table */}
               <Card>
                 <CardContent className="p-6">
                   {shiftDataLoading ? (
@@ -486,42 +486,61 @@ export function AdminDashboard() {
                       <p className="text-sm">Add locations and dates above to get started</p>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                      {locations.map(location => (
-                        <div key={location} className="space-y-4">
-                          <h3 className="text-lg font-bold text-slate-800">{location}</h3>
-                          <div className="space-y-3">
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse">
+                        <thead>
+                          <tr>
+                            <th className="border border-gray-300 p-3 bg-gray-50 font-semibold text-left min-w-[120px]">
+                              地點 (Location)
+                            </th>
                             {dates.map(date => (
-                              <div key={date} className="bg-white border rounded-lg p-4 space-y-3">
-                                <div className="font-medium text-slate-700">
-                                  {formatDateDisplay(date)}
+                              <th key={date} className="border border-gray-300 p-3 bg-gray-50 font-semibold text-center min-w-[180px]">
+                                <div className="space-y-1">
+                                  <div className="font-medium">{formatDateDisplay(date)}</div>
+                                  <div className="grid grid-cols-2 gap-1 text-xs">
+                                    <div>DS</div>
+                                    <div>NS</div>
+                                  </div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-3">
-                                  {['DS', 'NS'].map(shift => {
-                                    const shiftEntry = groupedShiftData[`${location}-${date}`]?.[shift];
-                                    
-                                    return (
-                                      <div key={shift} className="bg-slate-50 rounded p-3">
-                                        <div className="text-xs font-medium text-slate-600 mb-2 text-center">
-                                          {shift === 'DS' ? 'Day Shift' : 'Night Shift'}
-                                        </div>
-                                        <div className="space-y-1">
-                                          <div className="w-full bg-white py-2 px-3 rounded border text-sm font-medium text-center">
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {locations.map(location => (
+                            <tr key={location}>
+                              <td className="border border-gray-300 p-3 font-medium bg-gray-50">
+                                <div className="flex items-center">
+                                  <span className="mr-2">📍</span>
+                                  {location}
+                                </div>
+                              </td>
+                              {dates.map(date => (
+                                <td key={date} className="border border-gray-300 p-2">
+                                  <div className="grid grid-cols-2 gap-2">
+                                    {['DS', 'NS'].map(shift => {
+                                      const shiftEntry = groupedShiftData[`${location}-${date}`]?.[shift];
+                                      
+                                      return (
+                                        <div key={shift} className="text-center">
+                                          <div className={`px-3 py-2 rounded-lg text-sm font-medium ${
+                                            shift === 'DS' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                                          }`}>
                                             NT${shiftEntry?.rate || '800'}
                                           </div>
-                                          <div className="w-full bg-white py-1 px-3 rounded border text-xs text-slate-600 text-center">
-                                            Capacity: {shiftEntry?.capacity ?? 10}
+                                          <div className="text-xs text-gray-600 mt-1">
+                                            {shiftEntry?.capacity ?? 10} available
                                           </div>
                                         </div>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      ))}
+                                      );
+                                    })}
+                                  </div>
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   )}
                 </CardContent>
