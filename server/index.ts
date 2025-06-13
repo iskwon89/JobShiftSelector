@@ -38,8 +38,28 @@ app.use((req, res, next) => {
   next();
 });
 
+// Initialize Default cohort data
+async function initializeDefaultCohort() {
+  try {
+    const { storage } = await import('./storage');
+    
+    // Check if Default cohort exists
+    const cohorts = await storage.getAvailableCohorts();
+    if (!cohorts.includes('Default')) {
+      console.log('Creating Default cohort for guest users...');
+      await storage.createCohortMatrix('Default');
+      console.log('Default cohort created successfully');
+    }
+  } catch (error) {
+    console.error('Error initializing Default cohort:', error);
+  }
+}
+
 (async () => {
   const server = await registerRoutes(app);
+  
+  // Initialize Default cohort
+  await initializeDefaultCohort();
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

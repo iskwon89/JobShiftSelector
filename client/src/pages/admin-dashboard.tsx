@@ -85,7 +85,7 @@ export default function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   
   // Current cohort selection
-  const [selectedCohort, setSelectedCohort] = useState<string>("A");
+  const [selectedCohort, setSelectedCohort] = useState<string>("Default");
   const [newCohort, setNewCohort] = useState("");
   
   // New location/date form states

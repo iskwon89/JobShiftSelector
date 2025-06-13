@@ -96,9 +96,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       if (!employee) {
-        return res.status(404).json({ 
-          message: "Employee ID not found. Please check your ID or contact HR." 
-        });
+        console.log("Employee not found - assigning to Default cohort");
+        // Return default user data for users not in employee database
+        const responseData = {
+          id: employeeId,
+          name: "Guest User",
+          eligible: true,
+          cohort: "Default"
+        };
+        
+        console.log("Verification SUCCESS (Default) - Sending response:", responseData);
+        console.log("=== End ID Verification ===");
+        
+        return res.json(responseData);
       }
 
       if (!employee.eligible) {

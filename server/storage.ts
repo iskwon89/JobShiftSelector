@@ -85,9 +85,16 @@ export class MemStorage implements IStorage {
       'NS': '1600'
     };
 
-    // Create shift data for both cohorts
-    ['A', 'B'].forEach(cohort => {
-      const rates = cohort === 'A' ? cohortARates : cohortBRates;
+    // Default cohort rates (standard rates for guest users)
+    const defaultRates = {
+      'DS': '750',
+      'NS': '1100'
+    };
+
+    // Create shift data for all cohorts including Default
+    ['A', 'B', 'Default'].forEach(cohort => {
+      const rates = cohort === 'A' ? cohortARates : 
+                   cohort === 'B' ? cohortBRates : defaultRates;
       
       locations.forEach(location => {
         dates.forEach(date => {
@@ -100,6 +107,7 @@ export class MemStorage implements IStorage {
             if (cohort === 'A' && location === 'FC4' && shift === 'SS') {
               rate = '1600';
             }
+            // Default cohort uses standard rates without special cases
             
             const id = this.currentShiftDataId++;
             this.shiftData.set(id, {
@@ -408,9 +416,11 @@ export class MemStorage implements IStorage {
           // Default rates based on cohort and shift (in NTD)
           let rate = '800';
           if (shift === 'NS') {
-            rate = cohort === 'A' ? '1200' : '1600';
+            rate = cohort === 'A' ? '1200' : cohort === 'B' ? '1600' : '1100';
           } else if (cohort === 'B') {
             rate = '900';
+          } else if (cohort === 'Default') {
+            rate = '750';
           }
           
           const id = this.currentShiftDataId++;
