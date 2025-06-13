@@ -56,10 +56,8 @@ Couflex Team`);
   // Validation helper
   const isValidLineId = (lineId: string) => {
     const trimmed = lineId.trim();
-    // LINE ID can be user-friendly (4-20 chars) or internal user ID (U + 32 chars)
-    const isUserFriendlyId = trimmed.length >= 4 && trimmed.length <= 20;
-    const isInternalUserId = trimmed.startsWith('U') && trimmed.length === 33;
-    return isUserFriendlyId || isInternalUserId;
+    // Only accept internal user IDs for messaging API
+    return trimmed.startsWith('U') && trimmed.length === 33;
   };
   
   const { data: notifications = [], isLoading, refetch } = useQuery<LineNotification[]>({
@@ -384,11 +382,22 @@ Couflex Team`);
               <CardTitle className="text-blue-800 dark:text-blue-200">How to Get LINE User IDs</CardTitle>
             </CardHeader>
             <CardContent className="text-sm text-blue-700 dark:text-blue-300">
-              <div className="space-y-2">
-                <p><strong>LINE ID Format:</strong> User-friendly LINE IDs are 4-20 characters long</p>
-                <p><strong>Examples:</strong> "john123", "@mycompany", "employee001"</p>
-                <p><strong>How to find:</strong> Users can set their LINE ID in LINE app settings, or you can ask employees to share their LINE ID</p>
-                <p><strong>Note:</strong> LINE IDs are optional - not all users have one set up</p>
+              <div className="space-y-3">
+                <p><strong>Important:</strong> For sending messages, you need the User ID (starts with 'U'), not the LINE ID</p>
+                <p><strong>User ID Format:</strong> 33 characters starting with 'U' (e.g., U1234567890abcdef1234567890abcdef)</p>
+                
+                <div className="border-l-2 border-blue-300 pl-3 space-y-2">
+                  <p><strong>How to collect User IDs:</strong></p>
+                  <ol className="list-decimal list-inside space-y-1 text-xs">
+                    <li>Set up a webhook endpoint in your LINE Bot settings</li>
+                    <li>When employees add your bot as a friend, you'll receive a webhook with their User ID</li>
+                    <li>When employees send messages, the webhook includes their User ID</li>
+                    <li>Store these User IDs in your database linked to employee information</li>
+                  </ol>
+                </div>
+                
+                <p className="text-xs"><strong>Webhook URL:</strong> Set to https://your-domain.com/webhook/line</p>
+                <p className="text-xs"><strong>Testing:</strong> Use your own User ID first - add the bot and check webhook logs</p>
               </div>
             </CardContent>
           </Card>
@@ -408,10 +417,10 @@ Couflex Team`);
                     id="lineId"
                     value={manualLineId}
                     onChange={(e) => setManualLineId(e.target.value)}
-                    placeholder="username or @username"
+                    placeholder="U1234567890abcdef1234567890abcdef"
                   />
                   <div className="text-xs text-muted-foreground">
-                    Enter LINE ID (4-20 characters, e.g., "username" or "@username")
+                    Enter User ID (33 characters starting with 'U')
                   </div>
                 </div>
                 
@@ -452,7 +461,7 @@ Couflex Team`);
                   
                 {!isValidLineId(manualLineId) && manualLineId.length > 0 && (
                   <div className="text-sm text-red-600 mt-2">
-                    Invalid LINE ID format. Must be 4-20 characters long.
+                    Invalid User ID format. Must start with 'U' and be 33 characters long.
                   </div>
                 )}
                 </div>

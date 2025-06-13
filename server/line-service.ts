@@ -62,23 +62,20 @@ Good luck with your shift! 💪`;
         };
       }
 
-      // LINE ID can be either:
-      // 1. User-friendly ID (like @username or username) - 4-20 characters
-      // 2. Internal user ID starting with 'U' - 33 characters
+      // Only accept internal user IDs for the messaging API
       const trimmedLineId = lineId.trim();
-      const isUserFriendlyId = trimmedLineId.length >= 4 && trimmedLineId.length <= 20;
       const isInternalUserId = trimmedLineId.startsWith('U') && trimmedLineId.length === 33;
       
-      if (!isUserFriendlyId && !isInternalUserId) {
+      if (!isInternalUserId) {
         return {
           success: false,
-          error: 'Invalid LINE ID format. LINE ID should be 4-20 characters (e.g., "username" or "@username") or internal user ID starting with "U"'
+          error: 'Invalid User ID format. Must start with "U" and be 33 characters long (e.g., U1234567890abcdef1234567890abcdef)'
         };
       }
 
       const message = this.formatShiftMessage(reminderData);
       
-      const result = await this.client.pushMessage(lineId, {
+      const result = await this.client.pushMessage(trimmedLineId, {
         type: 'text',
         text: message
       });
