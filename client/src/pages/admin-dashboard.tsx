@@ -333,7 +333,7 @@ export function AdminDashboard() {
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className="p-2"
           >
-            {sidebarCollapsed ? <Menu className="w-4 h-4" /> : <X className="w-4 h-4" />}
+            <Menu className="w-4 h-4" />
           </Button>
         </div>
         
@@ -362,7 +362,7 @@ export function AdminDashboard() {
           <Button
             variant="ghost"
             onClick={handleLogout}
-            className={`w-full justify-start text-gray-700 hover:text-red-600 hover:bg-red-50 ${
+            className={`w-full justify-start text-gray-700 hover:text-gray-900 hover:bg-gray-100 ${
               sidebarCollapsed ? 'px-2' : 'px-4'
             }`}
           >
