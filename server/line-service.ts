@@ -1,6 +1,6 @@
 import { Client } from '@line/bot-sdk';
 import { storage } from './storage';
-import type { InsertLineNotification, LineNotification } from '@shared/schema';
+import type { InsertLineNotification, LineNotification, ShiftSelection } from '@shared/schema';
 
 interface LineConfig {
   channelAccessToken: string;
@@ -92,8 +92,8 @@ Good luck with your shift! 💪`;
         throw new Error(`Application ${applicationId} not found`);
       }
 
-      const selectedShifts = Array.isArray(application.selectedShifts) 
-        ? application.selectedShifts 
+      const selectedShifts: ShiftSelection[] = Array.isArray(application.selectedShifts) 
+        ? application.selectedShifts as ShiftSelection[]
         : JSON.parse(application.selectedShifts as string);
 
       for (const shift of selectedShifts) {

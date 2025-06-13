@@ -1,6 +1,8 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import * as cron from 'node-cron';
+import { getLineService } from './line-service';
 
 const app = express();
 app.use(express.json());
@@ -60,11 +62,27 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = 5000;
+  // Setup cron job to process LINE notifications at 9am Taiwan time daily
+  cron.schedule('0 9 * * *', async () => {
+    try {
+      log('Processing pending LINE notifications...');
+      const lineService = getLineService();
+      await lineService.processPendingNotifications();
+      log('LINE notification processing completed');
+    } catch (error) {
+      console.error('Error processing LINE notifications:', error);
+    }
+  }, {
+    scheduled: true,
+    timezone: 'Asia/Taipei'
+  });
+
   server.listen({
     port,
     host: "0.0.0.0",
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    log('LINE notification cron job scheduled for 9am Taiwan time');
   });
 })();
