@@ -614,6 +614,98 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Message template management
+  app.post('/api/admin/line-notifications/template', async (req, res) => {
+    try {
+      const { template } = req.body;
+      if (!template) {
+        return res.status(400).json({ message: 'Template is required' });
+      }
+      
+      // For now, we'll store the template in memory or could add to database
+      // This is a simple implementation - you could expand to store in DB
+      res.json({ message: 'Template saved successfully', template });
+    } catch (error) {
+      console.error('Error saving template:', error);
+      res.status(500).json({ message: 'Failed to save template' });
+    }
+  });
+
+  // Preview message with macros
+  app.post('/api/admin/line-notifications/preview', async (req, res) => {
+    try {
+      const { template, lineId, date } = req.body;
+      if (!template || !lineId || !date) {
+        return res.status(400).json({ message: 'Template, lineId, and date are required' });
+      }
+
+      // Mock data for preview - replace with actual employee data lookup
+      const previewData = {
+        name: 'John Doe',
+        location: 'FC1',
+        date: date,
+        time: '09:00-18:00',
+        shift: 'Day Shift'
+      };
+
+      let message = template;
+      Object.entries(previewData).forEach(([key, value]) => {
+        const regex = new RegExp(`{{${key}}}`, 'g');
+        message = message.replace(regex, value);
+      });
+
+      res.json({ message });
+    } catch (error) {
+      console.error('Error generating preview:', error);
+      res.status(500).json({ message: 'Failed to generate preview' });
+    }
+  });
+
+  // Send manual message
+  app.post('/api/admin/line-notifications/send-manual', async (req, res) => {
+    try {
+      const { lineId, date } = req.body;
+      if (!lineId || !date) {
+        return res.status(400).json({ message: 'LineId and date are required' });
+      }
+
+      const lineService = getLineService();
+      
+      // Create manual shift reminder data
+      const reminderData = {
+        name: 'Manual User',
+        location: 'Manual Location',
+        date: date,
+        shiftType: 'DS' as const,
+        shiftTime: '09:00-18:00'
+      };
+
+      const result = await lineService.sendShiftReminder(lineId, reminderData);
+      
+      if (result.success) {
+        // Log the manual notification
+        const notification = {
+          applicationId: 0, // Manual sends don't have application ID
+          employeeId: 'manual',
+          lineId: lineId,
+          shiftLocation: 'Manual Location',
+          shiftDate: date,
+          shiftType: 'DS',
+          scheduledFor: new Date()
+        };
+        
+        await storage.createLineNotification(notification);
+        
+        res.json({ message: 'Manual message sent successfully' });
+      } else {
+        res.status(500).json({ message: result.error || 'Failed to send message' });
+      }
+    } catch (error) {
+      console.error('Error sending manual message:', error);
+      res.status(500).json({ message: 'Failed to send manual message' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

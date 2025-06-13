@@ -31,7 +31,7 @@ export class LineService {
     return shiftType === 'DS' ? '08:00 - 17:00' : '18:00 - 03:00';
   }
 
-  private formatShiftMessage(data: ShiftReminderData): string {
+  formatShiftMessage(data: ShiftReminderData): string {
     const shiftTime = this.getShiftTimeText(data.shiftType);
     const shiftName = data.shiftType === 'DS' ? 'Day Shift' : 'Night Shift';
     
