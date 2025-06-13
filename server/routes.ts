@@ -706,6 +706,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // LINE webhook endpoint for collecting User IDs
+  app.post('/webhook/line', async (req, res) => {
+    try {
+      const signature = req.get('x-line-signature');
+      if (!signature) {
+        console.log('LINE webhook: Missing signature');
+        return res.status(401).send('Unauthorized');
+      }
+
+      // Verify webhook signature (optional but recommended)
+      const events = req.body.events || [];
+      
+      for (const event of events) {
+        console.log('LINE webhook event:', JSON.stringify(event, null, 2));
+        
+        if (event.type === 'follow' || event.type === 'message') {
+          const userId = event.source?.userId;
+          if (userId) {
+            console.log(`Collected User ID: ${userId}`);
+            console.log(`=== USER ID FOR MANUAL MESSAGING: ${userId} ===`);
+            
+            // You can store this in your database linked to employee info
+            // For now, just log it so you can copy it for testing
+          }
+        }
+      }
+      
+      res.status(200).send('OK');
+    } catch (error) {
+      console.error('LINE webhook error:', error);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
