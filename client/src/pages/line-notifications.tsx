@@ -385,10 +385,10 @@ Couflex Team`);
             </CardHeader>
             <CardContent className="text-sm text-blue-700 dark:text-blue-300">
               <div className="space-y-2">
-                <p><strong>For testing:</strong> Use your LINE Bot's webhook URL to capture user IDs when employees interact with the bot</p>
-                <p><strong>Format:</strong> LINE user IDs always start with "U" followed by 32 characters (total 33 characters)</p>
-                <p><strong>Example:</strong> U1234567890abcdef1234567890abcdef</p>
-                <p><strong>Note:</strong> Each user has a unique ID that's generated when they first interact with your LINE Bot</p>
+                <p><strong>LINE ID Format:</strong> User-friendly LINE IDs are 4-20 characters long</p>
+                <p><strong>Examples:</strong> "john123", "@mycompany", "employee001"</p>
+                <p><strong>How to find:</strong> Users can set their LINE ID in LINE app settings, or you can ask employees to share their LINE ID</p>
+                <p><strong>Note:</strong> LINE IDs are optional - not all users have one set up</p>
               </div>
             </CardContent>
           </Card>
@@ -408,10 +408,10 @@ Couflex Team`);
                     id="lineId"
                     value={manualLineId}
                     onChange={(e) => setManualLineId(e.target.value)}
-                    placeholder="U1234567890abcdef1234567890abcdef"
+                    placeholder="username or @username"
                   />
                   <div className="text-xs text-muted-foreground">
-                    LINE user IDs start with "U" and are 33 characters long
+                    Enter LINE ID (4-20 characters, e.g., "username" or "@username")
                   </div>
                 </div>
                 
@@ -452,7 +452,7 @@ Couflex Team`);
                   
                 {!isValidLineId(manualLineId) && manualLineId.length > 0 && (
                   <div className="text-sm text-red-600 mt-2">
-                    Invalid LINE ID format. Must start with "U" and be 33 characters long.
+                    Invalid LINE ID format. Must be 4-20 characters long.
                   </div>
                 )}
                 </div>
