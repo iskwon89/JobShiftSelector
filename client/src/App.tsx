@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/lib/language";
 import JobApplication from "@/pages/job-application";
 import AdminLogin from "@/pages/admin-login";
 import AdminDashboard from "@/pages/admin-dashboard";
+import { LineNotifications } from "@/pages/line-notifications";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -15,6 +16,7 @@ function Router() {
       <Route path="/" component={JobApplication} />
       <Route path="/admin" component={AdminLogin} />
       <Route path="/admin/dashboard" component={AdminDashboard} />
+      <Route path="/admin/line-notifications" component={LineNotifications} />
       <Route component={NotFound} />
     </Switch>
   );

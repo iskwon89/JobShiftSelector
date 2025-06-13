@@ -16,6 +16,7 @@ import type { ShiftData } from "@shared/schema";
 import { downloadSampleExcel } from "@/lib/sample-excel";
 import { DatePicker } from "@/components/date-picker";
 import { format } from "date-fns";
+import { LineNotifications } from "./line-notifications";
 
 // Convert Date object to "13-Jun" format for backend
 const dateToBackendFormat = (date: Date): string => {
@@ -555,9 +556,10 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         <Tabs defaultValue="excel-upload" className="space-y-4 sm:space-y-6">
-          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 h-auto sm:h-10">
+          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 h-auto sm:h-10">
             <TabsTrigger value="excel-upload" className="text-xs sm:text-sm">Employee Data Upload</TabsTrigger>
             <TabsTrigger value="pricing-matrix" className="text-xs sm:text-sm">Pricing Matrix Management</TabsTrigger>
+            <TabsTrigger value="line-notifications" className="text-xs sm:text-sm">LINE Notifications</TabsTrigger>
           </TabsList>
 
           {/* Excel Upload Tab */}
@@ -1140,6 +1142,11 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* LINE Notifications Tab */}
+          <TabsContent value="line-notifications">
+            <LineNotifications />
           </TabsContent>
         </Tabs>
       </main>
