@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Header } from "@/components/header";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/lib/language";
@@ -101,6 +102,7 @@ export default function AdminDashboard() {
   const [editingDate, setEditingDate] = useState<string | null>(null);
   const [editLocationValue, setEditLocationValue] = useState("");
   const [editDateValue, setEditDateValue] = useState("");
+  const [showCreateCohortModal, setShowCreateCohortModal] = useState(false);
   
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -147,6 +149,7 @@ export default function AdminDashboard() {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/cohorts'] });
       queryClient.invalidateQueries({ queryKey: ['/api/admin/shift-data'] });
       setNewCohort("");
+      setShowCreateCohortModal(false);
       toast({
         title: "Success",
         description: "Cohort matrix created successfully",
@@ -642,51 +645,67 @@ export default function AdminDashboard() {
           {/* Pricing Matrix Tab */}
           <TabsContent value="pricing-matrix">
             <div className="space-y-6">
-              {/* Cohort Management */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Cohort Management</CardTitle>
-                  <p className="text-slate-600">Select or create cohort pricing matrices</p>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Select Active Cohort</Label>
-                      <Select value={selectedCohort} onValueChange={setSelectedCohort}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select cohort" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {cohorts?.map(cohort => (
-                            <SelectItem key={cohort} value={cohort}>
-                              Cohort {cohort}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Create New Cohort</Label>
-                      <div className="flex gap-2">
+              {/* Pricing Matrix Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <h2 className="text-2xl font-bold">PRICING MATRIX</h2>
+                  <Select value={selectedCohort} onValueChange={setSelectedCohort}>
+                    <SelectTrigger className="w-48">
+                      <SelectValue placeholder="Select cohort" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {cohorts?.map(cohort => (
+                        <SelectItem key={cohort} value={cohort}>
+                          COHORT {cohort}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Dialog open={showCreateCohortModal} onOpenChange={setShowCreateCohortModal}>
+                  <DialogTrigger asChild>
+                    <Button>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Create New Cohort
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Create New Cohort</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="cohort-name">Cohort Name</Label>
                         <Input
+                          id="cohort-name"
                           value={newCohort}
                           onChange={(e) => setNewCohort(e.target.value)}
                           placeholder="e.g., C"
-                          className="flex-1"
                         />
-                        <Button onClick={handleCreateCohort} disabled={!newCohort.trim()} size="sm" className="px-3">
-                          <Plus className="w-4 h-4" />
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setShowCreateCohortModal(false)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={handleCreateCohort} 
+                          disabled={!newCohort.trim() || createCohortMutation.isPending}
+                        >
+                          Create Cohort
                         </Button>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </DialogContent>
+                </Dialog>
+              </div>
 
               {/* Add Location/Date Controls */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Manage Matrix for Cohort {selectedCohort}</CardTitle>
+                  <CardTitle>Manage Locations & Dates</CardTitle>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
