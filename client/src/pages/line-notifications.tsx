@@ -4,7 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { RefreshCw, Send, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { RefreshCw, Send, Clock, CheckCircle, XCircle, AlertCircle, Eye, MessageSquare, Settings } from 'lucide-react';
 import { queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 
@@ -23,6 +27,31 @@ interface LineNotification {
 
 export function LineNotifications() {
   const { toast } = useToast();
+  
+  // Message template state
+  const [messageTemplate, setMessageTemplate] = useState(`🔔 Shift Reminder 🔔
+
+Hello {{name}}!
+
+You have an upcoming shift scheduled:
+📍 Location: {{location}}
+📅 Date: {{date}}
+⏰ Time: {{time}} ({{shift}})
+
+Please arrive 15 minutes early for briefing.
+
+For any questions, contact HR at:
+📧 hr@couflex.com
+📞 +886-2-1234-5678
+
+Thank you!
+Couflex Team`);
+
+  // Manual message state
+  const [manualLineId, setManualLineId] = useState('');
+  const [manualDate, setManualDate] = useState('');
+  const [previewMessage, setPreviewMessage] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
   
   const { data: notifications = [], isLoading, refetch } = useQuery<LineNotification[]>({
     queryKey: ['/api/admin/line-notifications'],
@@ -48,6 +77,82 @@ export function LineNotifications() {
       toast({
         title: "Error",
         description: error.message || "Failed to process notifications",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const saveTemplateMutation = useMutation({
+    mutationFn: async (template: string) => {
+      const response = await fetch('/api/admin/line-notifications/template', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ template }),
+      });
+      if (!response.ok) throw new Error('Failed to save template');
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Message template saved successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save template",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const sendManualMessageMutation = useMutation({
+    mutationFn: async ({ lineId, date }: { lineId: string; date: string }) => {
+      const response = await fetch('/api/admin/line-notifications/send-manual', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lineId, date }),
+      });
+      if (!response.ok) throw new Error('Failed to send manual message');
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Manual message sent successfully",
+      });
+      setManualLineId('');
+      setManualDate('');
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/line-notifications'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send manual message",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const previewTemplateMutation = useMutation({
+    mutationFn: async ({ template, lineId, date }: { template: string; lineId: string; date: string }) => {
+      const response = await fetch('/api/admin/line-notifications/preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ template, lineId, date }),
+      });
+      if (!response.ok) throw new Error('Failed to generate preview');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setPreviewMessage(data.message);
+      setShowPreview(true);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to generate preview",
         variant: "destructive",
       });
     },
@@ -109,110 +214,244 @@ export function LineNotifications() {
         </div>
       </div>
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Notifications</CardTitle>
-            <Send className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{notifications.length}</div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending</CardTitle>
-            <Clock className="h-4 w-4 text-yellow-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{pendingCount}</div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sent Successfully</CardTitle>
-            <CheckCircle className="h-4 w-4 text-green-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">{sentCount}</div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Failed</CardTitle>
-            <XCircle className="h-4 w-4 text-red-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-red-600">{failedCount}</div>
-          </CardContent>
-        </Card>
-      </div>
+      <Tabs defaultValue="history" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="history">Notification History</TabsTrigger>
+          <TabsTrigger value="template">Message Template</TabsTrigger>
+          <TabsTrigger value="manual">Manual Send</TabsTrigger>
+        </TabsList>
 
-      {/* Notifications List */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Notification History</CardTitle>
-          <CardDescription>
-            Recent LINE notifications with their status and details
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <RefreshCw className="w-6 h-6 animate-spin mr-2" />
-              Loading notifications...
-            </div>
-          ) : notifications.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              No notifications found
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {notifications.map((notification, index) => (
-                <div key={notification.id}>
-                  <div className="flex items-start justify-between py-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-3">
-                        {getStatusBadge(notification.status)}
-                        <span className="font-medium">Employee ID: {notification.employeeId}</span>
-                        <span className="text-sm text-muted-foreground">
-                          App #{notification.applicationId}
-                        </span>
-                      </div>
-                      
-                      <div className="text-sm text-muted-foreground">
-                        <div><strong>LINE ID:</strong> {notification.lineId}</div>
-                        <div><strong>Scheduled for:</strong> {formatDate(notification.scheduledFor)}</div>
-                        {notification.sentAt && (
-                          <div><strong>Sent at:</strong> {formatDate(notification.sentAt)}</div>
-                        )}
-                        <div><strong>Created:</strong> {formatDate(notification.createdAt)}</div>
-                      </div>
-                      
-                      <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
-                        <div className="text-sm font-medium mb-1">Message:</div>
-                        <div className="text-sm whitespace-pre-wrap">{notification.message}</div>
-                      </div>
-                      
-                      {notification.response && (
-                        <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-md">
-                          <div className="text-sm font-medium mb-1">Response:</div>
-                          <div className="text-sm">{notification.response}</div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  {index < notifications.length - 1 && <Separator />}
+        {/* History Tab */}
+        <TabsContent value="history" className="space-y-6">
+          {/* Statistics Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Total Notifications</CardTitle>
+                <Send className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{notifications.length}</div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Pending</CardTitle>
+                <Clock className="h-4 w-4 text-yellow-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-yellow-600">{pendingCount}</div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Sent Successfully</CardTitle>
+                <CheckCircle className="h-4 w-4 text-green-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600">{sentCount}</div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Failed</CardTitle>
+                <XCircle className="h-4 w-4 text-red-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-red-600">{failedCount}</div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Notifications List */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Notification History</CardTitle>
+              <CardDescription>
+                Recent LINE notifications with their status and details
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <RefreshCw className="w-6 h-6 animate-spin mr-2" />
+                  Loading notifications...
                 </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+              ) : notifications.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  No notifications found
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {notifications.map((notification, index) => (
+                    <div key={notification.id}>
+                      <div className="flex items-start justify-between py-4">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-3">
+                            {getStatusBadge(notification.status)}
+                            <span className="font-medium">Employee ID: {notification.employeeId}</span>
+                            <span className="text-sm text-muted-foreground">
+                              App #{notification.applicationId}
+                            </span>
+                          </div>
+                          
+                          <div className="text-sm text-muted-foreground">
+                            <div><strong>LINE ID:</strong> {notification.lineId}</div>
+                            <div><strong>Scheduled for:</strong> {formatDate(notification.scheduledFor)}</div>
+                            {notification.sentAt && (
+                              <div><strong>Sent at:</strong> {formatDate(notification.sentAt)}</div>
+                            )}
+                            <div><strong>Created:</strong> {formatDate(notification.createdAt)}</div>
+                          </div>
+                          
+                          <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
+                            <div className="text-sm font-medium mb-1">Message:</div>
+                            <div className="text-sm whitespace-pre-wrap">{notification.message}</div>
+                          </div>
+                          
+                          {notification.response && (
+                            <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-md">
+                              <div className="text-sm font-medium mb-1">Response:</div>
+                              <div className="text-sm">{notification.response}</div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      {index < notifications.length - 1 && <Separator />}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Template Tab */}
+        <TabsContent value="template" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Message Template</CardTitle>
+              <CardDescription>
+                Customize the notification message template using macro notation
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="template">Template Message</Label>
+                <Textarea
+                  id="template"
+                  value={messageTemplate}
+                  onChange={(e) => setMessageTemplate(e.target.value)}
+                  rows={12}
+                  className="font-mono"
+                  placeholder="Enter message template with macros"
+                />
+                <div className="text-sm text-muted-foreground">
+                  Available macros: name, location, date, time, shift
+                </div>
+              </div>
+              
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => saveTemplateMutation.mutate(messageTemplate)}
+                  disabled={saveTemplateMutation.isPending}
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Save Template
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Manual Send Tab */}
+        <TabsContent value="manual" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Send Manual Message</CardTitle>
+                <CardDescription>
+                  Send notification manually to specific LINE ID for a date
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="lineId">LINE ID</Label>
+                  <Input
+                    id="lineId"
+                    value={manualLineId}
+                    onChange={(e) => setManualLineId(e.target.value)}
+                    placeholder="Enter LINE ID"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="date">Date (format: Mon, Jun 16)</Label>
+                  <Input
+                    id="date"
+                    value={manualDate}
+                    onChange={(e) => setManualDate(e.target.value)}
+                    placeholder="Mon, Jun 16"
+                  />
+                </div>
+                
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => previewTemplateMutation.mutate({ 
+                      template: messageTemplate, 
+                      lineId: manualLineId, 
+                      date: manualDate 
+                    })}
+                    disabled={!manualLineId || !manualDate || previewTemplateMutation.isPending}
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    Preview
+                  </Button>
+                  
+                  <Button
+                    onClick={() => sendManualMessageMutation.mutate({ 
+                      lineId: manualLineId, 
+                      date: manualDate 
+                    })}
+                    disabled={!manualLineId || !manualDate || sendManualMessageMutation.isPending}
+                  >
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Send Now
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {showPreview && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Message Preview</CardTitle>
+                  <CardDescription>
+                    Preview of the message that will be sent
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-md border">
+                    <div className="text-sm whitespace-pre-wrap">{previewMessage}</div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-3"
+                    onClick={() => setShowPreview(false)}
+                  >
+                    Close Preview
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
