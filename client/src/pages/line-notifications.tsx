@@ -53,6 +53,15 @@ Couflex Team`);
   const [previewMessage, setPreviewMessage] = useState('');
   const [showPreview, setShowPreview] = useState(false);
   
+  // Validation helper
+  const isValidLineId = (lineId: string) => {
+    const trimmed = lineId.trim();
+    // LINE ID can be user-friendly (4-20 chars) or internal user ID (U + 32 chars)
+    const isUserFriendlyId = trimmed.length >= 4 && trimmed.length <= 20;
+    const isInternalUserId = trimmed.startsWith('U') && trimmed.length === 33;
+    return isUserFriendlyId || isInternalUserId;
+  };
+  
   const { data: notifications = [], isLoading, refetch } = useQuery<LineNotification[]>({
     queryKey: ['/api/admin/line-notifications'],
   });
@@ -369,6 +378,21 @@ Couflex Team`);
 
         {/* Manual Send Tab */}
         <TabsContent value="manual" className="space-y-6">
+          {/* Instructions Card */}
+          <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200">
+            <CardHeader>
+              <CardTitle className="text-blue-800 dark:text-blue-200">How to Get LINE User IDs</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-blue-700 dark:text-blue-300">
+              <div className="space-y-2">
+                <p><strong>For testing:</strong> Use your LINE Bot's webhook URL to capture user IDs when employees interact with the bot</p>
+                <p><strong>Format:</strong> LINE user IDs always start with "U" followed by 32 characters (total 33 characters)</p>
+                <p><strong>Example:</strong> U1234567890abcdef1234567890abcdef</p>
+                <p><strong>Note:</strong> Each user has a unique ID that's generated when they first interact with your LINE Bot</p>
+              </div>
+            </CardContent>
+          </Card>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
@@ -384,8 +408,11 @@ Couflex Team`);
                     id="lineId"
                     value={manualLineId}
                     onChange={(e) => setManualLineId(e.target.value)}
-                    placeholder="Enter LINE ID"
+                    placeholder="U1234567890abcdef1234567890abcdef"
                   />
+                  <div className="text-xs text-muted-foreground">
+                    LINE user IDs start with "U" and are 33 characters long
+                  </div>
                 </div>
                 
                 <div className="space-y-2">
@@ -417,11 +444,17 @@ Couflex Team`);
                       lineId: manualLineId, 
                       date: manualDate 
                     })}
-                    disabled={!manualLineId || !manualDate || sendManualMessageMutation.isPending}
+                    disabled={!isValidLineId(manualLineId) || !manualDate || sendManualMessageMutation.isPending}
                   >
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Send Now
                   </Button>
+                  
+                {!isValidLineId(manualLineId) && manualLineId.length > 0 && (
+                  <div className="text-sm text-red-600 mt-2">
+                    Invalid LINE ID format. Must start with "U" and be 33 characters long.
+                  </div>
+                )}
                 </div>
               </CardContent>
             </Card>

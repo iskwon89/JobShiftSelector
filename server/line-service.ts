@@ -54,6 +54,28 @@ Good luck with your shift! 💪`;
     reminderData: ShiftReminderData
   ): Promise<{ success: boolean; response?: string; error?: string }> {
     try {
+      // Validate LINE ID format
+      if (!lineId || lineId.trim().length === 0) {
+        return {
+          success: false,
+          error: 'LINE ID is required'
+        };
+      }
+
+      // LINE ID can be either:
+      // 1. User-friendly ID (like @username or username) - 4-20 characters
+      // 2. Internal user ID starting with 'U' - 33 characters
+      const trimmedLineId = lineId.trim();
+      const isUserFriendlyId = trimmedLineId.length >= 4 && trimmedLineId.length <= 20;
+      const isInternalUserId = trimmedLineId.startsWith('U') && trimmedLineId.length === 33;
+      
+      if (!isUserFriendlyId && !isInternalUserId) {
+        return {
+          success: false,
+          error: 'Invalid LINE ID format. LINE ID should be 4-20 characters (e.g., "username" or "@username") or internal user ID starting with "U"'
+        };
+      }
+
       const message = this.formatShiftMessage(reminderData);
       
       const result = await this.client.pushMessage(lineId, {
@@ -70,9 +92,22 @@ Good luck with your shift! 💪`;
       
       let errorMessage = 'Unknown error occurred';
       if (error.response) {
-        errorMessage = `LINE API Error: ${error.response.status} - ${error.response.statusText}`;
-        if (error.response.data?.message) {
-          errorMessage += ` (${error.response.data.message})`;
+        const status = error.response.status;
+        if (status === 400) {
+          errorMessage = 'Invalid request format or LINE ID. Please verify the LINE ID is correct.';
+          if (error.response.data?.details) {
+            const details = error.response.data.details.map((d: any) => d.message).join(', ');
+            errorMessage += ` Details: ${details}`;
+          }
+        } else if (status === 403) {
+          errorMessage = 'LINE Bot access token is invalid or expired. Please check your LINE Bot credentials.';
+        } else if (status === 429) {
+          errorMessage = 'Rate limit exceeded. Please try again later.';
+        } else {
+          errorMessage = `LINE API Error: ${status} - ${error.response.statusText}`;
+          if (error.response.data?.message) {
+            errorMessage += ` (${error.response.data.message})`;
+          }
         }
       } else if (error.message) {
         errorMessage = error.message;
