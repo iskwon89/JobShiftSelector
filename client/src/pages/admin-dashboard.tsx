@@ -126,6 +126,18 @@ export default function AdminDashboard() {
     }
   });
 
+  // Update selected cohort when cohorts are loaded
+  useEffect(() => {
+    if (cohorts && cohorts.length > 0) {
+      // If Default exists, use it; otherwise use the first available cohort
+      if (cohorts.includes('Default')) {
+        setSelectedCohort('Default');
+      } else if (!cohorts.includes(selectedCohort)) {
+        setSelectedCohort(cohorts[0]);
+      }
+    }
+  }, [cohorts]);
+
   // Fetch shift data for all cohorts
   const { data: allShiftData, isLoading: shiftDataLoading } = useQuery<ShiftData[]>({
     queryKey: ['/api/admin/shift-data'],
