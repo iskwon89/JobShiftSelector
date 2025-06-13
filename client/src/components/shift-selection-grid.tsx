@@ -427,7 +427,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                           key={shift}
                           onClick={() => handleShiftClick(location, date, shift)}
                           disabled={fullyBooked}
-                          className={`p-2 rounded-xl border-2 transition-all duration-200 transform hover:scale-[1.02] min-h-[90px] flex flex-col justify-center overflow-hidden ${
+                          className={`mobile-shift-button p-2 rounded-xl border-2 transition-all duration-200 transform hover:scale-[1.02] min-h-[90px] flex flex-col justify-center overflow-hidden ${
                             fullyBooked 
                               ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' 
                               : selected 
@@ -443,7 +443,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                               <div className="text-xs font-semibold break-words">Fully Booked</div>
                             ) : (
                               <>
-                                <div className={`text-xs font-bold leading-tight break-all ${selected ? 'text-white' : getRateTextColor(rate, selected, fullyBooked)}`}>
+                                <div className={`mobile-pricing-text text-xs font-bold leading-tight break-all ${selected ? 'text-white' : getRateTextColor(rate, selected, fullyBooked)}`}>
                                   NT${rate}
                                 </div>
                                 <div className={`text-xs ${selected ? 'text-blue-100' : 'text-gray-500'}`}>
