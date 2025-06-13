@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/lib/language";
-import { Upload, CheckCircle, LogOut, Trash2, Plus, Download, Grid3X3, Users, MessageSquare, Menu, X } from "lucide-react";
+import { Upload, CheckCircle, LogOut, Trash2, Plus, Download, DollarSign, Users, MessageSquare, Menu, X } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ShiftData } from "@shared/schema";
@@ -314,7 +314,7 @@ export function AdminDashboard() {
   });
 
   const menuItems = [
-    { id: "pricing-matrix", label: "Pricing Matrix", icon: Grid3X3 },
+    { id: "pricing-matrix", label: "Pricing Matrix", icon: DollarSign },
     { id: "employee-data", label: "Employee Data Upload", icon: Users },
     { id: "line-notifications", label: "LINE Notifications", icon: MessageSquare },
   ];
@@ -333,7 +333,7 @@ export function AdminDashboard() {
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className="p-2"
           >
-            <Menu className="w-4 h-4" />
+            {sidebarCollapsed ? <Menu className="w-4 h-4" /> : <X className="w-4 h-4" />}
           </Button>
         </div>
         
@@ -358,11 +358,11 @@ export function AdminDashboard() {
         </nav>
         
         {/* Logout button at bottom */}
-        <div className="absolute bottom-4 left-4 right-4">
+        <div className="absolute bottom-4 left-0 right-0 px-4">
           <Button
             variant="ghost"
             onClick={handleLogout}
-            className={`w-full justify-start text-gray-700 hover:text-gray-900 hover:bg-gray-100 ${
+            className={`w-full justify-start text-gray-700 hover:text-red-600 hover:bg-red-50 ${
               sidebarCollapsed ? 'px-2' : 'px-4'
             }`}
           >
@@ -473,7 +473,7 @@ export function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              {/* Pricing Matrix Table */}
+              {/* Pricing Matrix Grid */}
               <Card>
                 <CardContent className="p-6">
                   {shiftDataLoading ? (
@@ -486,61 +486,42 @@ export function AdminDashboard() {
                       <p className="text-sm">Add locations and dates above to get started</p>
                     </div>
                   ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full border-collapse">
-                        <thead>
-                          <tr>
-                            <th className="border border-gray-300 p-3 bg-gray-50 font-semibold text-left min-w-[120px]">
-                              地點 (Location)
-                            </th>
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                      {locations.map(location => (
+                        <div key={location} className="space-y-4">
+                          <h3 className="text-lg font-bold text-slate-800">{location}</h3>
+                          <div className="space-y-3">
                             {dates.map(date => (
-                              <th key={date} className="border border-gray-300 p-3 bg-gray-50 font-semibold text-center min-w-[180px]">
-                                <div className="space-y-1">
-                                  <div className="font-medium">{formatDateDisplay(date)}</div>
-                                  <div className="grid grid-cols-2 gap-1 text-xs">
-                                    <div>DS</div>
-                                    <div>NS</div>
-                                  </div>
+                              <div key={date} className="bg-white border rounded-lg p-4 space-y-3">
+                                <div className="font-medium text-slate-700">
+                                  {formatDateDisplay(date)}
                                 </div>
-                              </th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {locations.map(location => (
-                            <tr key={location}>
-                              <td className="border border-gray-300 p-3 font-medium bg-gray-50">
-                                <div className="flex items-center">
-                                  <span className="mr-2">📍</span>
-                                  {location}
-                                </div>
-                              </td>
-                              {dates.map(date => (
-                                <td key={date} className="border border-gray-300 p-2">
-                                  <div className="grid grid-cols-2 gap-2">
-                                    {['DS', 'NS'].map(shift => {
-                                      const shiftEntry = groupedShiftData[`${location}-${date}`]?.[shift];
-                                      
-                                      return (
-                                        <div key={shift} className="text-center">
-                                          <div className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                                            shift === 'DS' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
-                                          }`}>
+                                <div className="grid grid-cols-2 gap-3">
+                                  {['DS', 'NS'].map(shift => {
+                                    const shiftEntry = groupedShiftData[`${location}-${date}`]?.[shift];
+                                    
+                                    return (
+                                      <div key={shift} className="bg-slate-50 rounded p-3">
+                                        <div className="text-xs font-medium text-slate-600 mb-2 text-center">
+                                          {shift === 'DS' ? 'Day Shift' : 'Night Shift'}
+                                        </div>
+                                        <div className="space-y-1">
+                                          <div className="w-full bg-white py-2 px-3 rounded border text-sm font-medium text-center">
                                             NT${shiftEntry?.rate || '800'}
                                           </div>
-                                          <div className="text-xs text-gray-600 mt-1">
-                                            {shiftEntry?.capacity ?? 10} available
+                                          <div className="w-full bg-white py-1 px-3 rounded border text-xs text-slate-600 text-center">
+                                            Capacity: {shiftEntry?.capacity ?? 10}
                                           </div>
                                         </div>
-                                      );
-                                    })}
-                                  </div>
-                                </td>
-                              ))}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </CardContent>
