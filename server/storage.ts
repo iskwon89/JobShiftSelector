@@ -1,6 +1,6 @@
-import { employees, applications, shiftData, type Employee, type InsertEmployee, type Application, type InsertApplication, type ShiftData } from "@shared/schema";
+import { employees, applications, shiftData, lineNotifications, type Employee, type InsertEmployee, type Application, type InsertApplication, type ShiftData, type LineNotification, type InsertLineNotification } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, sql, lte } from "drizzle-orm";
 
 export interface IStorage {
   // Employee management
@@ -12,8 +12,15 @@ export interface IStorage {
   // Application management
   createApplication(application: InsertApplication): Promise<Application>;
   getApplications(): Promise<Application[]>;
+  getApplicationById(id: number): Promise<Application | undefined>;
   getLatestApplicationByEmployeeId(employeeId: string): Promise<Application | undefined>;
   updateApplication(id: number, updates: Partial<Application>): Promise<Application>;
+
+  // LINE Notification management
+  createLineNotification(notification: InsertLineNotification): Promise<LineNotification>;
+  getPendingNotifications(): Promise<LineNotification[]>;
+  updateNotificationStatus(id: number, status: string, response?: string): Promise<LineNotification>;
+  getNotificationLogs(): Promise<LineNotification[]>;
 
   // Shift data management
   getShiftDataByCohort(cohort: string): Promise<ShiftData[]>;
@@ -41,17 +48,21 @@ export class MemStorage implements IStorage {
   private employees: Map<number, Employee>;
   private applications: Map<number, Application>;
   private shiftData: Map<number, ShiftData>;
+  private lineNotifications: Map<number, LineNotification>;
   private currentEmployeeId: number;
   private currentApplicationId: number;
   private currentShiftDataId: number;
+  private currentNotificationId: number;
 
   constructor() {
     this.employees = new Map();
     this.applications = new Map();
     this.shiftData = new Map();
+    this.lineNotifications = new Map();
     this.currentEmployeeId = 1;
     this.currentApplicationId = 1;
     this.currentShiftDataId = 1;
+    this.currentNotificationId = 1;
     
     // Initialize with default shift data
     this.initializeShiftData();
@@ -173,6 +184,10 @@ export class MemStorage implements IStorage {
     return userApplications[0];
   }
 
+  async getApplicationById(id: number): Promise<Application | undefined> {
+    return this.applications.get(id);
+  }
+
   async updateApplication(id: number, updates: Partial<Application>): Promise<Application> {
     const existing = this.applications.get(id);
     if (!existing) {
@@ -182,6 +197,50 @@ export class MemStorage implements IStorage {
     const updated = { ...existing, ...updates };
     this.applications.set(id, updated);
     return updated;
+  }
+
+  // LINE Notification management
+  async createLineNotification(notification: InsertLineNotification): Promise<LineNotification> {
+    const id = this.currentNotificationId++;
+    const lineNotification: LineNotification = {
+      ...notification,
+      id,
+      sentAt: null,
+      status: 'pending',
+      response: null,
+      createdAt: new Date(),
+    };
+    this.lineNotifications.set(id, lineNotification);
+    return lineNotification;
+  }
+
+  async getPendingNotifications(): Promise<LineNotification[]> {
+    const now = new Date();
+    return Array.from(this.lineNotifications.values()).filter(
+      notification => notification.status === 'pending' && new Date(notification.scheduledFor) <= now
+    );
+  }
+
+  async updateNotificationStatus(id: number, status: string, response?: string): Promise<LineNotification> {
+    const existing = this.lineNotifications.get(id);
+    if (!existing) {
+      throw new Error(`Notification with id ${id} not found`);
+    }
+    
+    const updated = {
+      ...existing,
+      status,
+      sentAt: new Date(),
+      response: response || null,
+    };
+    this.lineNotifications.set(id, updated);
+    return updated;
+  }
+
+  async getNotificationLogs(): Promise<LineNotification[]> {
+    return Array.from(this.lineNotifications.values()).sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
   }
 
   async getShiftDataByCohort(cohort: string): Promise<ShiftData[]> {
@@ -471,6 +530,15 @@ export class DatabaseStorage implements IStorage {
     return application;
   }
 
+  async getApplicationById(id: number): Promise<Application | undefined> {
+    const [application] = await db
+      .select()
+      .from(applications)
+      .where(eq(applications.id, id))
+      .limit(1);
+    return application;
+  }
+
   async updateApplication(id: number, updates: Partial<Application>): Promise<Application> {
     const [updated] = await db
       .update(applications)
@@ -478,6 +546,51 @@ export class DatabaseStorage implements IStorage {
       .where(eq(applications.id, id))
       .returning();
     return updated;
+  }
+
+  // LINE Notification management
+  async createLineNotification(notification: InsertLineNotification): Promise<LineNotification> {
+    const [created] = await db
+      .insert(lineNotifications)
+      .values(notification)
+      .returning();
+    return created;
+  }
+
+  async getPendingNotifications(): Promise<LineNotification[]> {
+    const now = new Date();
+    return await db
+      .select()
+      .from(lineNotifications)
+      .where(and(
+        eq(lineNotifications.status, 'pending'),
+        lte(lineNotifications.scheduledFor, now)
+      ));
+  }
+
+  async updateNotificationStatus(id: number, status: string, response?: string): Promise<LineNotification> {
+    const updateData: any = {
+      status,
+      sentAt: new Date(),
+    };
+    
+    if (response) {
+      updateData.response = response;
+    }
+
+    const [updated] = await db
+      .update(lineNotifications)
+      .set(updateData)
+      .where(eq(lineNotifications.id, id))
+      .returning();
+    return updated;
+  }
+
+  async getNotificationLogs(): Promise<LineNotification[]> {
+    return await db
+      .select()
+      .from(lineNotifications)
+      .orderBy(sql`${lineNotifications.createdAt} DESC`);
   }
 
   // Shift data management

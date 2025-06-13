@@ -63,7 +63,7 @@ Good luck with your shift! 💪`;
 
       return {
         success: true,
-        response: `Message sent successfully. Message ID: ${result.sentMessages?.[0]?.id || 'unknown'}`
+        response: `Message sent successfully to LINE user: ${lineId}`
       };
     } catch (error: any) {
       console.error('LINE message send error:', error);
@@ -94,7 +94,7 @@ Good luck with your shift! 💪`;
 
       const selectedShifts = Array.isArray(application.selectedShifts) 
         ? application.selectedShifts 
-        : JSON.parse(application.selectedShifts);
+        : JSON.parse(application.selectedShifts as string);
 
       for (const shift of selectedShifts) {
         const shiftDate = this.parseShiftDate(shift.date);
