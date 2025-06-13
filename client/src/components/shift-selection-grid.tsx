@@ -415,7 +415,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
               {dates.map(date => (
                 <div key={date} className="border border-slate-200 rounded-lg p-3">
                   <h4 className="font-medium text-slate-700 mb-3 text-center">{formatDateDisplay(date)}</h4>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-2">
                     {shifts.map(shift => {
                       const rate = getShiftRate(location, date, shift);
                       const selected = isShiftSelected(location, date, shift);
@@ -427,7 +427,7 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                           key={shift}
                           onClick={() => handleShiftClick(location, date, shift)}
                           disabled={fullyBooked}
-                          className={`p-3 rounded-2xl border-2 transition-all duration-200 transform hover:scale-[1.02] min-h-[100px] flex flex-col justify-center ${
+                          className={`p-2 rounded-xl border-2 transition-all duration-200 transform hover:scale-[1.02] min-h-[90px] flex flex-col justify-center overflow-hidden ${
                             fullyBooked 
                               ? 'bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200' 
                               : selected 
@@ -435,15 +435,15 @@ export function ShiftSelectionGrid({ userData, onShiftsSelected, onBack, initial
                                 : 'bg-white hover:bg-gray-50 text-gray-700 border-gray-200 hover:border-gray-300 shadow-md hover:shadow-lg'
                           }`}
                         >
-                          <div className="text-center space-y-1">
+                          <div className="text-center space-y-1 w-full">
                             <div className={`text-xs font-medium ${selected ? 'text-blue-100' : 'text-gray-500'}`}>
                               {shift === 'DS' ? t('shift.dayShift') : t('shift.nightShift')}
                             </div>
                             {fullyBooked ? (
-                              <div className="text-sm font-semibold">Fully Booked</div>
+                              <div className="text-xs font-semibold break-words">Fully Booked</div>
                             ) : (
                               <>
-                                <div className={`text-lg font-bold leading-tight ${selected ? 'text-white' : getRateTextColor(rate, selected, fullyBooked)}`}>
+                                <div className={`text-xs font-bold leading-tight break-all ${selected ? 'text-white' : getRateTextColor(rate, selected, fullyBooked)}`}>
                                   NT${rate}
                                 </div>
                                 <div className={`text-xs ${selected ? 'text-blue-100' : 'text-gray-500'}`}>
